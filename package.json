@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "generate:api": "openapi-generator-cli generate -i ../bike-maintainer-api/src/main/resources/maintenance-api.yaml -g typescript-angular -o src/app/api-client --additional-properties=ngVersion=22.1.8,stringEnums=true,fileNaming=kebab-case,withInterfaces=true"
   },
   "private": true,
   "packageManager": "npm@10.9.8",
@@ -24,6 +25,7 @@
     "@angular/build": "^22.1.8",
     "@angular/cli": "^22.1.8",
     "@angular/compiler-cli": "^22.1.0",
+    "@openapitools/openapi-generator-cli": "^2.41.0",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
