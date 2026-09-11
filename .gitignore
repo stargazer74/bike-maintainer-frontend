@@ -6,6 +6,9 @@
 /out-tsc
 /bazel-out
 
+# Generated API client (see: npm run generate:api)
+/src/app/api-client/
+
 # Node
 /node_modules
 npm-debug.log
