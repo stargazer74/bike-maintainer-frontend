@@ -30,15 +30,23 @@
 .vehicle-header {
   position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 16px;
   padding: 24px 28px;
   margin-bottom: 20px;
   border-radius: 16px;
   background: linear-gradient(to right, var(--bm-surface), rgb(30 41 59 / 90%), var(--bm-surface));
   border: 1px solid var(--bm-border);
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 30%);
+}
+
+// `mat-card` forces `display: flex; flex-direction: column` on itself at the
+// same specificity as `.vehicle-header`'s own rule — this inner wrapper does
+// the actual row layout instead of fighting Material for it.
+.vehicle-header__row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .vehicle-header__decoration {
@@ -133,11 +141,44 @@
 
 .vehicle-header__stat-value {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: baseline;
+  gap: 6px;
   font: var(--mat-sys-title-large);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color: var(--bm-orange-light);
+}
+
+.vehicle-header__stat-unit {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--bm-text-muted);
+}
+
+.vehicle-header__stat-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  margin-left: 2px;
+  border-radius: 6px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border-strong);
+  color: var(--bm-text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    color: var(--bm-orange-light);
+    border-color: var(--bm-orange);
+  }
 }
 
 .vehicle-header__stat-edit {

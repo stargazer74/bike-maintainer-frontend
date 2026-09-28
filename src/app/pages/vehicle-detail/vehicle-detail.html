@@ -18,62 +18,65 @@
       >speed</mat-icon
     >
 
-    <span class="vehicle-header__icon">
-      <mat-icon fontSet="material-symbols-outlined">{{ vehicleIcon(vehicle.type) }}</mat-icon>
-    </span>
+    <div class="vehicle-header__row">
+      <span class="vehicle-header__icon">
+        <mat-icon fontSet="material-symbols-outlined">{{ vehicleIcon(vehicle.type) }}</mat-icon>
+      </span>
 
-    <div class="vehicle-header__body">
-      <div class="vehicle-header__title-row">
-        <h1>{{ vehicle.name }}</h1>
-        <button
-          mat-icon-button
-          type="button"
-          aria-label="Fahrzeugdaten bearbeiten"
-          (click)="openEditVehicleDialog(vehicle)"
-        >
-          <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-        </button>
-      </div>
-      @if (vehicleSubtitle(vehicle); as subtitle) {
-        @if (subtitle) {
-          <p>{{ subtitle }}</p>
-        }
-      }
-    </div>
-
-    <div class="vehicle-header__stat">
-      <span class="vehicle-header__stat-label">Aktueller Stand</span>
-      @if (editingMileage()) {
-        <div class="vehicle-header__stat-edit">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <input
-              matInput
-              type="number"
-              min="0"
-              [ngModel]="mileageInput()"
-              (ngModelChange)="mileageInput.set($event)"
-            />
-          </mat-form-field>
-          <button mat-icon-button type="button" aria-label="Speichern" (click)="saveMileage(vehicle)">
-            <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
-          </button>
-          <button mat-icon-button type="button" aria-label="Abbrechen" (click)="cancelEditMileage()">
-            <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
-          </button>
-        </div>
-      } @else {
-        <div class="vehicle-header__stat-value">
-          <span>{{ vehicle.currentMileage ?? 0 | number }} km</span>
+      <div class="vehicle-header__body">
+        <div class="vehicle-header__title-row">
+          <h1>{{ vehicle.name }}</h1>
           <button
             mat-icon-button
             type="button"
-            aria-label="Kilometerstand bearbeiten"
-            (click)="startEditMileage(vehicle)"
+            aria-label="Fahrzeugdaten bearbeiten"
+            (click)="openEditVehicleDialog(vehicle)"
           >
             <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
           </button>
         </div>
-      }
+        @if (vehicleSubtitle(vehicle); as subtitle) {
+          @if (subtitle) {
+            <p>{{ subtitle }}</p>
+          }
+        }
+      </div>
+
+      <div class="vehicle-header__stat">
+        <span class="vehicle-header__stat-label">Aktueller Stand</span>
+        @if (editingMileage()) {
+          <div class="vehicle-header__stat-edit">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <input
+                matInput
+                type="number"
+                min="0"
+                [ngModel]="mileageInput()"
+                (ngModelChange)="mileageInput.set($event)"
+              />
+            </mat-form-field>
+            <button mat-icon-button type="button" aria-label="Speichern" (click)="saveMileage(vehicle)">
+              <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
+            </button>
+            <button mat-icon-button type="button" aria-label="Abbrechen" (click)="cancelEditMileage()">
+              <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+            </button>
+          </div>
+        } @else {
+          <div class="vehicle-header__stat-value">
+            <span>{{ vehicle.currentMileage ?? 0 | number }}</span>
+            <span class="vehicle-header__stat-unit">km</span>
+            <button
+              class="vehicle-header__stat-edit-btn"
+              type="button"
+              aria-label="Kilometerstand bearbeiten"
+              (click)="startEditMileage(vehicle)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </mat-card>
 
