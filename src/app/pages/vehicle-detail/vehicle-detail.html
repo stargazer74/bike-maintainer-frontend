@@ -23,7 +23,17 @@
     </span>
 
     <div class="vehicle-header__body">
-      <h1>{{ vehicle.name }}</h1>
+      <div class="vehicle-header__title-row">
+        <h1>{{ vehicle.name }}</h1>
+        <button
+          mat-icon-button
+          type="button"
+          aria-label="Fahrzeugdaten bearbeiten"
+          (click)="openEditVehicleDialog(vehicle)"
+        >
+          <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+        </button>
+      </div>
       @if (vehicleSubtitle(vehicle); as subtitle) {
         @if (subtitle) {
           <p>{{ subtitle }}</p>
