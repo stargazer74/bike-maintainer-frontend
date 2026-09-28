@@ -67,7 +67,13 @@
     </div>
   </mat-card>
 
-  <mat-tab-group class="vehicle-tabs" mat-stretch-tabs="false" animationDuration="0ms">
+  <mat-tab-group
+    class="vehicle-tabs"
+    mat-stretch-tabs="false"
+    animationDuration="0ms"
+    [selectedIndex]="selectedTabIndex()"
+    (selectedIndexChange)="selectedTabIndex.set($event)"
+  >
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon fontSet="material-symbols-outlined">pie_chart</mat-icon>
@@ -165,12 +171,245 @@
         <mat-icon fontSet="material-symbols-outlined">build</mat-icon>
         Wartung erfassen
       </ng-template>
-      <mat-card class="stub-card" appearance="outlined">
-        <mat-card-content>
-          <mat-icon fontSet="material-symbols-outlined">add_task</mat-icon>
-          <p>Kommt bald.</p>
-        </mat-card-content>
-      </mat-card>
+      <section class="log-form-section">
+        <mat-card class="log-form-card" appearance="outlined">
+          <mat-card-content>
+            <div class="log-form__row">
+              <div class="field">
+                <label class="field__label" for="log-date">Datum</label>
+                <input
+                  id="log-date"
+                  class="field__input"
+                  type="date"
+                  [ngModel]="logDate()"
+                  (ngModelChange)="logDate.set($event)"
+                />
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="log-mileage">Kilometerstand</label>
+                <input
+                  id="log-mileage"
+                  class="field__input"
+                  type="number"
+                  min="0"
+                  [ngModel]="logMileage()"
+                  (ngModelChange)="logMileage.set($event)"
+                />
+              </div>
+            </div>
+
+            <div class="field log-form__tasks">
+              <span class="field__label">Durchgeführte Aufgaben</span>
+              @if (!taskCards().length) {
+                <p class="log-form__tasks-empty">Keine aktiven Wartungsaufgaben hinterlegt.</p>
+              } @else {
+                <div class="log-form__task-list">
+                  @for (card of taskCards(); track card.task.id) {
+                    <label class="log-form__task-option">
+                      <input
+                        type="checkbox"
+                        [checked]="card.task.id !== undefined && logTaskIds().has(card.task.id)"
+                        (change)="toggleLogTask(card.task.id)"
+                      />
+                      <mat-icon fontSet="material-symbols-outlined">{{ card.icon }}</mat-icon>
+                      <span>{{ card.task.name }}</span>
+                    </label>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="log-notes">Notizen</label>
+              <textarea
+                id="log-notes"
+                class="field__input"
+                rows="3"
+                [ngModel]="logNotes()"
+                (ngModelChange)="logNotes.set($event)"
+              ></textarea>
+            </div>
+
+            @if (logSubmitError(); as error) {
+              <p class="field__error">{{ error }}</p>
+            }
+
+            <button
+              type="button"
+              class="btn btn--primary log-form__submit"
+              [disabled]="savingLog() || !logDate()"
+              (click)="submitLog(vehicle)"
+            >
+              @if (savingLog()) {
+                <mat-spinner diameter="18" />
+              } @else {
+                <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
+                Wartung speichern
+              }
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </section>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon fontSet="material-symbols-outlined">checklist</mat-icon>
+        Wartungsaufgaben
+      </ng-template>
+      <section class="tasks-manage-section">
+        <mat-card class="log-form-card" appearance="outlined">
+          <mat-card-content>
+            <h3 class="tasks-manage__form-title">
+              {{ editingTaskId() === null ? 'Neue Wartungsaufgabe' : 'Wartungsaufgabe bearbeiten' }}
+            </h3>
+
+            <div class="field">
+              <label class="field__label" for="task-name">Name *</label>
+              <input
+                id="task-name"
+                class="field__input"
+                [ngModel]="taskFormName()"
+                (ngModelChange)="taskFormName.set($event)"
+                placeholder="z. B. Ölwechsel"
+              />
+            </div>
+
+            <div class="log-form__row">
+              <div class="field">
+                <label class="field__label" for="task-interval-km">Intervall (km)</label>
+                <input
+                  id="task-interval-km"
+                  class="field__input"
+                  type="number"
+                  min="0"
+                  [ngModel]="taskFormIntervalKm()"
+                  (ngModelChange)="taskFormIntervalKm.set($event)"
+                  placeholder="z. B. 10000"
+                />
+              </div>
+              <div class="field">
+                <label class="field__label" for="task-interval-months">Intervall (Monate)</label>
+                <input
+                  id="task-interval-months"
+                  class="field__input"
+                  type="number"
+                  min="0"
+                  [ngModel]="taskFormIntervalMonths()"
+                  (ngModelChange)="taskFormIntervalMonths.set($event)"
+                  placeholder="z. B. 12"
+                />
+              </div>
+            </div>
+
+            <div class="log-form__row">
+              <div class="field">
+                <label class="field__label" for="task-first-due-km">Erstfällig bei (km)</label>
+                <input
+                  id="task-first-due-km"
+                  class="field__input"
+                  type="number"
+                  min="0"
+                  [ngModel]="taskFormFirstDueKm()"
+                  (ngModelChange)="taskFormFirstDueKm.set($event)"
+                />
+              </div>
+              <div class="field">
+                <label class="field__label" for="task-first-due-months">Erstfällig nach (Monaten)</label>
+                <input
+                  id="task-first-due-months"
+                  class="field__input"
+                  type="number"
+                  min="0"
+                  [ngModel]="taskFormFirstDueMonths()"
+                  (ngModelChange)="taskFormFirstDueMonths.set($event)"
+                />
+              </div>
+            </div>
+
+            <div class="tasks-manage__toggles">
+              <label class="tasks-manage__toggle">
+                <input
+                  type="checkbox"
+                  [checked]="taskFormOneTime()"
+                  (change)="taskFormOneTime.set(!taskFormOneTime())"
+                />
+                Einmalige Aufgabe
+              </label>
+              <label class="tasks-manage__toggle">
+                <input
+                  type="checkbox"
+                  [checked]="taskFormActive()"
+                  (change)="taskFormActive.set(!taskFormActive())"
+                />
+                Aktiv
+              </label>
+            </div>
+
+            @if (taskSubmitError(); as error) {
+              <p class="field__error">{{ error }}</p>
+            }
+
+            <div class="tasks-manage__form-actions">
+              @if (editingTaskId() !== null) {
+                <button type="button" class="btn btn--ghost" [disabled]="savingTask()" (click)="cancelTaskEdit()">
+                  Abbrechen
+                </button>
+              }
+              <button
+                type="button"
+                class="btn btn--primary"
+                [disabled]="savingTask() || !taskFormName().trim()"
+                (click)="submitTask(vehicle)"
+              >
+                @if (savingTask()) {
+                  <mat-spinner diameter="18" />
+                } @else {
+                  <mat-icon fontSet="material-symbols-outlined">{{
+                    editingTaskId() === null ? 'add' : 'save'
+                  }}</mat-icon>
+                  {{ editingTaskId() === null ? 'Aufgabe anlegen' : 'Änderungen speichern' }}
+                }
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        @if (!result.tasks.length) {
+          <mat-card class="stub-card" appearance="outlined">
+            <mat-card-content>
+              <mat-icon fontSet="material-symbols-outlined">checklist</mat-icon>
+              <p>Noch keine Wartungsaufgaben angelegt.</p>
+            </mat-card-content>
+          </mat-card>
+        } @else {
+          <div class="tasks-manage__list">
+            @for (task of result.tasks; track task.id) {
+              <mat-card class="tasks-manage__item" appearance="outlined">
+                <span class="tasks-manage__item-icon">
+                  <mat-icon fontSet="material-symbols-outlined">{{ resolveTaskIcon(task.name) }}</mat-icon>
+                </span>
+                <div class="tasks-manage__item-body">
+                  <span class="tasks-manage__item-title">{{ task.name }}</span>
+                  <span class="tasks-manage__item-subtitle">{{ describeTaskInterval(task) }}</span>
+                  @if (task.active === false) {
+                    <span class="status-badge status-badge--none">Inaktiv</span>
+                  }
+                </div>
+                <div class="tasks-manage__item-actions">
+                  <button mat-icon-button type="button" aria-label="Bearbeiten" (click)="startEditTask(task)">
+                    <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" aria-label="Löschen" (click)="deleteTask(vehicle, task)">
+                    <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+                  </button>
+                </div>
+              </mat-card>
+            }
+          </div>
+        }
+      </section>
     </mat-tab>
   </mat-tab-group>
 }

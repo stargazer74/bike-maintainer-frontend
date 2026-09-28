@@ -330,3 +330,153 @@
   color: var(--bm-text-muted);
   font-size: 0.8125rem;
 }
+
+.log-form-section {
+  padding-top: 20px;
+}
+
+.log-form-card {
+  display: block;
+  background: var(--bm-surface);
+  border-color: var(--bm-border) !important;
+}
+
+.log-form__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .field {
+    flex: 1 1 220px;
+  }
+}
+
+.log-form__tasks-empty {
+  margin: 0;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
+
+.log-form__task-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+}
+
+.log-form__task-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border);
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    accent-color: var(--bm-orange);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--bm-text-muted);
+  }
+}
+
+.log-form__submit {
+  margin-top: 4px;
+}
+
+.tasks-manage-section {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tasks-manage__form-title {
+  margin: 0 0 16px;
+  font: var(--mat-sys-title-medium);
+  color: #e2e8f0;
+}
+
+.tasks-manage__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.tasks-manage__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    accent-color: var(--bm-orange);
+  }
+}
+
+.tasks-manage__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tasks-manage__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tasks-manage__item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bm-surface);
+  border-color: var(--bm-border) !important;
+}
+
+.tasks-manage__item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: var(--bm-surface-alt);
+  color: #cbd5e1;
+}
+
+.tasks-manage__item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tasks-manage__item-title {
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.tasks-manage__item-subtitle {
+  font-size: 0.8125rem;
+  color: var(--bm-text-muted);
+}
+
+.tasks-manage__item-actions {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
