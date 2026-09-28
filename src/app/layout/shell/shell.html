@@ -1,0 +1,33 @@
+<div class="shell">
+  <mat-toolbar class="shell__toolbar">
+    <span class="shell__brand-icon">
+      <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
+    </span>
+    <span class="shell__brand-name">Bike Maintainer</span>
+
+    <div class="shell__toolbar-actions">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="shell__vehicle-select">
+        <mat-select
+          [value]="selectedVehicleId()"
+          placeholder="Fahrzeug wählen"
+          (selectionChange)="onSelectVehicle($event.value)"
+        >
+          @for (vehicle of vehicles.value(); track vehicle.id) {
+            <mat-option [value]="vehicle.id">{{ vehicle.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button type="button" class="shell__add-button" (click)="onAddVehicleClick()">
+        <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+        <span>Bike hinzufügen</span>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <div class="shell__content">
+    <main class="shell__main">
+      <router-outlet />
+    </main>
+  </div>
+</div>

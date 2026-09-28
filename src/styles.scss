@@ -1,1 +1,87 @@
-/* You can add global styles to this file, and also import other style files */
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+// Custom "Werkstatt" palette (Graphit primär, Signal-Orange als Akzent),
+// generated via `ng generate @angular/material:m3-theme`.
+@use './styles/theme-colors' as theme-colors;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: theme-colors.$primary-palette,
+        tertiary: theme-colors.$tertiary-palette,
+      ),
+      typography: (
+        plain-family: Inter,
+        brand-family: Inter,
+      ),
+      density: 0,
+    )
+  );
+}
+
+body {
+  // App is dark-only by design (see reference mock).
+  color-scheme: dark;
+  background-color: var(--bm-bg);
+  color: var(--bm-text);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+// Exact palette from the MotoKeep reference design (Tailwind slate/orange/
+// emerald/amber/rose scales) — used instead of the M3-derived system tokens
+// wherever pixel-exact color matching to the reference matters.
+:root {
+  --bm-bg: #0b0f19;
+  --bm-surface: #0f172a; // slate-900 — cards, toolbar/nav
+  --bm-surface-alt: #1e293b; // slate-800 — chips, inputs, icon tiles
+  --bm-surface-inset: #020617; // slate-950 — nested/inset panels
+  --bm-border: #1e293b; // slate-800
+  --bm-border-strong: #334155; // slate-700
+  --bm-text: #f8fafc; // slate-50
+  --bm-text-muted: #94a3b8; // slate-400
+  --bm-text-dim: #64748b; // slate-500
+
+  --bm-orange: #f97316; // orange-500
+  --bm-orange-light: #fb923c; // orange-400
+  --bm-orange-dark: #ea580c; // orange-600
+  --bm-amber: #f59e0b; // amber-500
+
+  --status-ok: #34d399; // emerald-400
+  --status-ok-bg: rgb(2 44 34 / 30%); // emerald-950/30
+  --status-ok-border: rgb(6 95 70 / 50%); // emerald-800/50
+
+  --status-due: #fbbf24; // amber-400
+  --status-due-bg: rgb(69 26 3 / 40%); // amber-950/40
+  --status-due-border: rgb(146 64 14 / 60%); // amber-800/60
+
+  --status-overdue: #fb7185; // rose-400
+  --status-overdue-bg: rgb(76 5 25 / 40%); // rose-950/40
+  --status-overdue-border: rgb(159 18 57 / 60%); // rose-800/60
+
+  --status-none: #94a3b8; // slate-400
+  --status-none-bg: #1e293b; // slate-800
+  --status-none-border: #334155; // slate-700
+}

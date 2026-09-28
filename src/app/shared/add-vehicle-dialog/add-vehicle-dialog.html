@@ -1,0 +1,94 @@
+<h2 mat-dialog-title class="add-vehicle__title">
+  <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
+  Neues Fahrzeug anlegen
+</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="add-vehicle__content">
+    <div class="field">
+      <label class="field__label" for="av-name">Name *</label>
+      <input
+        id="av-name"
+        class="field__input"
+        [class.field__input--invalid]="form.controls.name.invalid && form.controls.name.touched"
+        formControlName="name"
+        placeholder="z. B. Yamaha MT-09 SP"
+      />
+      @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+        <span class="field__error">Name ist erforderlich.</span>
+      }
+      @if (form.controls.name.hasError('maxlength')) {
+        <span class="field__error">Maximal 255 Zeichen.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="av-type">Fahrzeugtyp *</label>
+      <select id="av-type" class="field__input" formControlName="type">
+        @for (option of vehicleTypes; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="add-vehicle__row">
+      <div class="field">
+        <label class="field__label" for="av-make">Hersteller</label>
+        <input id="av-make" class="field__input" formControlName="make" placeholder="z. B. Yamaha" />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="av-model">Modell</label>
+        <input id="av-model" class="field__input" formControlName="model" placeholder="z. B. MT-09 SP" />
+      </div>
+    </div>
+
+    <div class="add-vehicle__row">
+      <div class="field">
+        <label class="field__label" for="av-year">Baujahr</label>
+        <input
+          id="av-year"
+          class="field__input"
+          type="number"
+          formControlName="modelYear"
+          [min]="minYear"
+          [max]="maxYear"
+          placeholder="2022"
+        />
+        @if (form.controls.modelYear.hasError('min') || form.controls.modelYear.hasError('max')) {
+          <span class="field__error">Bitte ein gültiges Jahr angeben.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="av-mileage">Kilometerstand (km)</label>
+        <input
+          id="av-mileage"
+          class="field__input"
+          type="number"
+          formControlName="currentMileage"
+          min="0"
+          placeholder="0"
+        />
+        @if (form.controls.currentMileage.hasError('min')) {
+          <span class="field__error">Darf nicht negativ sein.</span>
+        }
+      </div>
+    </div>
+
+    @if (submitError(); as error) {
+      <p class="add-vehicle__error">{{ error }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn btn--ghost" (click)="cancel()" [disabled]="saving()">Abbrechen</button>
+    <button type="submit" class="btn btn--primary" [disabled]="saving()">
+      @if (saving()) {
+        <mat-spinner diameter="18" />
+      } @else {
+        Fahrzeug anlegen
+      }
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,151 @@
+@if (data.isLoading()) {
+  <div class="state-row">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (data.error()) {
+  <mat-card class="stub-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon fontSet="material-symbols-outlined">error</mat-icon>
+      <p>Fahrzeug konnte nicht geladen werden.</p>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  @let result = data.value()!;
+  @let vehicle = result.vehicle;
+
+  <mat-card class="vehicle-header" appearance="outlined">
+    <mat-icon class="vehicle-header__decoration" fontSet="material-symbols-outlined" aria-hidden="true"
+      >speed</mat-icon
+    >
+
+    <span class="vehicle-header__icon">
+      <mat-icon fontSet="material-symbols-outlined">{{ vehicleIcon(vehicle.type) }}</mat-icon>
+    </span>
+
+    <div class="vehicle-header__body">
+      <h1>{{ vehicle.name }}</h1>
+      @if (vehicleSubtitle(vehicle); as subtitle) {
+        @if (subtitle) {
+          <p>{{ subtitle }}</p>
+        }
+      }
+    </div>
+
+    <div class="vehicle-header__stat">
+      <span class="vehicle-header__stat-label">Aktueller Stand</span>
+      @if (editingMileage()) {
+        <div class="vehicle-header__stat-edit">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <input
+              matInput
+              type="number"
+              min="0"
+              [ngModel]="mileageInput()"
+              (ngModelChange)="mileageInput.set($event)"
+            />
+          </mat-form-field>
+          <button mat-icon-button type="button" aria-label="Speichern" (click)="saveMileage(vehicle)">
+            <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
+          </button>
+          <button mat-icon-button type="button" aria-label="Abbrechen" (click)="cancelEditMileage()">
+            <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+          </button>
+        </div>
+      } @else {
+        <div class="vehicle-header__stat-value">
+          <span>{{ vehicle.currentMileage ?? 0 | number }} km</span>
+          <button
+            mat-icon-button
+            type="button"
+            aria-label="Kilometerstand bearbeiten"
+            (click)="startEditMileage(vehicle)"
+          >
+            <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </mat-card>
+
+  <mat-tab-group class="vehicle-tabs" mat-stretch-tabs="false" animationDuration="0ms">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon fontSet="material-symbols-outlined">pie_chart</mat-icon>
+        Dashboard & Status
+      </ng-template>
+      <section class="status-section">
+        <h2>
+          <mat-icon fontSet="material-symbols-outlined">shield</mat-icon>
+          Wartungsstatus der Hauptkomponenten
+        </h2>
+
+        @if (!taskCards().length) {
+          <mat-card class="stub-card" appearance="outlined">
+            <mat-card-content>
+              <mat-icon fontSet="material-symbols-outlined">build</mat-icon>
+              <p>Noch keine Wartungsaufgaben hinterlegt.</p>
+            </mat-card-content>
+          </mat-card>
+        } @else {
+          <div class="task-grid">
+            @for (card of taskCards(); track card.task.id) {
+              <mat-card class="task-card" appearance="outlined">
+                <span class="task-card__icon">
+                  <mat-icon fontSet="material-symbols-outlined">{{ card.icon }}</mat-icon>
+                </span>
+                <div class="task-card__body">
+                  <span class="task-card__title">{{ card.task.name }}</span>
+                  <span class="task-card__subtitle">
+                    @if (card.status.lastService) {
+                      Letzter Service: {{ card.status.lastService.mileage | number }} km ({{
+                        card.status.lastService.date | date: 'dd.MM.yyyy'
+                      }})
+                    } @else {
+                      Ausstehend
+                    }
+                  </span>
+                  <span class="status-badge" [class]="'status-badge--' + card.status.state">{{
+                    card.status.label
+                  }}</span>
+                  @if (card.status.progress !== null) {
+                    <mat-progress-bar
+                      mode="determinate"
+                      [value]="card.status.progress * 100"
+                      [class]="'progress-bar--' + card.status.state"
+                    />
+                  }
+                </div>
+              </mat-card>
+            }
+          </div>
+        }
+      </section>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+        Wartungshistorie ({{ result.logs.length }})
+      </ng-template>
+      <mat-card class="stub-card" appearance="outlined">
+        <mat-card-content>
+          <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+          <p>Kommt bald.</p>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon fontSet="material-symbols-outlined">build</mat-icon>
+        Wartung erfassen
+      </ng-template>
+      <mat-card class="stub-card" appearance="outlined">
+        <mat-card-content>
+          <mat-icon fontSet="material-symbols-outlined">add_task</mat-icon>
+          <p>Kommt bald.</p>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+  </mat-tab-group>
+}
