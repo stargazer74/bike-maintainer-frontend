@@ -274,3 +274,59 @@
     --mat-progress-bar-active-indicator-color: var(--status-overdue);
   }
 }
+
+.history-section {
+  padding-top: 20px;
+}
+
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.log-card {
+  display: block;
+  padding: 16px;
+  background: var(--bm-surface);
+  border-color: var(--bm-border) !important;
+}
+
+.log-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.log-card__date {
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.log-card__mileage {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--bm-orange-light);
+}
+
+.log-card__tasks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.log-card__task-chip {
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border);
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+.log-card__notes {
+  margin: 10px 0 0;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
