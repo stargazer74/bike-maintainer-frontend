@@ -7,6 +7,9 @@
 // Custom "Werkstatt" palette (Graphit primär, Signal-Orange als Akzent),
 // generated via `ng generate @angular/material:m3-theme`.
 @use './styles/theme-colors' as theme-colors;
+// Shared hand-styled form fields/buttons (`.field`, `.btn`, ...) — global so
+// every form in the app can use them instead of Material's own styling.
+@use './styles/forms';
 
 html {
   height: 100%;

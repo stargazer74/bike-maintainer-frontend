@@ -1,5 +1,13 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -12,7 +20,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
+  MaintenanceLogRequest,
   MaintenanceLogsService,
+  MaintenanceTaskRequest,
+  MaintenanceTaskResponse,
   MaintenanceTasksService,
   VehicleRequest,
   VehicleResponse,
@@ -20,6 +31,7 @@ import {
 } from '../../api-client';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { computeTaskStatus } from './maintenance-status';
+import { describeTaskInterval } from './task-interval';
 import { resolveTaskIcon } from './task-icon';
 
 @Component({
@@ -50,6 +62,8 @@ export class VehicleDetail {
 
   protected readonly vehicleIcon = vehicleIcon;
   protected readonly vehicleSubtitle = vehicleSubtitle;
+  protected readonly resolveTaskIcon = resolveTaskIcon;
+  protected readonly describeTaskInterval = describeTaskInterval;
 
   protected readonly data = rxResource({
     params: () => ({ id: Number(this.id()) }),
@@ -90,6 +104,8 @@ export class VehicleDetail {
       }));
   });
 
+  protected readonly selectedTabIndex = signal(0);
+
   protected readonly editingMileage = signal(false);
   protected readonly mileageInput = signal(0);
 
@@ -119,4 +135,157 @@ export class VehicleDetail {
       this.data.reload();
     });
   }
+
+  protected readonly logDate = signal(todayIso());
+  protected readonly logMileage = signal(0);
+  protected readonly logNotes = signal('');
+  protected readonly logTaskIds = signal<ReadonlySet<number>>(new Set());
+  protected readonly savingLog = signal(false);
+  protected readonly logSubmitError = signal<string | null>(null);
+
+  private readonly logMileageSeeded = signal(false);
+
+  constructor() {
+    effect(() => {
+      const result = this.data.value();
+      if (result && !this.logMileageSeeded()) {
+        this.logMileageSeeded.set(true);
+        this.logMileage.set(result.vehicle.currentMileage ?? 0);
+      }
+    });
+  }
+
+  protected toggleLogTask(taskId: number | undefined): void {
+    if (taskId === undefined) {
+      return;
+    }
+    this.logTaskIds.update((ids) => {
+      const next = new Set(ids);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
+      return next;
+    });
+  }
+
+  protected submitLog(vehicle: VehicleResponse): void {
+    if (this.savingLog() || vehicle.id === undefined || !this.logDate()) {
+      return;
+    }
+    const request: MaintenanceLogRequest = {
+      performedAt: this.logDate(),
+      mileageAtPerformed: this.logMileage(),
+      notes: this.logNotes().trim() || undefined,
+      performedTaskIds: [...this.logTaskIds()],
+    };
+    this.savingLog.set(true);
+    this.logSubmitError.set(null);
+    this.logsService.createMaintenanceLog(vehicle.id, request).subscribe({
+      next: () => {
+        this.savingLog.set(false);
+        this.logNotes.set('');
+        this.logTaskIds.set(new Set());
+        this.data.reload();
+      },
+      error: () => {
+        this.savingLog.set(false);
+        this.logSubmitError.set('Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.');
+      },
+    });
+  }
+
+  protected readonly taskFormName = signal('');
+  protected readonly taskFormIntervalKm = signal<number | null>(null);
+  protected readonly taskFormIntervalMonths = signal<number | null>(null);
+  protected readonly taskFormFirstDueKm = signal<number | null>(null);
+  protected readonly taskFormFirstDueMonths = signal<number | null>(null);
+  protected readonly taskFormOneTime = signal(false);
+  protected readonly taskFormActive = signal(true);
+  protected readonly editingTaskId = signal<number | null>(null);
+  protected readonly savingTask = signal(false);
+  protected readonly taskSubmitError = signal<string | null>(null);
+
+  protected startEditTask(task: MaintenanceTaskResponse): void {
+    this.editingTaskId.set(task.id ?? null);
+    this.taskFormName.set(task.name ?? '');
+    this.taskFormIntervalKm.set(task.intervalKm ?? null);
+    this.taskFormIntervalMonths.set(task.intervalMonths ?? null);
+    this.taskFormFirstDueKm.set(task.firstDueKm ?? null);
+    this.taskFormFirstDueMonths.set(task.firstDueMonths ?? null);
+    this.taskFormOneTime.set(task.oneTime ?? false);
+    this.taskFormActive.set(task.active ?? true);
+    this.taskSubmitError.set(null);
+  }
+
+  protected cancelTaskEdit(): void {
+    this.resetTaskForm();
+  }
+
+  protected submitTask(vehicle: VehicleResponse): void {
+    const name = this.taskFormName().trim();
+    if (this.savingTask() || vehicle.id === undefined || !name) {
+      return;
+    }
+    const request: MaintenanceTaskRequest = {
+      name,
+      intervalKm: this.taskFormIntervalKm() ?? undefined,
+      intervalMonths: this.taskFormIntervalMonths() ?? undefined,
+      firstDueKm: this.taskFormFirstDueKm() ?? undefined,
+      firstDueMonths: this.taskFormFirstDueMonths() ?? undefined,
+      oneTime: this.taskFormOneTime(),
+      active: this.taskFormActive(),
+    };
+    const taskId = this.editingTaskId();
+    const request$ =
+      taskId === null
+        ? this.tasksService.createMaintenanceTask(vehicle.id, request)
+        : this.tasksService.updateMaintenanceTask(vehicle.id, taskId, request);
+
+    this.savingTask.set(true);
+    this.taskSubmitError.set(null);
+    request$.subscribe({
+      next: () => {
+        this.savingTask.set(false);
+        this.resetTaskForm();
+        this.data.reload();
+      },
+      error: () => {
+        this.savingTask.set(false);
+        this.taskSubmitError.set('Wartungsaufgabe konnte nicht gespeichert werden. Bitte versuche es erneut.');
+      },
+    });
+  }
+
+  protected deleteTask(vehicle: VehicleResponse, task: MaintenanceTaskResponse): void {
+    if (vehicle.id === undefined || task.id === undefined) {
+      return;
+    }
+    if (!confirm(`"${task.name}" wirklich löschen?`)) {
+      return;
+    }
+    this.tasksService.deleteMaintenanceTask(vehicle.id, task.id).subscribe(() => {
+      if (this.editingTaskId() === task.id) {
+        this.resetTaskForm();
+      }
+      this.data.reload();
+    });
+  }
+
+  private resetTaskForm(): void {
+    this.editingTaskId.set(null);
+    this.taskFormName.set('');
+    this.taskFormIntervalKm.set(null);
+    this.taskFormIntervalMonths.set(null);
+    this.taskFormFirstDueKm.set(null);
+    this.taskFormFirstDueMonths.set(null);
+    this.taskFormOneTime.set(false);
+    this.taskFormActive.set(true);
+    this.taskSubmitError.set(null);
+  }
+}
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
 }
