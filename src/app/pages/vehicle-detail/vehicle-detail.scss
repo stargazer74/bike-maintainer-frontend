@@ -95,6 +95,20 @@
   }
 }
 
+.vehicle-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  button {
+    color: var(--bm-text-muted);
+
+    &:hover {
+      color: var(--bm-orange-light);
+    }
+  }
+}
+
 .vehicle-header__stat {
   position: relative;
   z-index: 1;

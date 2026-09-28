@@ -1,23 +1,30 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { VehicleRequest, VehicleResponse, VehicleType, VehiclesService } from '../../api-client';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
+export interface VehicleFormDialogData {
+  readonly vehicle?: VehicleResponse;
+}
+
 @Component({
-  selector: 'app-add-vehicle-dialog',
+  selector: 'app-vehicle-form-dialog',
   imports: [ReactiveFormsModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule],
-  templateUrl: './add-vehicle-dialog.html',
-  styleUrl: './add-vehicle-dialog.scss',
+  templateUrl: './vehicle-form-dialog.html',
+  styleUrl: './vehicle-form-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddVehicleDialog {
+export class VehicleFormDialog {
   private readonly fb = inject(FormBuilder);
   private readonly vehiclesService = inject(VehiclesService);
-  private readonly dialogRef = inject(MatDialogRef<AddVehicleDialog, VehicleResponse>);
+  private readonly dialogRef = inject(MatDialogRef<VehicleFormDialog, VehicleResponse>);
+  private readonly data = inject<VehicleFormDialogData | null>(MAT_DIALOG_DATA, { optional: true });
+
+  protected readonly editingVehicle = this.data?.vehicle ?? null;
 
   protected readonly minYear = 1900;
   protected readonly maxYear = CURRENT_YEAR + 1;
@@ -31,15 +38,18 @@ export class AddVehicleDialog {
   protected readonly submitError = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(255)]],
-    type: this.fb.nonNullable.control<VehicleType>(VehicleType.Motorcycle, Validators.required),
-    make: ['', Validators.maxLength(100)],
-    model: ['', Validators.maxLength(100)],
-    modelYear: this.fb.control<number | null>(null, [
+    name: [this.editingVehicle?.name ?? '', [Validators.required, Validators.maxLength(255)]],
+    type: this.fb.nonNullable.control<VehicleType>(
+      this.editingVehicle?.type ?? VehicleType.Motorcycle,
+      Validators.required,
+    ),
+    make: [this.editingVehicle?.make ?? '', Validators.maxLength(100)],
+    model: [this.editingVehicle?.model ?? '', Validators.maxLength(100)],
+    modelYear: this.fb.control<number | null>(this.editingVehicle?.modelYear ?? null, [
       Validators.min(this.minYear),
       Validators.max(this.maxYear),
     ]),
-    currentMileage: this.fb.nonNullable.control(0, Validators.min(0)),
+    currentMileage: this.fb.nonNullable.control(this.editingVehicle?.currentMileage ?? 0, Validators.min(0)),
   });
 
   protected submit(): void {
@@ -61,16 +71,26 @@ export class AddVehicleDialog {
       currentMileage: value.currentMileage,
     };
 
+    const vehicle = this.editingVehicle;
+    const request$ =
+      vehicle?.id === undefined
+        ? this.vehiclesService.createVehicle(request)
+        : this.vehiclesService.updateVehicle(vehicle.id, request);
+
     this.saving.set(true);
     this.submitError.set(null);
-    this.vehiclesService.createVehicle(request).subscribe({
-      next: (vehicle) => {
+    request$.subscribe({
+      next: (result) => {
         this.saving.set(false);
-        this.dialogRef.close(vehicle);
+        this.dialogRef.close(result);
       },
       error: () => {
         this.saving.set(false);
-        this.submitError.set('Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.');
+        this.submitError.set(
+          vehicle
+            ? 'Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut.'
+            : 'Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.',
+        );
       },
     });
   }

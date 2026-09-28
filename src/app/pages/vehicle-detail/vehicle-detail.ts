@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -30,6 +31,7 @@ import {
   VehiclesService,
 } from '../../api-client';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
+import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { computeTaskStatus } from './maintenance-status';
 import { describeTaskInterval } from './task-interval';
 import { resolveTaskIcon } from './task-icon';
@@ -59,6 +61,7 @@ export class VehicleDetail {
   private readonly vehiclesService = inject(VehiclesService);
   private readonly tasksService = inject(MaintenanceTasksService);
   private readonly logsService = inject(MaintenanceLogsService);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly vehicleIcon = vehicleIcon;
   protected readonly vehicleSubtitle = vehicleSubtitle;
@@ -105,6 +108,18 @@ export class VehicleDetail {
   });
 
   protected readonly selectedTabIndex = signal(0);
+
+  protected openEditVehicleDialog(vehicle: VehicleResponse): void {
+    this.dialog
+      .open(VehicleFormDialog, { autoFocus: 'first-tabbable', data: { vehicle } })
+      .afterClosed()
+      .subscribe((updatedVehicle) => {
+        if (!updatedVehicle) {
+          return;
+        }
+        this.data.reload();
+      });
+  }
 
   protected readonly editingMileage = signal(false);
   protected readonly mileageInput = signal(0);

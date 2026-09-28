@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { VehiclesService } from '../../api-client';
-import { AddVehicleDialog } from '../../shared/add-vehicle-dialog/add-vehicle-dialog';
+import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 
 interface NavItem {
   readonly label: string;
@@ -74,7 +74,7 @@ export class Shell {
 
   protected onAddVehicleClick(): void {
     this.dialog
-      .open(AddVehicleDialog, { autoFocus: 'first-tabbable' })
+      .open(VehicleFormDialog, { autoFocus: 'first-tabbable' })
       .afterClosed()
       .subscribe((createdVehicle) => {
         if (!createdVehicle) {

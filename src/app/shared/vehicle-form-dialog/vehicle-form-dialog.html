@@ -1,6 +1,6 @@
 <h2 mat-dialog-title class="add-vehicle__title">
-  <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
-  Neues Fahrzeug anlegen
+  <mat-icon fontSet="material-symbols-outlined">{{ editingVehicle ? 'edit' : 'two_wheeler' }}</mat-icon>
+  {{ editingVehicle ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug anlegen' }}
 </h2>
 
 <form [formGroup]="form" (ngSubmit)="submit()">
@@ -87,7 +87,7 @@
       @if (saving()) {
         <mat-spinner diameter="18" />
       } @else {
-        Fahrzeug anlegen
+        {{ editingVehicle ? 'Änderungen speichern' : 'Fahrzeug anlegen' }}
       }
     </button>
   </mat-dialog-actions>
