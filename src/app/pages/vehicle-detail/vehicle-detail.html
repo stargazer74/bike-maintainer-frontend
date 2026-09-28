@@ -127,12 +127,37 @@
         <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
         Wartungshistorie ({{ result.logs.length }})
       </ng-template>
-      <mat-card class="stub-card" appearance="outlined">
-        <mat-card-content>
-          <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
-          <p>Kommt bald.</p>
-        </mat-card-content>
-      </mat-card>
+      <section class="history-section">
+        @if (!logCards().length) {
+          <mat-card class="stub-card" appearance="outlined">
+            <mat-card-content>
+              <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+              <p>Noch keine Wartungen erfasst.</p>
+            </mat-card-content>
+          </mat-card>
+        } @else {
+          <div class="log-list">
+            @for (card of logCards(); track card.log.id) {
+              <mat-card class="log-card" appearance="outlined">
+                <div class="log-card__header">
+                  <span class="log-card__date">{{ card.log.performedAt | date: 'dd.MM.yyyy' }}</span>
+                  <span class="log-card__mileage">{{ card.log.mileageAtPerformed | number }} km</span>
+                </div>
+                @if (card.taskNames.length) {
+                  <div class="log-card__tasks">
+                    @for (name of card.taskNames; track name) {
+                      <span class="log-card__task-chip">{{ name }}</span>
+                    }
+                  </div>
+                }
+                @if (card.log.notes) {
+                  <p class="log-card__notes">{{ card.log.notes }}</p>
+                }
+              </mat-card>
+            }
+          </div>
+        }
+      </section>
     </mat-tab>
 
     <mat-tab>

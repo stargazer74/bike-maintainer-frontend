@@ -76,6 +76,20 @@ export class VehicleDetail {
       }));
   });
 
+  protected readonly logCards = computed(() => {
+    const result = this.data.value();
+    if (!result) {
+      return [];
+    }
+    const taskNames = new Map(result.tasks.map((task) => [task.id, task.name ?? 'Unbenannte Aufgabe']));
+    return [...result.logs]
+      .sort((a, b) => (b.performedAt ?? '').localeCompare(a.performedAt ?? ''))
+      .map((log) => ({
+        log,
+        taskNames: (log.performedTaskIds ?? []).map((id) => taskNames.get(id) ?? 'Unbekannte Aufgabe'),
+      }));
+  });
+
   protected readonly editingMileage = signal(false);
   protected readonly mileageInput = signal(0);
 
