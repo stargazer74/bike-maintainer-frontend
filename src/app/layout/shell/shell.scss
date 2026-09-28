@@ -1,0 +1,165 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.shell__toolbar {
+  flex: 0 0 auto;
+  gap: 12px;
+  background: var(--bm-surface);
+  border-bottom: 1px solid var(--bm-border);
+  // Fallback for narrow viewports: scroll instead of silently clipping the
+  // add-vehicle button off the visible edge.
+  overflow-x: auto;
+}
+
+.shell__brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(to top right, var(--bm-orange-dark), var(--bm-amber));
+  color: white;
+  box-shadow: 0 4px 14px rgb(249 115 22 / 20%);
+}
+
+.shell__brand-name {
+  flex-shrink: 0;
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  background: linear-gradient(to right, white, #e2e8f0, var(--bm-orange-light));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.shell__toolbar-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.shell__vehicle-select {
+  width: 220px;
+
+  // Compact the outline field to fit the toolbar height; the form-field's
+  // default vertical padding is sized for a full form, not a toolbar.
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    height: 40px;
+    background: var(--bm-surface-alt);
+    border-radius: 8px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    min-height: unset;
+    color: #e2e8f0; // slate-200
+  }
+
+  // The outline's corner radius isn't exposed as a theme token, so the
+  // notched-outline pieces need a direct override.
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: var(--bm-border-strong) !important;
+  }
+
+  ::ng-deep .mdc-notched-outline__leading {
+    border-radius: 8px 0 0 8px;
+  }
+
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-radius: 0 8px 8px 0;
+  }
+
+  ::ng-deep .mat-mdc-select-arrow {
+    color: var(--bm-text-dim);
+  }
+
+  ::ng-deep .mat-mdc-select-placeholder {
+    color: #e2e8f0; // slate-200
+  }
+}
+
+.shell__add-button {
+  --mat-button-outlined-container-shape: 8px;
+  // Material's own ".mat-mdc-outlined-button.mat-unthemed" default (applied
+  // whenever no `color` input is set) has two classes — higher specificity
+  // than this single-class selector — so these need `!important` to win.
+  --mat-button-outlined-label-text-color: var(--bm-orange-light) !important;
+  --mat-button-outlined-outline-color: var(--bm-border-strong) !important;
+  background: var(--bm-surface-alt);
+
+  &:hover {
+    background: var(--bm-border-strong);
+  }
+}
+
+@media (max-width: 768px) {
+  .shell__vehicle-select {
+    width: 130px;
+  }
+
+  .shell__toolbar-actions button span {
+    display: none;
+  }
+}
+
+.shell__nav {
+  flex: 0 0 auto;
+  background: var(--bm-bg);
+  border-bottom: 1px solid var(--bm-border);
+
+  --mat-tab-background-color: transparent;
+  --mat-tab-active-indicator-color: var(--bm-orange);
+  --mat-tab-active-label-text-color: var(--bm-orange-light);
+  --mat-tab-active-hover-label-text-color: var(--bm-orange-light);
+  --mat-tab-active-focus-label-text-color: var(--bm-orange-light);
+  --mat-tab-active-hover-indicator-color: var(--bm-orange);
+  --mat-tab-active-focus-indicator-color: var(--bm-orange);
+  --mat-tab-active-ripple-color: var(--bm-orange);
+  --mat-tab-inactive-label-text-color: var(--bm-text-muted);
+  --mat-tab-inactive-hover-label-text-color: #e2e8f0;
+}
+
+.shell__nav-item {
+  // Material's tab-link wraps its projected content in an inner
+  // `.mdc-tab__text-label` span; the icon/label gap has to target that.
+  ::ng-deep .mdc-tab__text-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.shell__content {
+  flex: 1 1 auto;
+  overflow: auto;
+  background: var(--bm-bg);
+}
+
+.shell__main {
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .shell__main {
+    padding: 16px;
+  }
+}

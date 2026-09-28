@@ -1,0 +1,39 @@
+<header class="page-header">
+  <h1>Fahrzeuge</h1>
+  <p>Alle erfassten Motorräder und Autos.</p>
+</header>
+
+@if (vehicles.isLoading()) {
+  <div class="state-row">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (vehicles.error()) {
+  <mat-card class="stub-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon fontSet="material-symbols-outlined">error</mat-icon>
+      <p>Fahrzeuge konnten nicht geladen werden.</p>
+    </mat-card-content>
+  </mat-card>
+} @else if (!vehicles.value()?.length) {
+  <mat-card class="stub-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
+      <p>Noch keine Fahrzeuge erfasst.</p>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <div class="vehicle-grid">
+    @for (vehicle of vehicles.value(); track vehicle.id) {
+      <a class="vehicle-card" [routerLink]="['/fahrzeuge', vehicle.id]">
+        <span class="vehicle-card__icon">
+          <mat-icon fontSet="material-symbols-outlined">{{ vehicleIcon(vehicle.type) }}</mat-icon>
+        </span>
+        <span class="vehicle-card__body">
+          <span class="vehicle-card__name">{{ vehicle.name }}</span>
+          <span class="vehicle-card__subtitle">{{ vehicleSubtitle(vehicle) }}</span>
+        </span>
+        <span class="vehicle-card__mileage">{{ vehicle.currentMileage ?? 0 | number }} km</span>
+      </a>
+    }
+  </div>
+}

@@ -1,0 +1,276 @@
+.state-row {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.stub-card {
+  display: block;
+  background: var(--bm-surface);
+  border-color: var(--bm-border) !important;
+
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--bm-text-muted);
+    text-align: center;
+  }
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    color: var(--bm-orange-light);
+  }
+}
+
+.vehicle-header {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: linear-gradient(to right, var(--bm-surface), rgb(30 41 59 / 90%), var(--bm-surface));
+  border: 1px solid var(--bm-border);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 30%);
+}
+
+.vehicle-header__decoration {
+  position: absolute;
+  right: -40px;
+  bottom: -40px;
+  font-size: 220px;
+  width: 220px;
+  height: 220px;
+  color: #f1f5f9;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.vehicle-header__icon {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border-strong);
+  color: var(--bm-orange-light);
+
+  mat-icon {
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.vehicle-header__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  h1 {
+    margin: 0;
+    font: var(--mat-sys-title-large);
+    color: var(--bm-text);
+  }
+
+  p {
+    margin: 0;
+    color: var(--bm-text-muted);
+    font-size: 0.875rem;
+  }
+}
+
+.vehicle-header__stat {
+  position: relative;
+  z-index: 1;
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgb(2 6 23 / 60%);
+  border: 1px solid rgb(30 41 59 / 80%);
+}
+
+.vehicle-header__stat-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: var(--bm-text-muted);
+  text-transform: uppercase;
+}
+
+.vehicle-header__stat-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--mat-sys-title-large);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--bm-orange-light);
+}
+
+.vehicle-header__stat-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-form-field {
+    width: 120px;
+  }
+}
+
+.vehicle-tabs {
+  --mat-tab-active-indicator-color: var(--bm-orange);
+  --mat-tab-active-label-text-color: var(--bm-orange-light);
+  --mat-tab-active-hover-label-text-color: var(--bm-orange-light);
+  --mat-tab-active-focus-label-text-color: var(--bm-orange-light);
+  --mat-tab-active-ripple-color: var(--bm-orange);
+  --mat-tab-inactive-label-text-color: var(--bm-text-muted);
+  --mat-tab-inactive-hover-label-text-color: #e2e8f0;
+
+  // Material's tab wraps the projected `mat-tab-label` content in an inner
+  // `.mdc-tab__text-label` span; the icon/text gap has to target that. Scoped
+  // to inside that wrapper only, so it doesn't resize icons in the tab bodies.
+  ::ng-deep .mdc-tab__text-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.status-section {
+  padding-top: 20px;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+    font: var(--mat-sys-title-medium);
+    color: #e2e8f0;
+
+    mat-icon {
+      color: var(--bm-orange-light);
+    }
+  }
+}
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.task-card {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bm-surface);
+  border-color: var(--bm-border) !important;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--bm-border-strong) !important;
+  }
+}
+
+.task-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: var(--bm-surface-alt);
+  color: #cbd5e1; // slate-300 — neutral, not orange, matching the reference
+}
+
+.task-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.task-card__title {
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.task-card__subtitle {
+  font-size: 0.8125rem;
+  color: var(--bm-text-muted);
+}
+
+.status-badge {
+  align-self: flex-start;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--overdue {
+    color: var(--status-overdue);
+    background: var(--status-overdue-bg);
+    border-color: var(--status-overdue-border);
+  }
+
+  &--due-soon {
+    color: var(--status-due);
+    background: var(--status-due-bg);
+    border-color: var(--status-due-border);
+  }
+
+  &--ok,
+  &--done {
+    color: var(--status-ok);
+    background: var(--status-ok-bg);
+    border-color: var(--status-ok-border);
+  }
+
+  &--none {
+    color: var(--status-none);
+    background: var(--status-none-bg);
+    border-color: var(--status-none-border);
+  }
+}
+
+.task-card mat-progress-bar {
+  margin-top: 2px;
+  --mat-progress-bar-track-color: var(--bm-surface-inset);
+  --mat-progress-bar-active-indicator-color: var(--bm-orange);
+
+  &.progress-bar--due-soon {
+    --mat-progress-bar-active-indicator-color: var(--bm-amber);
+  }
+
+  &.progress-bar--overdue {
+    --mat-progress-bar-active-indicator-color: var(--status-overdue);
+  }
+}

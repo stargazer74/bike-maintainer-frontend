@@ -1,0 +1,126 @@
+:host {
+  display: block;
+  min-width: 320px;
+
+  @media (min-width: 640px) {
+    min-width: 480px;
+  }
+}
+
+.add-vehicle__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bm-text);
+
+  mat-icon {
+    color: var(--bm-orange-light);
+  }
+}
+
+.add-vehicle__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-vehicle__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.add-vehicle__error {
+  margin: 4px 0 0;
+  color: var(--status-overdue);
+  font-size: 0.8125rem;
+}
+
+// Plain, hand-styled fields matching the reference design exactly — Material's
+// own outlined form-field (floating label, notched border) doesn't match it.
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.field__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #cbd5e1; // slate-300
+}
+
+.field__input {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--bm-surface-inset); // slate-950
+  border: 1px solid var(--bm-border-strong); // slate-700
+  border-radius: 8px;
+  padding: 10px;
+  color: #e2e8f0; // slate-200
+  font-family: inherit;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: var(--bm-text-dim);
+  }
+
+  &:focus {
+    border-color: var(--bm-orange);
+    box-shadow: 0 0 0 1px var(--bm-orange);
+  }
+
+  &--invalid {
+    border-color: var(--status-overdue);
+  }
+}
+
+select.field__input {
+  cursor: pointer;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.btn--ghost {
+  background: var(--bm-surface-alt); // slate-800
+  color: #cbd5e1; // slate-300
+
+  &:hover:not(:disabled) {
+    background: var(--bm-border-strong);
+  }
+}
+
+.btn--primary {
+  background: var(--bm-orange);
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: var(--bm-orange-dark);
+  }
+
+  mat-spinner {
+    ::ng-deep circle {
+      stroke: white;
+    }
+  }
+}
