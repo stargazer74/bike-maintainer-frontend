@@ -3,9 +3,83 @@
   <p>Überblick über alle Fahrzeuge und fällige Wartungen.</p>
 </header>
 
-<mat-card class="stub-card" appearance="outlined">
-  <mat-card-content>
-    <mat-icon fontSet="material-symbols-outlined">dashboard</mat-icon>
-    <p>Kommt bald.</p>
-  </mat-card-content>
-</mat-card>
+@if (data.isLoading()) {
+  <div class="state-row">
+    <mat-spinner diameter="32" />
+  </div>
+} @else if (data.error()) {
+  <mat-card class="stub-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon fontSet="material-symbols-outlined">error</mat-icon>
+      <p>Daten konnten nicht geladen werden.</p>
+    </mat-card-content>
+  </mat-card>
+} @else if (!vehicleSummaries().length) {
+  <mat-card class="stub-card" appearance="outlined">
+    <mat-card-content>
+      <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
+      <p>Noch keine Fahrzeuge erfasst.</p>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <div class="vehicle-summary-grid">
+    @for (summary of vehicleSummaries(); track summary.vehicle.id) {
+      <a class="vehicle-summary" [routerLink]="['/fahrzeuge', summary.vehicle.id]">
+        <div class="vehicle-summary__header">
+          <span class="vehicle-summary__icon">
+            <mat-icon fontSet="material-symbols-outlined">{{ vehicleIcon(summary.vehicle.type) }}</mat-icon>
+          </span>
+          <span class="vehicle-summary__title">
+            <span class="vehicle-summary__name">{{ summary.vehicle.name }}</span>
+            <span class="vehicle-summary__subtitle">{{ vehicleSubtitle(summary.vehicle) }}</span>
+          </span>
+          <span class="vehicle-summary__mileage">{{ summary.vehicle.currentMileage ?? 0 | number }} km</span>
+        </div>
+
+        <div class="vehicle-summary__divider"></div>
+
+        <div class="vehicle-summary__content">
+          <div class="vehicle-summary__block">
+            <span class="vehicle-summary__block-label">
+              <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+              Letzte Wartung
+            </span>
+            @if (summary.lastLog; as lastLog) {
+              <span class="vehicle-summary__block-content">
+                {{ lastLog.title }} · {{ lastLog.log.performedAt | date: 'dd.MM.yyyy' }} · {{
+                  lastLog.log.mileageAtPerformed | number
+                }} km
+              </span>
+            } @else {
+              <span class="vehicle-summary__block-empty">Noch keine Wartung erfasst</span>
+            }
+          </div>
+
+          <div class="vehicle-summary__block">
+            <span class="vehicle-summary__block-label">
+              <mat-icon fontSet="material-symbols-outlined">warning</mat-icon>
+              Fällig
+            </span>
+            @if (summary.dueTasks.length) {
+              <div class="vehicle-summary__due-list">
+                @for (due of summary.dueTasks; track due.task.id) {
+                  <span class="vehicle-summary__due-item">
+                    <span class="vehicle-summary__due-name">{{ due.task.name }}</span>
+                    <span class="status-badge" [class]="'status-badge--' + due.status.state">{{
+                      due.status.label
+                    }}</span>
+                  </span>
+                }
+                @if (summary.dueTasksOverflow > 0) {
+                  <span class="vehicle-summary__due-overflow">+{{ summary.dueTasksOverflow }} weitere</span>
+                }
+              </div>
+            } @else {
+              <span class="vehicle-summary__block-empty vehicle-summary__block-empty--ok">Alles aktuell</span>
+            }
+          </div>
+        </div>
+      </a>
+    }
+  </div>
+}

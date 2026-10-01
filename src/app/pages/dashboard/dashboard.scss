@@ -35,3 +35,186 @@
     color: var(--bm-orange-light);
   }
 }
+
+.state-row {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.vehicle-summary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vehicle-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--bm-surface);
+  border: 1px solid var(--bm-border);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--bm-border-strong);
+  }
+}
+
+.vehicle-summary__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  width: 320px;
+  min-width: 0;
+}
+
+.vehicle-summary__divider {
+  align-self: stretch;
+  flex: 0 0 auto;
+  width: 1px;
+  background: var(--bm-border);
+}
+
+.vehicle-summary__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border-strong);
+  color: var(--bm-orange-light);
+}
+
+.vehicle-summary__title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vehicle-summary__name {
+  font-weight: 700;
+  color: #e2e8f0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vehicle-summary__subtitle {
+  font-size: 0.8125rem;
+  color: var(--bm-text-muted);
+}
+
+.vehicle-summary__mileage {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--bm-orange-light);
+}
+
+.vehicle-summary__content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 20px;
+  min-width: 0;
+}
+
+.vehicle-summary__block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.vehicle-summary__block-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--bm-text-muted);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--bm-text-dim);
+  }
+}
+
+.vehicle-summary__block-content {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.vehicle-summary__block-empty {
+  font-size: 0.875rem;
+  color: var(--bm-text-dim);
+
+  &--ok {
+    color: var(--status-ok);
+  }
+}
+
+.vehicle-summary__due-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vehicle-summary__due-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vehicle-summary__due-name {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vehicle-summary__due-overflow {
+  font-size: 0.75rem;
+  color: var(--bm-text-muted);
+}
+
+.status-badge {
+  flex: 0 0 auto;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--overdue {
+    color: var(--status-overdue);
+    background: var(--status-overdue-bg);
+    border-color: var(--status-overdue-border);
+  }
+
+  &--due-soon {
+    color: var(--status-due);
+    background: var(--status-due-bg);
+    border-color: var(--status-due-border);
+  }
+}
