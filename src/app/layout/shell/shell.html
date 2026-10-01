@@ -6,6 +6,16 @@
     <span class="shell__brand-name">Bike Maintainer</span>
 
     <div class="shell__toolbar-actions">
+      <button
+        mat-icon-button
+        type="button"
+        class="shell__dashboard-button"
+        routerLink="/dashboard"
+        aria-label="Zum Dashboard"
+      >
+        <mat-icon fontSet="material-symbols-outlined">dashboard</mat-icon>
+      </button>
+
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="shell__vehicle-select">
         <mat-select
           [value]="selectedVehicleId()"

@@ -51,6 +51,18 @@
   margin-left: auto;
 }
 
+.shell__dashboard-button {
+  flex-shrink: 0;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border-strong);
+  color: var(--bm-text-muted);
+
+  &:hover {
+    color: var(--bm-orange-light);
+    border-color: var(--bm-orange);
+  }
+}
+
 .shell__vehicle-select {
   width: 220px;
 
