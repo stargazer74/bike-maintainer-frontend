@@ -7,6 +7,8 @@ export interface TaskStatus {
   readonly label: string;
   readonly lastService: { readonly mileage: number; readonly date: string } | null;
   readonly progress: number | null;
+  /** km until due (negative once overdue); null when the task has no km interval to track. */
+  readonly remainingKm: number | null;
 }
 
 /** Below this many remaining km, a task counts as "due soon" rather than "ok" — a fixed
@@ -24,7 +26,7 @@ export function computeTaskStatus(
   if (!lastLog) {
     const progress =
       task.firstDueKm && task.firstDueKm > 0 ? clamp(currentMileage / task.firstDueKm) : null;
-    return { state: 'none', label: 'Kein Eintrag', lastService: null, progress };
+    return { state: 'none', label: 'Kein Eintrag', lastService: null, progress, remainingKm: null };
   }
 
   const lastService = {
@@ -34,11 +36,11 @@ export function computeTaskStatus(
 
   if (task.oneTime) {
     const suffix = lastService.date ? ` am ${formatDate(lastService.date)}` : '';
-    return { state: 'done', label: `Erledigt${suffix}`, lastService, progress: null };
+    return { state: 'done', label: `Erledigt${suffix}`, lastService, progress: null, remainingKm: null };
   }
 
   if (!task.intervalKm) {
-    return { state: 'ok', label: 'OK', lastService, progress: null };
+    return { state: 'ok', label: 'OK', lastService, progress: null, remainingKm: null };
   }
 
   const nextDueKm = lastService.mileage + task.intervalKm;
@@ -51,12 +53,25 @@ export function computeTaskStatus(
       label: `Überfällig um ${formatKm(-remaining)} km`,
       lastService,
       progress,
+      remainingKm: remaining,
     };
   }
   if (remaining <= DUE_SOON_THRESHOLD_KM) {
-    return { state: 'due-soon', label: `Fällig in ${formatKm(remaining)} km`, lastService, progress };
+    return {
+      state: 'due-soon',
+      label: `Fällig in ${formatKm(remaining)} km`,
+      lastService,
+      progress,
+      remainingKm: remaining,
+    };
   }
-  return { state: 'ok', label: `OK (${formatKm(remaining)} km verbleibend)`, lastService, progress };
+  return {
+    state: 'ok',
+    label: `OK (${formatKm(remaining)} km verbleibend)`,
+    lastService,
+    progress,
+    remainingKm: remaining,
+  };
 }
 
 function findLastLog(
