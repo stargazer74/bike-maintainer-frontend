@@ -70,7 +70,7 @@ export class Dashboard {
         .map((task) => ({
           task,
           icon: resolveTaskIcon(task.name),
-          status: computeTaskStatus(task, entry.vehicle.currentMileage ?? 0, entry.logs),
+          status: computeTaskStatus(task),
         }))
         .filter((card) => card.status.state === 'overdue' || card.status.state === 'due-soon')
         .sort((a, b) => (a.status.remainingFraction ?? 0) - (b.status.remainingFraction ?? 0));

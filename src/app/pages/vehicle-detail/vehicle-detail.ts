@@ -84,13 +84,12 @@ export class VehicleDetail {
     if (!result) {
       return [];
     }
-    const mileage = result.vehicle.currentMileage ?? 0;
     return result.tasks
       .filter((task) => task.active !== false)
       .map((task) => ({
         task,
         icon: resolveTaskIcon(task.name),
-        status: computeTaskStatus(task, mileage, result.logs),
+        status: computeTaskStatus(task),
       }));
   });
 
@@ -144,6 +143,7 @@ export class VehicleDetail {
       make: vehicle.make,
       model: vehicle.model,
       modelYear: vehicle.modelYear,
+      firstRegistrationDate: vehicle.firstRegistrationDate,
       currentMileage: this.mileageInput(),
     };
     this.vehiclesService.updateVehicle(vehicle.id, request).subscribe(() => {
@@ -209,7 +209,7 @@ export class VehicleDetail {
       performedAt: this.logDate(),
       mileageAtPerformed: this.logMileage(),
       notes: this.logNotes().trim() || undefined,
-      performedTaskIds: [...this.logTaskIds()],
+      performedTaskIds: new Set(this.logTaskIds()),
     };
     const logId = this.editingLogId();
     const request$ =
