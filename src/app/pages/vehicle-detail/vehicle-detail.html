@@ -163,11 +163,11 @@
                   <span class="log-card__mileage">{{ card.log.mileageAtPerformed | number }} km</span>
                 </div>
                 @if (card.taskNames.length) {
-                  <div class="log-card__tasks">
+                  <ul class="log-card__task-list">
                     @for (name of card.taskNames; track name) {
-                      <span class="log-card__task-chip">{{ name }}</span>
+                      <li>{{ name }}</li>
                     }
-                  </div>
+                  </ul>
                 }
                 @if (card.log.notes) {
                   <p class="log-card__notes">{{ card.log.notes }}</p>
