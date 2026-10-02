@@ -45,11 +45,12 @@
               Letzte Wartung
             </span>
             @if (summary.lastLog; as lastLog) {
-              <span class="vehicle-summary__block-content">
-                {{ lastLog.title }} · {{ lastLog.log.performedAt | date: 'dd.MM.yyyy' }} · {{
+              <span class="vehicle-summary__block-meta">
+                {{ lastLog.log.performedAt | date: 'dd.MM.yyyy' }} · {{
                   lastLog.log.mileageAtPerformed | number
                 }} km
               </span>
+              <span class="vehicle-summary__block-content">{{ lastLog.title }}</span>
             } @else {
               <span class="vehicle-summary__block-empty">Noch keine Wartung erfasst</span>
             }
