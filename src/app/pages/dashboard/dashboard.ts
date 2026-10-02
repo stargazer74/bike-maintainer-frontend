@@ -73,7 +73,7 @@ export class Dashboard {
           status: computeTaskStatus(task, entry.vehicle.currentMileage ?? 0, entry.logs),
         }))
         .filter((card) => card.status.state === 'overdue' || card.status.state === 'due-soon')
-        .sort((a, b) => (a.status.remainingKm ?? 0) - (b.status.remainingKm ?? 0));
+        .sort((a, b) => (a.status.remainingFraction ?? 0) - (b.status.remainingFraction ?? 0));
 
       const shownLastLogNames = lastLogNames.slice(0, LAST_LOG_TASK_NAMES_SHOWN);
       const lastLogNamesOverflow = Math.max(0, lastLogNames.length - LAST_LOG_TASK_NAMES_SHOWN);
@@ -86,21 +86,21 @@ export class Dashboard {
         lastLog: lastLog ? { log: lastLog, title: lastLogTitle } : null,
         dueTasks: dueTasks.slice(0, DUE_TASKS_PER_VEHICLE),
         dueTasksOverflow: Math.max(0, dueTasks.length - DUE_TASKS_PER_VEHICLE),
-        mostUrgentRemainingKm: dueTasks.length ? (dueTasks[0].status.remainingKm ?? 0) : null,
+        mostUrgentFraction: dueTasks.length ? (dueTasks[0].status.remainingFraction ?? 0) : null,
       };
     });
 
     return summaries.sort((a, b) => {
-      if (a.mostUrgentRemainingKm === null && b.mostUrgentRemainingKm === null) {
+      if (a.mostUrgentFraction === null && b.mostUrgentFraction === null) {
         return (a.vehicle.name ?? '').localeCompare(b.vehicle.name ?? '');
       }
-      if (a.mostUrgentRemainingKm === null) {
+      if (a.mostUrgentFraction === null) {
         return 1;
       }
-      if (b.mostUrgentRemainingKm === null) {
+      if (b.mostUrgentFraction === null) {
         return -1;
       }
-      return a.mostUrgentRemainingKm - b.mostUrgentRemainingKm;
+      return a.mostUrgentFraction - b.mostUrgentFraction;
     });
   });
 }
