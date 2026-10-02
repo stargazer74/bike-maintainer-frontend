@@ -22,6 +22,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
   MaintenanceLogRequest,
+  MaintenanceLogResponse,
   MaintenanceLogsService,
   MaintenanceTaskRequest,
   MaintenanceTaskResponse,
@@ -155,6 +156,7 @@ export class VehicleDetail {
   protected readonly logMileage = signal(0);
   protected readonly logNotes = signal('');
   protected readonly logTaskIds = signal<ReadonlySet<number>>(new Set());
+  protected readonly editingLogId = signal<number | null>(null);
   protected readonly savingLog = signal(false);
   protected readonly logSubmitError = signal<string | null>(null);
 
@@ -185,6 +187,20 @@ export class VehicleDetail {
     });
   }
 
+  protected startEditLog(log: MaintenanceLogResponse): void {
+    this.editingLogId.set(log.id ?? null);
+    this.logDate.set(log.performedAt ?? todayIso());
+    this.logMileage.set(log.mileageAtPerformed ?? 0);
+    this.logNotes.set(log.notes ?? '');
+    this.logTaskIds.set(new Set(log.performedTaskIds ?? []));
+    this.logSubmitError.set(null);
+    this.selectedTabIndex.set(2);
+  }
+
+  protected cancelLogEdit(): void {
+    this.resetLogForm();
+  }
+
   protected submitLog(vehicle: VehicleResponse): void {
     if (this.savingLog() || vehicle.id === undefined || !this.logDate()) {
       return;
@@ -195,13 +211,18 @@ export class VehicleDetail {
       notes: this.logNotes().trim() || undefined,
       performedTaskIds: [...this.logTaskIds()],
     };
+    const logId = this.editingLogId();
+    const request$ =
+      logId === null
+        ? this.logsService.createMaintenanceLog(vehicle.id, request)
+        : this.logsService.updateMaintenanceLog(vehicle.id, logId, request);
+
     this.savingLog.set(true);
     this.logSubmitError.set(null);
-    this.logsService.createMaintenanceLog(vehicle.id, request).subscribe({
+    request$.subscribe({
       next: () => {
         this.savingLog.set(false);
-        this.logNotes.set('');
-        this.logTaskIds.set(new Set());
+        this.resetLogForm();
         this.data.reload();
       },
       error: () => {
@@ -209,6 +230,30 @@ export class VehicleDetail {
         this.logSubmitError.set('Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.');
       },
     });
+  }
+
+  protected deleteLog(vehicle: VehicleResponse, log: MaintenanceLogResponse): void {
+    if (vehicle.id === undefined || log.id === undefined) {
+      return;
+    }
+    if (!confirm(`Wartungseintrag vom ${formatDateDe(log.performedAt)} wirklich löschen?`)) {
+      return;
+    }
+    this.logsService.deleteMaintenanceLog(vehicle.id, log.id).subscribe(() => {
+      if (this.editingLogId() === log.id) {
+        this.resetLogForm();
+      }
+      this.data.reload();
+    });
+  }
+
+  private resetLogForm(): void {
+    this.editingLogId.set(null);
+    this.logDate.set(todayIso());
+    this.logMileage.set(this.data.value()?.vehicle.currentMileage ?? 0);
+    this.logNotes.set('');
+    this.logTaskIds.set(new Set());
+    this.logSubmitError.set(null);
   }
 
   protected readonly taskFormName = signal('');
@@ -303,4 +348,9 @@ export class VehicleDetail {
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+function formatDateDe(iso: string | undefined): string {
+  const date = iso ? new Date(iso) : null;
+  return date && !Number.isNaN(date.getTime()) ? date.toLocaleDateString('de-DE') : (iso ?? '');
 }

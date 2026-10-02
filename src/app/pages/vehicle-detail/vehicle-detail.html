@@ -160,7 +160,17 @@
               <mat-card class="log-card" appearance="outlined">
                 <div class="log-card__header">
                   <span class="log-card__date">{{ card.log.performedAt | date: 'dd.MM.yyyy' }}</span>
-                  <span class="log-card__mileage">{{ card.log.mileageAtPerformed | number }} km</span>
+                  <div class="log-card__header-right">
+                    <span class="log-card__mileage">{{ card.log.mileageAtPerformed | number }} km</span>
+                    <span class="log-card__actions">
+                      <button mat-icon-button type="button" aria-label="Bearbeiten" (click)="startEditLog(card.log)">
+                        <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+                      </button>
+                      <button mat-icon-button type="button" aria-label="Löschen" (click)="deleteLog(vehicle, card.log)">
+                        <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+                      </button>
+                    </span>
+                  </div>
                 </div>
                 @if (card.taskNames.length) {
                   <ul class="log-card__task-list">
@@ -187,6 +197,10 @@
       <section class="log-form-section">
         <mat-card class="log-form-card" appearance="outlined">
           <mat-card-content>
+            <h3 class="tasks-manage__form-title">
+              {{ editingLogId() === null ? 'Neue Wartung erfassen' : 'Wartung bearbeiten' }}
+            </h3>
+
             <div class="log-form__row">
               <div class="field">
                 <label class="field__label" for="log-date">Datum</label>
@@ -248,19 +262,26 @@
               <p class="field__error">{{ error }}</p>
             }
 
-            <button
-              type="button"
-              class="btn btn--primary log-form__submit"
-              [disabled]="savingLog() || !logDate()"
-              (click)="submitLog(vehicle)"
-            >
-              @if (savingLog()) {
-                <mat-spinner diameter="18" />
-              } @else {
-                <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
-                Wartung speichern
+            <div class="log-form__actions">
+              @if (editingLogId() !== null) {
+                <button type="button" class="btn btn--ghost" [disabled]="savingLog()" (click)="cancelLogEdit()">
+                  Abbrechen
+                </button>
               }
-            </button>
+              <button
+                type="button"
+                class="btn btn--primary"
+                [disabled]="savingLog() || !logDate()"
+                (click)="submitLog(vehicle)"
+              >
+                @if (savingLog()) {
+                  <mat-spinner diameter="18" />
+                } @else {
+                  <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
+                  {{ editingLogId() === null ? 'Wartung speichern' : 'Änderungen speichern' }}
+                }
+              </button>
+            </div>
           </mat-card-content>
         </mat-card>
       </section>
