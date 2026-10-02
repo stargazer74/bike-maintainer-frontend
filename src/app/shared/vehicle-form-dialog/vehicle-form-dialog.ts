@@ -45,10 +45,15 @@ export class VehicleFormDialog {
     ),
     make: [this.editingVehicle?.make ?? '', Validators.maxLength(100)],
     model: [this.editingVehicle?.model ?? '', Validators.maxLength(100)],
-    modelYear: this.fb.control<number | null>(this.editingVehicle?.modelYear ?? null, [
+    modelYear: this.fb.nonNullable.control(this.editingVehicle?.modelYear ?? CURRENT_YEAR, [
+      Validators.required,
       Validators.min(this.minYear),
       Validators.max(this.maxYear),
     ]),
+    firstRegistrationDate: this.fb.nonNullable.control(
+      this.editingVehicle?.firstRegistrationDate ?? `${CURRENT_YEAR}-01-01`,
+      Validators.required,
+    ),
     currentMileage: this.fb.nonNullable.control(this.editingVehicle?.currentMileage ?? 0, Validators.min(0)),
   });
 
@@ -67,7 +72,8 @@ export class VehicleFormDialog {
       type: value.type,
       make: value.make || undefined,
       model: value.model || undefined,
-      modelYear: value.modelYear ?? undefined,
+      modelYear: value.modelYear,
+      firstRegistrationDate: value.firstRegistrationDate,
       currentMileage: value.currentMileage,
     };
 

@@ -76,6 +76,20 @@
       </div>
     </div>
 
+    <div class="field">
+      <label class="field__label" for="av-first-registration">Erstzulassung *</label>
+      <input
+        id="av-first-registration"
+        class="field__input"
+        [class.field__input--invalid]="form.controls.firstRegistrationDate.invalid && form.controls.firstRegistrationDate.touched"
+        type="date"
+        formControlName="firstRegistrationDate"
+      />
+      @if (form.controls.firstRegistrationDate.touched && form.controls.firstRegistrationDate.hasError('required')) {
+        <span class="field__error">Erstzulassung ist erforderlich.</span>
+      }
+    </div>
+
     @if (submitError(); as error) {
       <p class="add-vehicle__error">{{ error }}</p>
     }
