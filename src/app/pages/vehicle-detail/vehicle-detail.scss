@@ -349,9 +349,28 @@
 
 .log-card__header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.log-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.log-card__actions {
+  display: flex;
+  gap: 2px;
+
+  button {
+    color: var(--bm-text-muted);
+
+    &:hover {
+      color: var(--bm-orange-light);
+    }
+  }
 }
 
 .log-card__date {
@@ -453,7 +472,10 @@
   }
 }
 
-.log-form__submit {
+.log-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
   margin-top: 4px;
 }
 
