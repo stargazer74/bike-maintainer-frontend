@@ -14,6 +14,9 @@ import { resolveTaskIcon } from '../vehicle-detail/task-icon';
 /** How many due tasks are shown per vehicle before collapsing into "+N weitere". */
 const DUE_TASKS_PER_VEHICLE = 3;
 
+/** How many task names from the last log are shown before collapsing into "+N weitere". */
+const LAST_LOG_TASK_NAMES_SHOWN = 3;
+
 @Component({
   selector: 'app-dashboard',
   imports: [RouterLink, DatePipe, DecimalPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule],
@@ -72,11 +75,15 @@ export class Dashboard {
         .filter((card) => card.status.state === 'overdue' || card.status.state === 'due-soon')
         .sort((a, b) => (a.status.remainingKm ?? 0) - (b.status.remainingKm ?? 0));
 
+      const shownLastLogNames = lastLogNames.slice(0, LAST_LOG_TASK_NAMES_SHOWN);
+      const lastLogNamesOverflow = Math.max(0, lastLogNames.length - LAST_LOG_TASK_NAMES_SHOWN);
+      const lastLogTitle = shownLastLogNames.length
+        ? shownLastLogNames.join(', ') + (lastLogNamesOverflow > 0 ? ` +${lastLogNamesOverflow} weitere` : '')
+        : 'Wartung';
+
       return {
         vehicle: entry.vehicle,
-        lastLog: lastLog
-          ? { log: lastLog, title: lastLogNames.length ? lastLogNames.join(', ') : 'Wartung' }
-          : null,
+        lastLog: lastLog ? { log: lastLog, title: lastLogTitle } : null,
         dueTasks: dueTasks.slice(0, DUE_TASKS_PER_VEHICLE),
         dueTasksOverflow: Math.max(0, dueTasks.length - DUE_TASKS_PER_VEHICLE),
         mostUrgentRemainingKm: dueTasks.length ? (dueTasks[0].status.remainingKm ?? 0) : null,

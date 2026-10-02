@@ -50,8 +50,7 @@
 
 .vehicle-summary {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 20px;
   padding: 16px 20px;
   border-radius: 12px;
@@ -125,6 +124,7 @@
 
 .vehicle-summary__content {
   display: flex;
+  align-items: flex-start;
   flex: 1 1 auto;
   flex-wrap: wrap;
   gap: 20px;
@@ -157,9 +157,19 @@
   }
 }
 
-.vehicle-summary__block-content {
+.vehicle-summary__block-meta {
   font-size: 0.875rem;
-  color: #cbd5e1;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.vehicle-summary__block-content {
+  font-size: 0.8125rem;
+  color: var(--bm-text-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .vehicle-summary__block-empty {
