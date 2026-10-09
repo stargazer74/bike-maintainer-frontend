@@ -1,19 +1,22 @@
+import { formatNumber } from '@angular/common';
 import { MaintenanceTaskResponse } from '../../api-client';
+import { TranslatableText } from '../../i18n/translatable-text';
 
 /** Human-readable summary of a task's due interval for the management list. */
-export function describeTaskInterval(task: MaintenanceTaskResponse): string {
+export function describeTaskInterval(task: MaintenanceTaskResponse, locale: string): TranslatableText {
   if (task.oneTime) {
-    return 'Einmalige Aufgabe';
+    return { key: 'taskInterval.oneTime' };
   }
-  const parts: string[] = [];
-  if (task.intervalKm) {
-    parts.push(`${task.intervalKm.toLocaleString('de-DE')} km`);
+  const km = task.intervalKm ? formatNumber(task.intervalKm, locale) : null;
+  const months = task.intervalMonths || null;
+  if (km && months) {
+    return { key: 'taskInterval.everyKmOrMonths', params: { km, months } };
   }
-  if (task.intervalMonths) {
-    parts.push(`${task.intervalMonths} Monate`);
+  if (km) {
+    return { key: 'taskInterval.everyKm', params: { km } };
   }
-  if (!parts.length) {
-    return 'Kein Intervall hinterlegt';
+  if (months) {
+    return { key: months === 1 ? 'taskInterval.everyMonth' : 'taskInterval.everyMonths', params: { months } };
   }
-  return `Alle ${parts.join(' oder ')}`;
+  return { key: 'taskInterval.none' };
 }

@@ -1,16 +1,17 @@
-import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { VehiclesService } from '../../api-client';
+import { LocalNumberPipe } from '../../i18n/localized-pipes';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 
 @Component({
   selector: 'app-vehicles',
-  imports: [RouterLink, DecimalPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [RouterLink, LocalNumberPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule, TranslocoPipe],
   templateUrl: './vehicles.html',
   styleUrl: './vehicles.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

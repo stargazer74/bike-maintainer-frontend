@@ -9,20 +9,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { VehiclesService } from '../../api-client';
+import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 
 interface NavItem {
+  /** Translation key. */
   readonly label: string;
   readonly path: string;
   readonly icon: string;
 }
 
 const NAV_ITEMS: readonly NavItem[] = [
-  { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-  { label: 'Fahrzeuge', path: '/fahrzeuge', icon: 'two_wheeler' },
-  { label: 'Wartungsplan', path: '/wartungsplan', icon: 'build' },
-  { label: 'Historie', path: '/historie', icon: 'history' },
+  { label: 'nav.dashboard', path: '/dashboard', icon: 'dashboard' },
+  { label: 'nav.vehicles', path: '/fahrzeuge', icon: 'two_wheeler' },
+  { label: 'nav.maintenancePlan', path: '/wartungsplan', icon: 'build' },
+  { label: 'nav.history', path: '/historie', icon: 'history' },
 ];
 
 const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
@@ -39,6 +42,7 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
     MatSelectModule,
     MatTabsModule,
     MatToolbarModule,
+    TranslocoPipe,
   ],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
@@ -46,6 +50,8 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
 })
 export class Shell {
   protected readonly navItems = NAV_ITEMS;
+  protected readonly languages = APP_LANGUAGES;
+  protected readonly language = inject(LanguageService);
 
   private readonly router = inject(Router);
   private readonly vehiclesService = inject(VehiclesService);
@@ -70,6 +76,10 @@ export class Shell {
 
   protected onSelectVehicle(vehicleId: number): void {
     this.router.navigate(['/fahrzeuge', vehicleId]);
+  }
+
+  protected onSelectLanguage(lang: AppLanguage): void {
+    void this.language.use(lang);
   }
 
   protected onAddVehicleClick(): void {

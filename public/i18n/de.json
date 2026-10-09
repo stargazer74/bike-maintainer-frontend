@@ -1,0 +1,161 @@
+{
+  "app": {
+    "name": "Bike Maintainer"
+  },
+  "language": {
+    "switch": "Sprache wählen",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "saveChanges": "Änderungen speichern",
+    "comingSoon": "Kommt bald.",
+    "moreCount": "+{{count}} weitere"
+  },
+  "shell": {
+    "toDashboard": "Zum Dashboard",
+    "selectVehicle": "Fahrzeug wählen",
+    "addVehicle": "Bike hinzufügen"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "vehicles": "Fahrzeuge",
+    "maintenancePlan": "Wartungsplan",
+    "history": "Historie"
+  },
+  "task": {
+    "unnamed": "Unbenannte Aufgabe",
+    "unknown": "Unbekannte Aufgabe"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Überblick über alle Fahrzeuge und fällige Wartungen.",
+    "loadError": "Daten konnten nicht geladen werden.",
+    "lastMaintenance": "Letzte Wartung",
+    "noMaintenance": "Noch keine Wartung erfasst",
+    "maintenanceFallback": "Wartung",
+    "due": "Fällig",
+    "allUpToDate": "Alles aktuell"
+  },
+  "vehicles": {
+    "title": "Fahrzeuge",
+    "subtitle": "Alle erfassten Motorräder und Autos.",
+    "loadError": "Fahrzeuge konnten nicht geladen werden.",
+    "empty": "Noch keine Fahrzeuge erfasst."
+  },
+  "vehicle": {
+    "subtitleMakeModelYear": "{{makeModel}} • Baujahr {{year}}",
+    "subtitleYear": "Baujahr {{year}}",
+    "subtitleMakeModel": "{{makeModel}}"
+  },
+  "vehicleType": {
+    "MOTORCYCLE": "Motorrad",
+    "CAR": "Auto"
+  },
+  "vehicleForm": {
+    "titleNew": "Neues Fahrzeug anlegen",
+    "titleEdit": "Fahrzeug bearbeiten",
+    "name": "Name *",
+    "namePlaceholder": "z. B. Yamaha MT-09 SP",
+    "nameRequired": "Name ist erforderlich.",
+    "maxLength255": "Maximal 255 Zeichen.",
+    "type": "Fahrzeugtyp *",
+    "make": "Hersteller",
+    "makePlaceholder": "z. B. Yamaha",
+    "model": "Modell",
+    "modelPlaceholder": "z. B. MT-09 SP",
+    "modelYear": "Baujahr",
+    "modelYearInvalid": "Bitte ein gültiges Jahr angeben.",
+    "mileage": "Kilometerstand (km)",
+    "mileageNegative": "Darf nicht negativ sein.",
+    "firstRegistration": "Erstzulassung *",
+    "firstRegistrationRequired": "Erstzulassung ist erforderlich.",
+    "submitNew": "Fahrzeug anlegen",
+    "createError": "Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.",
+    "updateError": "Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut."
+  },
+  "vehicleDetail": {
+    "loadError": "Fahrzeug konnte nicht geladen werden.",
+    "editVehicle": "Fahrzeugdaten bearbeiten",
+    "currentMileage": "Aktueller Stand",
+    "editMileage": "Kilometerstand bearbeiten",
+    "tabStatus": "Dashboard & Status",
+    "statusHeading": "Wartungsstatus der Hauptkomponenten",
+    "noTasks": "Noch keine Wartungsaufgaben hinterlegt.",
+    "lastService": "Letzter Service: {{mileage}} km ({{date}})",
+    "pending": "Ausstehend",
+    "tabHistory": "Wartungshistorie ({{count}})",
+    "noLogs": "Noch keine Wartungen erfasst.",
+    "tabRecord": "Wartung erfassen",
+    "tabTasks": "Wartungsaufgaben",
+    "noTasksCreated": "Noch keine Wartungsaufgaben angelegt.",
+    "inactive": "Inaktiv"
+  },
+  "logForm": {
+    "titleNew": "Neue Wartung erfassen",
+    "titleEdit": "Wartung bearbeiten",
+    "date": "Datum",
+    "mileage": "Kilometerstand",
+    "tasks": "Durchgeführte Aufgaben",
+    "noActiveTasks": "Keine aktiven Wartungsaufgaben hinterlegt.",
+    "notes": "Notizen",
+    "submitNew": "Wartung speichern",
+    "saveError": "Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?"
+  },
+  "taskForm": {
+    "titleNew": "Neue Wartungsaufgabe",
+    "titleEdit": "Wartungsaufgabe bearbeiten",
+    "name": "Name *",
+    "namePlaceholder": "z. B. Ölwechsel",
+    "intervalKm": "Intervall (km)",
+    "intervalKmPlaceholder": "z. B. 10000",
+    "intervalMonths": "Intervall (Monate)",
+    "intervalMonthsPlaceholder": "z. B. 12",
+    "firstDueKm": "Erstfällig bei (km)",
+    "firstDueMonths": "Erstfällig nach (Monaten)",
+    "oneTime": "Einmalige Aufgabe",
+    "active": "Aktiv",
+    "submitNew": "Aufgabe anlegen",
+    "saveError": "Wartungsaufgabe konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "confirmDelete": "„{{name}}“ wirklich löschen?"
+  },
+  "taskStatus": {
+    "done": "Erledigt",
+    "doneOn": "Erledigt am {{date}}",
+    "neverPerformed": "Fällig (noch nie durchgeführt)",
+    "ok": "OK",
+    "overdueKm": "Überfällig um {{value}} km",
+    "overdueDays": "Überfällig seit {{value}} Tagen",
+    "overdueDay": "Überfällig seit {{value}} Tag",
+    "dueSoonKm": "Fällig in {{value}} km",
+    "dueSoonDays": "Fällig in {{value}} Tagen",
+    "dueSoonDay": "Fällig in {{value}} Tag",
+    "firstDueKm": "Erstfällig in {{value}} km",
+    "firstDueDays": "Erstfällig in {{value}} Tagen",
+    "firstDueDay": "Erstfällig in {{value}} Tag",
+    "okKm": "OK ({{value}} km verbleibend)",
+    "okDays": "OK ({{value}} Tage verbleibend)",
+    "okDay": "OK ({{value}} Tag verbleibend)"
+  },
+  "taskInterval": {
+    "oneTime": "Einmalige Aufgabe",
+    "none": "Kein Intervall hinterlegt",
+    "everyKm": "Alle {{km}} km",
+    "everyMonths": "Alle {{months}} Monate",
+    "everyMonth": "Jeden Monat",
+    "everyKmOrMonths": "Alle {{km}} km oder {{months}} Monate"
+  },
+  "maintenancePlan": {
+    "title": "Wartungsplan",
+    "subtitle": "Wartungsintervalle nach Kilometerstand und Zeit."
+  },
+  "history": {
+    "title": "Historie",
+    "subtitle": "Protokollierte Wartungen der letzten Zeit."
+  }
+}

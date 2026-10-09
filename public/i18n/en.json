@@ -1,0 +1,161 @@
+{
+  "app": {
+    "name": "Bike Maintainer"
+  },
+  "language": {
+    "switch": "Choose language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "saveChanges": "Save changes",
+    "comingSoon": "Coming soon.",
+    "moreCount": "+{{count}} more"
+  },
+  "shell": {
+    "toDashboard": "Go to dashboard",
+    "selectVehicle": "Select vehicle",
+    "addVehicle": "Add bike"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "vehicles": "Vehicles",
+    "maintenancePlan": "Maintenance plan",
+    "history": "History"
+  },
+  "task": {
+    "unnamed": "Unnamed task",
+    "unknown": "Unknown task"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of all vehicles and due maintenance.",
+    "loadError": "Data could not be loaded.",
+    "lastMaintenance": "Last maintenance",
+    "noMaintenance": "No maintenance recorded yet",
+    "maintenanceFallback": "Maintenance",
+    "due": "Due",
+    "allUpToDate": "All up to date"
+  },
+  "vehicles": {
+    "title": "Vehicles",
+    "subtitle": "All recorded motorcycles and cars.",
+    "loadError": "Vehicles could not be loaded.",
+    "empty": "No vehicles recorded yet."
+  },
+  "vehicle": {
+    "subtitleMakeModelYear": "{{makeModel}} • Model year {{year}}",
+    "subtitleYear": "Model year {{year}}",
+    "subtitleMakeModel": "{{makeModel}}"
+  },
+  "vehicleType": {
+    "MOTORCYCLE": "Motorcycle",
+    "CAR": "Car"
+  },
+  "vehicleForm": {
+    "titleNew": "Add new vehicle",
+    "titleEdit": "Edit vehicle",
+    "name": "Name *",
+    "namePlaceholder": "e.g. Yamaha MT-09 SP",
+    "nameRequired": "Name is required.",
+    "maxLength255": "At most 255 characters.",
+    "type": "Vehicle type *",
+    "make": "Make",
+    "makePlaceholder": "e.g. Yamaha",
+    "model": "Model",
+    "modelPlaceholder": "e.g. MT-09 SP",
+    "modelYear": "Model year",
+    "modelYearInvalid": "Please enter a valid year.",
+    "mileage": "Mileage (km)",
+    "mileageNegative": "Must not be negative.",
+    "firstRegistration": "First registration *",
+    "firstRegistrationRequired": "First registration is required.",
+    "submitNew": "Add vehicle",
+    "createError": "The vehicle could not be added. Please try again.",
+    "updateError": "The vehicle could not be updated. Please try again."
+  },
+  "vehicleDetail": {
+    "loadError": "The vehicle could not be loaded.",
+    "editVehicle": "Edit vehicle details",
+    "currentMileage": "Current mileage",
+    "editMileage": "Edit mileage",
+    "tabStatus": "Dashboard & status",
+    "statusHeading": "Maintenance status of the main components",
+    "noTasks": "No maintenance tasks defined yet.",
+    "lastService": "Last service: {{mileage}} km ({{date}})",
+    "pending": "Pending",
+    "tabHistory": "Maintenance history ({{count}})",
+    "noLogs": "No maintenance recorded yet.",
+    "tabRecord": "Record maintenance",
+    "tabTasks": "Maintenance tasks",
+    "noTasksCreated": "No maintenance tasks created yet.",
+    "inactive": "Inactive"
+  },
+  "logForm": {
+    "titleNew": "Record new maintenance",
+    "titleEdit": "Edit maintenance",
+    "date": "Date",
+    "mileage": "Mileage",
+    "tasks": "Tasks performed",
+    "noActiveTasks": "No active maintenance tasks defined.",
+    "notes": "Notes",
+    "submitNew": "Save maintenance",
+    "saveError": "The maintenance could not be saved. Please try again.",
+    "confirmDelete": "Really delete the maintenance entry from {{date}}?"
+  },
+  "taskForm": {
+    "titleNew": "New maintenance task",
+    "titleEdit": "Edit maintenance task",
+    "name": "Name *",
+    "namePlaceholder": "e.g. Oil change",
+    "intervalKm": "Interval (km)",
+    "intervalKmPlaceholder": "e.g. 10000",
+    "intervalMonths": "Interval (months)",
+    "intervalMonthsPlaceholder": "e.g. 12",
+    "firstDueKm": "First due at (km)",
+    "firstDueMonths": "First due after (months)",
+    "oneTime": "One-time task",
+    "active": "Active",
+    "submitNew": "Add task",
+    "saveError": "The maintenance task could not be saved. Please try again.",
+    "confirmDelete": "Really delete \"{{name}}\"?"
+  },
+  "taskStatus": {
+    "done": "Done",
+    "doneOn": "Done on {{date}}",
+    "neverPerformed": "Due (never performed)",
+    "ok": "OK",
+    "overdueKm": "Overdue by {{value}} km",
+    "overdueDays": "Overdue by {{value}} days",
+    "overdueDay": "Overdue by {{value}} day",
+    "dueSoonKm": "Due in {{value}} km",
+    "dueSoonDays": "Due in {{value}} days",
+    "dueSoonDay": "Due in {{value}} day",
+    "firstDueKm": "First due in {{value}} km",
+    "firstDueDays": "First due in {{value}} days",
+    "firstDueDay": "First due in {{value}} day",
+    "okKm": "OK ({{value}} km left)",
+    "okDays": "OK ({{value}} days left)",
+    "okDay": "OK ({{value}} day left)"
+  },
+  "taskInterval": {
+    "oneTime": "One-time task",
+    "none": "No interval defined",
+    "everyKm": "Every {{km}} km",
+    "everyMonths": "Every {{months}} months",
+    "everyMonth": "Every month",
+    "everyKmOrMonths": "Every {{km}} km or {{months}} months"
+  },
+  "maintenancePlan": {
+    "title": "Maintenance plan",
+    "subtitle": "Maintenance intervals by mileage and time."
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Recently logged maintenance."
+  }
+}

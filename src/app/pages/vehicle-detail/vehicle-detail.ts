@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { formatDate } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   MaintenanceLogRequest,
   MaintenanceLogResponse,
@@ -31,6 +32,8 @@ import {
   VehicleResponse,
   VehiclesService,
 } from '../../api-client';
+import { LanguageService } from '../../i18n/language';
+import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { computeTaskStatus } from './maintenance-status';
@@ -40,8 +43,8 @@ import { resolveTaskIcon } from './task-icon';
 @Component({
   selector: 'app-vehicle-detail',
   imports: [
-    DatePipe,
-    DecimalPipe,
+    LocalDatePipe,
+    LocalNumberPipe,
     FormsModule,
     MatButtonModule,
     MatCardModule,
@@ -51,6 +54,7 @@ import { resolveTaskIcon } from './task-icon';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatTabsModule,
+    TranslocoPipe,
   ],
   templateUrl: './vehicle-detail.html',
   styleUrl: './vehicle-detail.scss',
@@ -63,6 +67,8 @@ export class VehicleDetail {
   private readonly tasksService = inject(MaintenanceTasksService);
   private readonly logsService = inject(MaintenanceLogsService);
   private readonly dialog = inject(MatDialog);
+  private readonly transloco = inject(TranslocoService);
+  protected readonly language = inject(LanguageService);
 
   protected readonly vehicleIcon = vehicleIcon;
   protected readonly vehicleSubtitle = vehicleSubtitle;
@@ -84,12 +90,13 @@ export class VehicleDetail {
     if (!result) {
       return [];
     }
+    const locale = this.language.locale();
     return result.tasks
       .filter((task) => task.active !== false)
       .map((task) => ({
         task,
         icon: resolveTaskIcon(task.name),
-        status: computeTaskStatus(task),
+        status: computeTaskStatus(task, locale),
       }));
   });
 
@@ -98,12 +105,16 @@ export class VehicleDetail {
     if (!result) {
       return [];
     }
-    const taskNames = new Map(result.tasks.map((task) => [task.id, task.name ?? 'Unbenannte Aufgabe']));
+    // Passing the language signal makes this recompute on a language switch.
+    const lang = this.language.lang();
+    const unnamed = this.transloco.translate('task.unnamed', {}, lang);
+    const unknown = this.transloco.translate('task.unknown', {}, lang);
+    const taskNames = new Map(result.tasks.map((task) => [task.id, task.name ?? unnamed]));
     return [...result.logs]
       .sort((a, b) => (b.performedAt ?? '').localeCompare(a.performedAt ?? ''))
       .map((log) => ({
         log,
-        taskNames: (log.performedTaskIds ?? []).map((id) => taskNames.get(id) ?? 'Unbekannte Aufgabe'),
+        taskNames: (log.performedTaskIds ?? []).map((id) => taskNames.get(id) ?? unknown),
       }));
   });
 
@@ -158,6 +169,7 @@ export class VehicleDetail {
   protected readonly logTaskIds = signal<ReadonlySet<number>>(new Set());
   protected readonly editingLogId = signal<number | null>(null);
   protected readonly savingLog = signal(false);
+  /** Translation key of the error to show. */
   protected readonly logSubmitError = signal<string | null>(null);
 
   private readonly logMileageSeeded = signal(false);
@@ -227,7 +239,7 @@ export class VehicleDetail {
       },
       error: () => {
         this.savingLog.set(false);
-        this.logSubmitError.set('Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.');
+        this.logSubmitError.set('logForm.saveError');
       },
     });
   }
@@ -236,7 +248,8 @@ export class VehicleDetail {
     if (vehicle.id === undefined || log.id === undefined) {
       return;
     }
-    if (!confirm(`Wartungseintrag vom ${formatDateDe(log.performedAt)} wirklich löschen?`)) {
+    const date = formatIsoDate(log.performedAt, this.language.locale());
+    if (!confirm(this.transloco.translate('logForm.confirmDelete', { date }))) {
       return;
     }
     this.logsService.deleteMaintenanceLog(vehicle.id, log.id).subscribe(() => {
@@ -265,6 +278,7 @@ export class VehicleDetail {
   protected readonly taskFormActive = signal(true);
   protected readonly editingTaskId = signal<number | null>(null);
   protected readonly savingTask = signal(false);
+  /** Translation key of the error to show. */
   protected readonly taskSubmitError = signal<string | null>(null);
 
   protected startEditTask(task: MaintenanceTaskResponse): void {
@@ -313,7 +327,7 @@ export class VehicleDetail {
       },
       error: () => {
         this.savingTask.set(false);
-        this.taskSubmitError.set('Wartungsaufgabe konnte nicht gespeichert werden. Bitte versuche es erneut.');
+        this.taskSubmitError.set('taskForm.saveError');
       },
     });
   }
@@ -322,7 +336,7 @@ export class VehicleDetail {
     if (vehicle.id === undefined || task.id === undefined) {
       return;
     }
-    if (!confirm(`"${task.name}" wirklich löschen?`)) {
+    if (!confirm(this.transloco.translate('taskForm.confirmDelete', { name: task.name ?? '' }))) {
       return;
     }
     this.tasksService.deleteMaintenanceTask(vehicle.id, task.id).subscribe(() => {
@@ -350,7 +364,7 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function formatDateDe(iso: string | undefined): string {
+function formatIsoDate(iso: string | undefined, locale: string): string {
   const date = iso ? new Date(iso) : null;
-  return date && !Number.isNaN(date.getTime()) ? date.toLocaleDateString('de-DE') : (iso ?? '');
+  return date && !Number.isNaN(date.getTime()) ? formatDate(date, 'mediumDate', locale) : (iso ?? '');
 }
