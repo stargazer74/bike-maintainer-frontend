@@ -6,11 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { VehiclesService } from '../../api-client';
+import { LOGIN_PATH } from '../../auth/auth-guards';
+import { AuthStore } from '../../auth/auth-store';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 
@@ -39,6 +42,7 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
+    MatMenuModule,
     MatSelectModule,
     MatTabsModule,
     MatToolbarModule,
@@ -52,12 +56,15 @@ export class Shell {
   protected readonly navItems = NAV_ITEMS;
   protected readonly languages = APP_LANGUAGES;
   protected readonly language = inject(LanguageService);
+  protected readonly authStore = inject(AuthStore);
 
   private readonly router = inject(Router);
   private readonly vehiclesService = inject(VehiclesService);
   private readonly dialog = inject(MatDialog);
 
+  /** Loaded per logged-in user; idle (and empty) while logged out, reloaded when the user changes. */
   protected readonly vehicles = rxResource({
+    params: () => this.authStore.currentUser()?.id,
     stream: () => this.vehiclesService.listVehicles(),
   });
 
@@ -80,6 +87,10 @@ export class Shell {
 
   protected onSelectLanguage(lang: AppLanguage): void {
     void this.language.use(lang);
+  }
+
+  protected onLogout(): void {
+    this.authStore.logout().subscribe(() => void this.router.navigateByUrl(LOGIN_PATH));
   }
 
   protected onAddVehicleClick(): void {
