@@ -1,0 +1,34 @@
+.login {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.login__card {
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  background: var(--bm-surface);
+  border: 1px solid var(--bm-border);
+}
+
+.login__title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  color: var(--bm-text);
+}
+
+.login__subtitle {
+  margin: 0 0 24px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.login__error {
+  margin: 0 0 14px;
+}
+
+.login__submit {
+  width: 100%;
+  justify-content: center;
+}

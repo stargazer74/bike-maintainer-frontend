@@ -1,0 +1,47 @@
+<div class="login">
+  <mat-card class="login__card">
+    <h1 class="login__title">{{ 'login.title' | transloco }}</h1>
+    <p class="login__subtitle">{{ 'login.subtitle' | transloco }}</p>
+
+    <form novalidate (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label class="field__label" for="login-email">{{ 'login.email' | transloco }}</label>
+        <input
+          id="login-email"
+          name="email"
+          type="email"
+          class="field__input"
+          autocomplete="username"
+          required
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="login-password">{{ 'login.password' | transloco }}</label>
+        <input
+          id="login-password"
+          name="password"
+          type="password"
+          class="field__input"
+          autocomplete="current-password"
+          required
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+        />
+      </div>
+
+      @if (errorKey(); as key) {
+        <p class="field__error login__error" role="alert">{{ key | transloco }}</p>
+      }
+
+      <button type="submit" class="btn btn--primary login__submit" [disabled]="submitting()">
+        @if (submitting()) {
+          <mat-spinner diameter="16" />
+        }
+        {{ 'login.submit' | transloco }}
+      </button>
+    </form>
+  </mat-card>
+</div>

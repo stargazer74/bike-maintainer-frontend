@@ -19,13 +19,30 @@
   "shell": {
     "toDashboard": "Go to dashboard",
     "selectVehicle": "Select vehicle",
-    "addVehicle": "Add bike"
+    "addVehicle": "Add bike",
+    "userMenu": "User menu",
+    "logout": "Log out"
   },
   "nav": {
     "dashboard": "Dashboard",
     "vehicles": "Vehicles",
     "maintenancePlan": "Maintenance plan",
     "history": "History"
+  },
+  "login": {
+    "title": "Log in",
+    "subtitle": "Log in to see your vehicles.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "errors": {
+      "required": "Please enter your email and password.",
+      "invalidCredentials": "Wrong email or password.",
+      "accountDisabled": "Your account has been disabled.",
+      "emailNotVerified": "Your email address has not been verified yet.",
+      "tooManyAttempts": "Too many attempts, please try again later.",
+      "unknown": "Login failed, please try again later."
+    }
   },
   "task": {
     "unnamed": "Unnamed task",
