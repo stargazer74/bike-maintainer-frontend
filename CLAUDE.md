@@ -78,8 +78,27 @@ service signatures or model shapes.
   specificity as a component's own `.some-card { display: flex; ... }` override, and can win by
   source order — silently collapsing an intended row layout into a column. Don't fight this with
   `!important`; add an inner wrapper div inside the card and put the row layout on that instead.
-- The app is German-only (`LOCALE_ID` is set to `de-DE` in `app.config.ts`, all UI copy is German) —
-  don't add i18n scaffolding or English strings.
+- **The UI is German and English via Transloco** (`@jsverse/transloco`, runtime translation, one build).
+  Never hardcode UI text in templates or `.ts` — use translation keys:
+  - Texts live in `public/i18n/de.json` and `public/i18n/en.json`; always add/change a key in **both**
+    files (`i18n/translations.spec.ts` fails on missing keys or mismatched `{{placeholders}}`). Keys are
+    English and grouped by area (`vehicleForm.nameRequired`, `taskStatus.overdueKm`).
+  - Templates: `{{ 'key' | transloco }}` / `{{ 'key' | transloco: { count: n } }}`; attributes via
+    `[placeholder]="'key' | transloco"`, `[attr.aria-label]="'key' | transloco"`.
+  - Pure helpers return a `TranslatableText` (`{ key, params }`, see `i18n/translatable-text.ts`) instead of
+    a finished sentence; numbers/dates in params are formatted with the `locale` the caller passes in.
+  - Text needed in `.ts` (e.g. `confirm()`, fallbacks inside `computed`): `TranslocoService.translate(key,
+    params, language.lang())` — passing the language signal makes `computed`s recompute on a switch.
+  - Error messages kept in signals store the **key**, translated in the template.
+- **Language state:** `LanguageService` (`i18n/language.ts`) owns the active language as a signal
+  (`lang()`, `locale()` = `de-DE`/`en-GB`). Start: stored choice (`localStorage` `bm.language`) → browser
+  language → German. Switching loads the translation file first, then flips the signal, so keys never
+  flash. The switcher is in the shell toolbar.
+- **Numbers/dates:** use the `localNumber`/`localDate` pipes (`i18n/localized-pipes.ts`), not Angular's
+  `number`/`date` pipes or `toLocaleString('de-DE')` — they follow the active language. Default date format
+  is `mediumDate` (`09.10.2026` / `9 Oct 2026`).
+- URLs stay German (`/fahrzeuge`, …); they are addresses, not UI text.
+- Tests: import `translocoTesting()` from `i18n/testing.ts` (real translation files, no HTTP).
 - Domain-specific formatting/computation helpers live next to the page that uses them rather than in
   a shared utils folder, e.g. `pages/vehicle-detail/maintenance-status.ts` (due/overdue status logic),
   `task-icon.ts` (icon-by-task-name heuristic), `task-interval.ts` (interval description text).

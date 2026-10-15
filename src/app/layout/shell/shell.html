@@ -3,7 +3,7 @@
     <span class="shell__brand-icon">
       <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
     </span>
-    <span class="shell__brand-name">Bike Maintainer</span>
+    <span class="shell__brand-name">{{ 'app.name' | transloco }}</span>
 
     <div class="shell__toolbar-actions">
       <button
@@ -11,7 +11,7 @@
         type="button"
         class="shell__dashboard-button"
         routerLink="/dashboard"
-        aria-label="Zum Dashboard"
+        [attr.aria-label]="'shell.toDashboard' | transloco"
       >
         <mat-icon fontSet="material-symbols-outlined">dashboard</mat-icon>
       </button>
@@ -19,7 +19,7 @@
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="shell__vehicle-select">
         <mat-select
           [value]="selectedVehicleId()"
-          placeholder="Fahrzeug wählen"
+          [placeholder]="'shell.selectVehicle' | transloco"
           (selectionChange)="onSelectVehicle($event.value)"
         >
           @for (vehicle of vehicles.value(); track vehicle.id) {
@@ -28,9 +28,25 @@
         </mat-select>
       </mat-form-field>
 
+      <div class="shell__language" role="group" [attr.aria-label]="'language.switch' | transloco">
+        @for (lang of languages; track lang) {
+          <button
+            type="button"
+            class="shell__language-option"
+            [class.shell__language-option--active]="language.lang() === lang"
+            [attr.aria-pressed]="language.lang() === lang"
+            [attr.lang]="lang"
+            [title]="'language.' + lang | transloco"
+            (click)="onSelectLanguage(lang)"
+          >
+            {{ lang.toUpperCase() }}
+          </button>
+        }
+      </div>
+
       <button mat-stroked-button type="button" class="shell__add-button" (click)="onAddVehicleClick()">
         <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
-        <span>Bike hinzufügen</span>
+        <span>{{ 'shell.addVehicle' | transloco }}</span>
       </button>
     </div>
   </mat-toolbar>

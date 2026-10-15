@@ -1,4 +1,3 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -6,20 +5,31 @@ import { forkJoin, map, of, switchMap } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MaintenanceLogsService, MaintenanceTasksService, VehiclesService } from '../../api-client';
+import { LanguageService } from '../../i18n/language';
+import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { computeTaskStatus } from '../vehicle-detail/maintenance-status';
 import { resolveTaskIcon } from '../vehicle-detail/task-icon';
 
-/** How many due tasks are shown per vehicle before collapsing into "+N weitere". */
+/** How many due tasks are shown per vehicle before collapsing into "+N more". */
 const DUE_TASKS_PER_VEHICLE = 3;
 
-/** How many task names from the last log are shown before collapsing into "+N weitere". */
+/** How many task names from the last log are shown before collapsing into "+N more". */
 const LAST_LOG_TASK_NAMES_SHOWN = 3;
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, DatePipe, DecimalPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    RouterLink,
+    LocalDatePipe,
+    LocalNumberPipe,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslocoPipe,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +38,8 @@ export class Dashboard {
   private readonly vehiclesService = inject(VehiclesService);
   private readonly tasksService = inject(MaintenanceTasksService);
   private readonly logsService = inject(MaintenanceLogsService);
+  private readonly language = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly vehicleIcon = vehicleIcon;
   protected readonly vehicleSubtitle = vehicleSubtitle;
@@ -56,13 +68,18 @@ export class Dashboard {
     if (!vehicleData) {
       return [];
     }
+    // Reading the language signals makes this recompute on a language switch; translations of the new
+    // language are already loaded by then (see LanguageService.use).
+    const locale = this.language.locale();
+    const lang = this.language.lang();
+    const t = (key: string, params?: Record<string, number>) => this.transloco.translate(key, params ?? {}, lang);
     const summaries = vehicleData.map((entry) => {
-      const taskNames = new Map(entry.tasks.map((task) => [task.id, task.name ?? 'Unbenannte Aufgabe']));
+      const taskNames = new Map(entry.tasks.map((task) => [task.id, task.name ?? t('task.unnamed')]));
       const lastLog = [...entry.logs].sort((a, b) =>
         (b.performedAt ?? '').localeCompare(a.performedAt ?? ''),
       )[0];
       const lastLogNames = lastLog
-        ? (lastLog.performedTaskIds ?? []).map((id) => taskNames.get(id) ?? 'Unbekannte Aufgabe')
+        ? (lastLog.performedTaskIds ?? []).map((id) => taskNames.get(id) ?? t('task.unknown'))
         : [];
 
       const dueTasks = entry.tasks
@@ -70,7 +87,7 @@ export class Dashboard {
         .map((task) => ({
           task,
           icon: resolveTaskIcon(task.name),
-          status: computeTaskStatus(task),
+          status: computeTaskStatus(task, locale),
         }))
         .filter((card) => card.status.state === 'overdue' || card.status.state === 'due-soon')
         .sort((a, b) => (a.status.remainingFraction ?? 0) - (b.status.remainingFraction ?? 0));
@@ -78,8 +95,9 @@ export class Dashboard {
       const shownLastLogNames = lastLogNames.slice(0, LAST_LOG_TASK_NAMES_SHOWN);
       const lastLogNamesOverflow = Math.max(0, lastLogNames.length - LAST_LOG_TASK_NAMES_SHOWN);
       const lastLogTitle = shownLastLogNames.length
-        ? shownLastLogNames.join(', ') + (lastLogNamesOverflow > 0 ? ` +${lastLogNamesOverflow} weitere` : '')
-        : 'Wartung';
+        ? shownLastLogNames.join(', ') +
+          (lastLogNamesOverflow > 0 ? ' ' + t('common.moreCount', { count: lastLogNamesOverflow }) : '')
+        : t('dashboard.maintenanceFallback');
 
       return {
         vehicle: entry.vehicle,

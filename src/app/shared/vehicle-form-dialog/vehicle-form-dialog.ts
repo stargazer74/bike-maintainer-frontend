@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { VehicleRequest, VehicleResponse, VehicleType, VehiclesService } from '../../api-client';
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -13,7 +14,7 @@ export interface VehicleFormDialogData {
 
 @Component({
   selector: 'app-vehicle-form-dialog',
-  imports: [ReactiveFormsModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [ReactiveFormsModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, TranslocoPipe],
   templateUrl: './vehicle-form-dialog.html',
   styleUrl: './vehicle-form-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,12 +30,14 @@ export class VehicleFormDialog {
   protected readonly minYear = 1900;
   protected readonly maxYear = CURRENT_YEAR + 1;
 
+  /** Labels are translation keys. */
   protected readonly vehicleTypes: ReadonlyArray<{ value: VehicleType; label: string }> = [
-    { value: VehicleType.Motorcycle, label: 'Motorrad' },
-    { value: VehicleType.Car, label: 'Auto' },
+    { value: VehicleType.Motorcycle, label: 'vehicleType.MOTORCYCLE' },
+    { value: VehicleType.Car, label: 'vehicleType.CAR' },
   ];
 
   protected readonly saving = signal(false);
+  /** Translation key of the error to show, so it follows a language switch. */
   protected readonly submitError = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
@@ -92,11 +95,7 @@ export class VehicleFormDialog {
       },
       error: () => {
         this.saving.set(false);
-        this.submitError.set(
-          vehicle
-            ? 'Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut.'
-            : 'Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.',
-        );
+        this.submitError.set(vehicle ? 'vehicleForm.updateError' : 'vehicleForm.createError');
       },
     });
   }

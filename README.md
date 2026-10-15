@@ -18,6 +18,7 @@ liegen in den Nachbarprojekten:
 - [Angular](https://angular.dev/) 22 (standalone components, Vitest als Test-Runner)
 - TypeScript, SCSS
 - Angular CLI
+- [Transloco](https://jsverse.gitbook.io/transloco) für Deutsch und Englisch
 
 ## Voraussetzungen
 
@@ -75,6 +76,17 @@ export class VehicleListComponent {
   vehicles$ = this.vehiclesService.listVehicles();
 }
 ```
+
+## Mehrsprachigkeit
+
+Die Oberfläche gibt es auf Deutsch und Englisch. Übersetzt wird zur Laufzeit mit Transloco, es gibt also
+nur einen Build. Die Texte stehen in `public/i18n/de.json` und `public/i18n/en.json`. Neue oder geänderte
+Texte immer in **beiden** Dateien pflegen; ein Unit-Test schlägt fehl, wenn Schlüssel oder Platzhalter
+nicht übereinstimmen.
+
+Die Sprache lässt sich in der Toolbar umschalten (DE | EN). Beim ersten Aufruf gilt die Sprache des
+Browsers (Fallback Deutsch), danach die zuletzt gewählte. Zahlen und Datumsangaben werden passend zur
+Sprache formatiert (`12.500` / `12,500`, `09.10.2026` / `9 Oct 2026`).
 
 ## Weitere Befehle
 

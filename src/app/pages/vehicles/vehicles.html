@@ -1,6 +1,6 @@
 <header class="page-header">
-  <h1>Fahrzeuge</h1>
-  <p>Alle erfassten Motorräder und Autos.</p>
+  <h1>{{ 'vehicles.title' | transloco }}</h1>
+  <p>{{ 'vehicles.subtitle' | transloco }}</p>
 </header>
 
 @if (vehicles.isLoading()) {
@@ -11,14 +11,14 @@
   <mat-card class="stub-card" appearance="outlined">
     <mat-card-content>
       <mat-icon fontSet="material-symbols-outlined">error</mat-icon>
-      <p>Fahrzeuge konnten nicht geladen werden.</p>
+      <p>{{ 'vehicles.loadError' | transloco }}</p>
     </mat-card-content>
   </mat-card>
 } @else if (!vehicles.value()?.length) {
   <mat-card class="stub-card" appearance="outlined">
     <mat-card-content>
       <mat-icon fontSet="material-symbols-outlined">two_wheeler</mat-icon>
-      <p>Noch keine Fahrzeuge erfasst.</p>
+      <p>{{ 'vehicles.empty' | transloco }}</p>
     </mat-card-content>
   </mat-card>
 } @else {
@@ -30,9 +30,11 @@
         </span>
         <span class="vehicle-card__body">
           <span class="vehicle-card__name">{{ vehicle.name }}</span>
-          <span class="vehicle-card__subtitle">{{ vehicleSubtitle(vehicle) }}</span>
+          @if (vehicleSubtitle(vehicle); as subtitle) {
+            <span class="vehicle-card__subtitle">{{ subtitle.key | transloco: subtitle.params }}</span>
+          }
         </span>
-        <span class="vehicle-card__mileage">{{ vehicle.currentMileage ?? 0 | number }} km</span>
+        <span class="vehicle-card__mileage">{{ vehicle.currentMileage ?? 0 | localNumber }} km</span>
       </a>
     }
   </div>
