@@ -6,27 +6,29 @@
     <span class="shell__brand-name">{{ 'app.name' | transloco }}</span>
 
     <div class="shell__toolbar-actions">
-      <button
-        mat-icon-button
-        type="button"
-        class="shell__dashboard-button"
-        routerLink="/dashboard"
-        [attr.aria-label]="'shell.toDashboard' | transloco"
-      >
-        <mat-icon fontSet="material-symbols-outlined">dashboard</mat-icon>
-      </button>
-
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="shell__vehicle-select">
-        <mat-select
-          [value]="selectedVehicleId()"
-          [placeholder]="'shell.selectVehicle' | transloco"
-          (selectionChange)="onSelectVehicle($event.value)"
+      @if (authStore.isLoggedIn()) {
+        <button
+          mat-icon-button
+          type="button"
+          class="shell__dashboard-button"
+          routerLink="/dashboard"
+          [attr.aria-label]="'shell.toDashboard' | transloco"
         >
-          @for (vehicle of vehicles.value(); track vehicle.id) {
-            <mat-option [value]="vehicle.id">{{ vehicle.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+          <mat-icon fontSet="material-symbols-outlined">dashboard</mat-icon>
+        </button>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="shell__vehicle-select">
+          <mat-select
+            [value]="selectedVehicleId()"
+            [placeholder]="'shell.selectVehicle' | transloco"
+            (selectionChange)="onSelectVehicle($event.value)"
+          >
+            @for (vehicle of vehicles.value(); track vehicle.id) {
+              <mat-option [value]="vehicle.id">{{ vehicle.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
 
       <div class="shell__language" role="group" [attr.aria-label]="'language.switch' | transloco">
         @for (lang of languages; track lang) {
@@ -44,10 +46,29 @@
         }
       </div>
 
-      <button mat-stroked-button type="button" class="shell__add-button" (click)="onAddVehicleClick()">
-        <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
-        <span>{{ 'shell.addVehicle' | transloco }}</span>
-      </button>
+      @if (authStore.isLoggedIn()) {
+        <button mat-stroked-button type="button" class="shell__add-button" (click)="onAddVehicleClick()">
+          <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+          <span>{{ 'shell.addVehicle' | transloco }}</span>
+        </button>
+
+        <button
+          mat-icon-button
+          type="button"
+          class="shell__user-button"
+          [matMenuTriggerFor]="userMenu"
+          [attr.aria-label]="'shell.userMenu' | transloco"
+        >
+          <mat-icon fontSet="material-symbols-outlined">account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu" xPosition="before">
+          <div class="shell__user-email" mat-menu-item disabled>{{ authStore.currentUser()?.email }}</div>
+          <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
+            <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
+            <span>{{ 'shell.logout' | transloco }}</span>
+          </button>
+        </mat-menu>
+      }
     </div>
   </mat-toolbar>
 

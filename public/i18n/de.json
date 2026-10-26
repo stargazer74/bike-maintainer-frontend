@@ -19,13 +19,30 @@
   "shell": {
     "toDashboard": "Zum Dashboard",
     "selectVehicle": "Fahrzeug wählen",
-    "addVehicle": "Bike hinzufügen"
+    "addVehicle": "Bike hinzufügen",
+    "userMenu": "Benutzermenü",
+    "logout": "Abmelden"
   },
   "nav": {
     "dashboard": "Dashboard",
     "vehicles": "Fahrzeuge",
     "maintenancePlan": "Wartungsplan",
     "history": "Historie"
+  },
+  "login": {
+    "title": "Anmelden",
+    "subtitle": "Melde dich an, um deine Fahrzeuge zu sehen.",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "errors": {
+      "required": "Bitte E-Mail und Passwort eingeben.",
+      "invalidCredentials": "E-Mail oder Passwort falsch.",
+      "accountDisabled": "Dein Konto wurde gesperrt.",
+      "emailNotVerified": "Deine E-Mail-Adresse ist noch nicht bestätigt.",
+      "tooManyAttempts": "Zu viele Versuche, bitte später erneut.",
+      "unknown": "Anmeldung fehlgeschlagen, bitte später erneut versuchen."
+    }
   },
   "task": {
     "unnamed": "Unbenannte Aufgabe",
