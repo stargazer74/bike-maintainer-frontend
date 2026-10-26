@@ -2,7 +2,8 @@ import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/comm
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { loginUrlTree } from './auth-guards';
+import { AppConfigStore } from '../config/app-config-store';
+import { entryUrlTree } from './auth-guards';
 import { AuthStore } from './auth-store';
 
 /**
@@ -18,15 +19,19 @@ function handlesOwn401(request: HttpRequest<unknown>): boolean {
   );
 }
 
-/** A 401 on any other call means the session has expired: back to the login page, then return here. */
+/**
+ * A 401 on any other call means the session has expired: back to the login page (portal) or the profile
+ * selection (household), then return here.
+ */
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const store = inject(AuthStore);
   const router = inject(Router);
+  const config = inject(AppConfigStore);
   return next(request).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && !handlesOwn401(request)) {
         store.clear();
-        void router.navigateByUrl(loginUrlTree(router, router.url));
+        void router.navigateByUrl(entryUrlTree(router, config, router.url));
       }
       return throwError(() => error);
     }),

@@ -21,7 +21,8 @@
     "selectVehicle": "Fahrzeug wählen",
     "addVehicle": "Bike hinzufügen",
     "userMenu": "Benutzermenü",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "switchProfile": "Person wechseln"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -42,6 +43,24 @@
       "emailNotVerified": "Deine E-Mail-Adresse ist noch nicht bestätigt.",
       "tooManyAttempts": "Zu viele Versuche, bitte später erneut.",
       "unknown": "Anmeldung fehlgeschlagen, bitte später erneut versuchen."
+    }
+  },
+  "profiles": {
+    "title": "Wer bist du?",
+    "subtitle": "Wähle deine Person, um deine Fahrzeuge zu sehen.",
+    "newName": "Neue Person",
+    "newNamePlaceholder": "Name",
+    "add": "Hinzufügen",
+    "rename": "Umbenennen",
+    "renameLabel": "{{name}} umbenennen",
+    "deleteLabel": "{{name}} löschen",
+    "confirmDelete": "Person „{{name}}“ löschen?",
+    "errors": {
+      "nameRequired": "Bitte einen Namen eingeben.",
+      "nameTaken": "Dieser Name ist schon vergeben.",
+      "hasVehicles": "Diese Person hat noch Fahrzeuge. Bitte zuerst die Fahrzeuge löschen.",
+      "loadFailed": "Die Personen konnten nicht geladen werden.",
+      "unknown": "Das hat nicht geklappt, bitte später erneut versuchen."
     }
   },
   "task": {

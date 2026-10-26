@@ -62,11 +62,18 @@
           <mat-icon fontSet="material-symbols-outlined">account_circle</mat-icon>
         </button>
         <mat-menu #userMenu="matMenu" xPosition="before">
-          <div class="shell__user-email" mat-menu-item disabled>{{ authStore.currentUser()?.email }}</div>
-          <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
-            <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
-            <span>{{ 'shell.logout' | transloco }}</span>
-          </button>
+          <div class="shell__user-email" mat-menu-item disabled>{{ userName() }}</div>
+          @if (config.isHousehold()) {
+            <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
+              <mat-icon fontSet="material-symbols-outlined">switch_account</mat-icon>
+              <span>{{ 'shell.switchProfile' | transloco }}</span>
+            </button>
+          } @else {
+            <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
+              <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
+              <span>{{ 'shell.logout' | transloco }}</span>
+            </button>
+          }
         </mat-menu>
       }
     </div>

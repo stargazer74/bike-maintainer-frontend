@@ -1,0 +1,89 @@
+<div class="profile-select">
+  <mat-card class="profile-select__card">
+    <h1 class="profile-select__title">{{ 'profiles.title' | transloco }}</h1>
+    <p class="profile-select__subtitle">{{ 'profiles.subtitle' | transloco }}</p>
+
+    @if (profiles.isLoading() && !profiles.hasValue()) {
+      <mat-spinner class="profile-select__spinner" diameter="32" />
+    } @else if (profiles.error()) {
+      <p class="field__error" role="alert">{{ 'profiles.errors.loadFailed' | transloco }}</p>
+    } @else {
+      <ul class="profile-select__list">
+        @for (profile of profiles.value(); track profile.id) {
+          <li class="profile">
+            @if (editing()?.id === profile.id) {
+              <form class="profile__edit" novalidate (ngSubmit)="onRename()">
+                <input
+                  class="field__input profile__name-input"
+                  name="displayName"
+                  maxlength="50"
+                  [attr.aria-label]="'profiles.renameLabel' | transloco: { name: profile.displayName }"
+                  [ngModel]="editing()?.name"
+                  (ngModelChange)="onEditName($event)"
+                />
+                <button type="submit" class="btn btn--primary" [disabled]="busy()">
+                  {{ 'common.save' | transloco }}
+                </button>
+                <button type="button" class="btn btn--ghost" (click)="onCancelRename()">
+                  {{ 'common.cancel' | transloco }}
+                </button>
+              </form>
+            } @else {
+              <button
+                type="button"
+                class="profile__select"
+                [disabled]="busy()"
+                (click)="onSelect(profile)"
+              >
+                <mat-icon fontSet="material-symbols-outlined" class="profile__avatar">person</mat-icon>
+                <span class="profile__name">{{ profile.displayName }}</span>
+              </button>
+              <button
+                type="button"
+                class="profile__action profile__rename"
+                [title]="'profiles.rename' | transloco"
+                [attr.aria-label]="'profiles.renameLabel' | transloco: { name: profile.displayName }"
+                (click)="onStartRename(profile)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+              </button>
+              <button
+                type="button"
+                class="profile__action profile__delete"
+                [title]="'common.delete' | transloco"
+                [attr.aria-label]="'profiles.deleteLabel' | transloco: { name: profile.displayName }"
+                (click)="onDelete(profile)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    @if (errorKey(); as key) {
+      <p class="field__error profile-select__error" role="alert">{{ key | transloco }}</p>
+    }
+
+    <form class="profile-select__add" novalidate (ngSubmit)="onAdd()">
+      <div class="field profile-select__add-field">
+        <label class="field__label" for="profile-new-name">{{ 'profiles.newName' | transloco }}</label>
+        <input
+          id="profile-new-name"
+          name="newName"
+          class="field__input"
+          maxlength="50"
+          autocomplete="off"
+          [placeholder]="'profiles.newNamePlaceholder' | transloco"
+          [ngModel]="newName()"
+          (ngModelChange)="newName.set($event)"
+        />
+      </div>
+      <button type="submit" class="btn btn--primary" [disabled]="busy()">
+        <mat-icon fontSet="material-symbols-outlined">person_add</mat-icon>
+        {{ 'profiles.add' | transloco }}
+      </button>
+    </form>
+  </mat-card>
+</div>

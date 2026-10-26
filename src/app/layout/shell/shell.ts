@@ -12,8 +12,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { VehiclesService } from '../../api-client';
-import { LOGIN_PATH } from '../../auth/auth-guards';
+import { LOGIN_PATH, PROFILE_SELECT_PATH } from '../../auth/auth-guards';
 import { AuthStore } from '../../auth/auth-store';
+import { AppConfigStore } from '../../config/app-config-store';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 
@@ -57,6 +58,13 @@ export class Shell {
   protected readonly languages = APP_LANGUAGES;
   protected readonly language = inject(LanguageService);
   protected readonly authStore = inject(AuthStore);
+  protected readonly config = inject(AppConfigStore);
+
+  /** Profiles (household) have a display name; accounts (portal) are shown by their email. */
+  protected readonly userName = computed(() => {
+    const user = this.authStore.currentUser();
+    return user?.displayName ?? user?.email ?? '';
+  });
 
   private readonly router = inject(Router);
   private readonly vehiclesService = inject(VehiclesService);
@@ -89,8 +97,10 @@ export class Shell {
     void this.language.use(lang);
   }
 
+  /** Ends the session; in household mode this means switching to another profile. */
   protected onLogout(): void {
-    this.authStore.logout().subscribe(() => void this.router.navigateByUrl(LOGIN_PATH));
+    const entryPath = this.config.isHousehold() ? PROFILE_SELECT_PATH : LOGIN_PATH;
+    this.authStore.logout().subscribe(() => void this.router.navigateByUrl(entryPath));
   }
 
   protected onAddVehicleClick(): void {

@@ -21,7 +21,8 @@
     "selectVehicle": "Select vehicle",
     "addVehicle": "Add bike",
     "userMenu": "User menu",
-    "logout": "Log out"
+    "logout": "Log out",
+    "switchProfile": "Switch person"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -42,6 +43,24 @@
       "emailNotVerified": "Your email address has not been verified yet.",
       "tooManyAttempts": "Too many attempts, please try again later.",
       "unknown": "Login failed, please try again later."
+    }
+  },
+  "profiles": {
+    "title": "Who are you?",
+    "subtitle": "Pick your profile to see your vehicles.",
+    "newName": "New person",
+    "newNamePlaceholder": "Name",
+    "add": "Add",
+    "rename": "Rename",
+    "renameLabel": "Rename {{name}}",
+    "deleteLabel": "Delete {{name}}",
+    "confirmDelete": "Delete “{{name}}”?",
+    "errors": {
+      "nameRequired": "Please enter a name.",
+      "nameTaken": "This name is already taken.",
+      "hasVehicles": "This person still has vehicles. Please delete the vehicles first.",
+      "loadFailed": "The profiles could not be loaded.",
+      "unknown": "That did not work, please try again later."
     }
   },
   "task": {
