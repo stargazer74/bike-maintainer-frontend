@@ -5,13 +5,14 @@ import { Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { ProfileResponse, ProfilesService } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { isSafeReturnUrl } from '../../auth/return-url';
-import { LanguageService } from '../../i18n/language';
+import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 
 /** Translation key of the message for a failed create/rename/delete. */
 function profileErrorKey(error: unknown, conflictKey: string): string {
@@ -36,8 +37,7 @@ export class ProfileSelect {
   private readonly profilesService = inject(ProfilesService);
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
-  private readonly language = inject(LanguageService);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly profiles = rxResource({ stream: () => this.profilesService.listProfiles() });
 
@@ -104,17 +104,18 @@ export class ProfileSelect {
   }
 
   protected onDelete(profile: ProfileResponse): void {
-    const question = this.transloco.translate(
-      'profiles.confirmDelete',
-      { name: profile.displayName },
-      this.language.lang(),
-    );
-    if (!confirm(question)) {
-      return;
-    }
-    this.run(this.profilesService.deleteProfile(profile.id), 'profiles.errors.hasVehicles', () =>
-      this.profiles.reload(),
-    );
+    confirmAction(this.dialog, {
+      title: 'profiles.deleteTitle',
+      message: 'profiles.confirmDelete',
+      params: { name: profile.displayName },
+      confirm: 'common.delete',
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        this.run(this.profilesService.deleteProfile(profile.id), 'profiles.errors.hasVehicles', () =>
+          this.profiles.reload(),
+        );
+      }
+    });
   }
 
   /** Runs one request at a time; a 409 is reported with `conflictKey`, other errors generically. */

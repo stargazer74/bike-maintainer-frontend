@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { filter, forkJoin, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -34,6 +34,7 @@ import {
 } from '../../api-client';
 import { LanguageService } from '../../i18n/language';
 import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
+import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { computeTaskStatus } from './maintenance-status';
@@ -248,16 +249,25 @@ export class VehicleDetail {
     if (vehicle.id === undefined || log.id === undefined) {
       return;
     }
+    const vehicleId = vehicle.id;
+    const logId = log.id;
     const date = formatIsoDate(log.performedAt, this.language.locale());
-    if (!confirm(this.transloco.translate('logForm.confirmDelete', { date }))) {
-      return;
-    }
-    this.logsService.deleteMaintenanceLog(vehicle.id, log.id).subscribe(() => {
-      if (this.editingLogId() === log.id) {
-        this.resetLogForm();
-      }
-      this.data.reload();
-    });
+    confirmAction(this.dialog, {
+      title: 'logForm.deleteTitle',
+      message: 'logForm.confirmDelete',
+      params: { date },
+      confirm: 'common.delete',
+    })
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.logsService.deleteMaintenanceLog(vehicleId, logId)),
+      )
+      .subscribe(() => {
+        if (this.editingLogId() === logId) {
+          this.resetLogForm();
+        }
+        this.data.reload();
+      });
   }
 
   private resetLogForm(): void {
@@ -336,15 +346,24 @@ export class VehicleDetail {
     if (vehicle.id === undefined || task.id === undefined) {
       return;
     }
-    if (!confirm(this.transloco.translate('taskForm.confirmDelete', { name: task.name ?? '' }))) {
-      return;
-    }
-    this.tasksService.deleteMaintenanceTask(vehicle.id, task.id).subscribe(() => {
-      if (this.editingTaskId() === task.id) {
-        this.resetTaskForm();
-      }
-      this.data.reload();
-    });
+    const vehicleId = vehicle.id;
+    const taskId = task.id;
+    confirmAction(this.dialog, {
+      title: 'taskForm.deleteTitle',
+      message: 'taskForm.confirmDelete',
+      params: { name: task.name ?? '' },
+      confirm: 'common.delete',
+    })
+      .pipe(
+        filter(Boolean),
+        switchMap(() => this.tasksService.deleteMaintenanceTask(vehicleId, taskId)),
+      )
+      .subscribe(() => {
+        if (this.editingTaskId() === taskId) {
+          this.resetTaskForm();
+        }
+        this.data.reload();
+      });
   }
 
   private resetTaskForm(): void {

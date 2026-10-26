@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 440px;
+}
+
+.confirm-dialog__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bm-text);
+
+  mat-icon {
+    color: var(--status-overdue);
+  }
+}
+
+.confirm-dialog__message {
+  margin: 0;
+  color: var(--bm-text-muted);
+}
+
+// `.btn`, `.btn--ghost` and `.btn--danger` are defined globally in src/styles/_forms.scss.

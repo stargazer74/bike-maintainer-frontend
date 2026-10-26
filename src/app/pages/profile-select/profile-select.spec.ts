@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { of } from 'rxjs';
 import { Language, ProfileResponse, UserResponse, UserRole } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
+import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
 import { ProfileSelect } from './profile-select';
 
 @Component({ template: 'target' })
@@ -83,6 +86,13 @@ describe('ProfileSelect', () => {
   function type(input: HTMLInputElement, value: string): void {
     input.value = value;
     input.dispatchEvent(new Event('input'));
+  }
+
+  /** Answers the confirmation dialog with `confirmed` and returns the spy to inspect how it was opened. */
+  function answerConfirmation(confirmed: boolean) {
+    return vi
+      .spyOn(TestBed.inject(MatDialog), 'open')
+      .mockReturnValue({ afterClosed: () => of(confirmed) } as ReturnType<MatDialog['open']>);
   }
 
   function errorText(page: HTMLElement): string {
@@ -180,12 +190,19 @@ describe('ProfileSelect', () => {
     expect(page.textContent).toContain('Anna-Lena');
   });
 
-  it('deletes a profile after confirmation', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('deletes a profile after confirmation in the styled dialog', async () => {
     const page = await open();
+    const open$ = answerConfirmation(true);
     card(page, 'Anna').querySelector<HTMLButtonElement>('.profile__delete')!.click();
 
-    expect(window.confirm).toHaveBeenCalledWith('Person „Anna“ löschen?');
+    expect(open$).toHaveBeenCalledWith(ConfirmDialog, {
+      data: {
+        title: 'profiles.deleteTitle',
+        message: 'profiles.confirmDelete',
+        params: { name: 'Anna' },
+        confirm: 'common.delete',
+      },
+    });
     const request = httpMock.expectOne(`${PROFILES_URL}/2`);
     expect(request.request.method).toBe('DELETE');
     request.flush(null, { status: 204, statusText: 'No Content' });
@@ -197,16 +214,16 @@ describe('ProfileSelect', () => {
   });
 
   it('does not delete without confirmation', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
     const page = await open();
+    answerConfirmation(false);
     card(page, 'Anna').querySelector<HTMLButtonElement>('.profile__delete')!.click();
 
     httpMock.expectNone(`${PROFILES_URL}/2`);
   });
 
   it('explains that a profile with vehicles cannot be deleted', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     const page = await open();
+    answerConfirmation(true);
     card(page, 'Anna').querySelector<HTMLButtonElement>('.profile__delete')!.click();
     httpMock.expectOne(`${PROFILES_URL}/2`).flush(null, { status: 409, statusText: 'Conflict' });
     await settle();

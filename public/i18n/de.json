@@ -54,7 +54,8 @@
     "rename": "Umbenennen",
     "renameLabel": "{{name}} umbenennen",
     "deleteLabel": "{{name}} löschen",
-    "confirmDelete": "Person „{{name}}“ löschen?",
+    "deleteTitle": "Person löschen?",
+    "confirmDelete": "Soll „{{name}}“ wirklich gelöscht werden?",
     "errors": {
       "nameRequired": "Bitte einen Namen eingeben.",
       "nameTaken": "Dieser Name ist schon vergeben.",
@@ -141,6 +142,7 @@
     "notes": "Notizen",
     "submitNew": "Wartung speichern",
     "saveError": "Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "deleteTitle": "Wartungseintrag löschen?",
     "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?"
   },
   "taskForm": {
@@ -158,6 +160,7 @@
     "active": "Aktiv",
     "submitNew": "Aufgabe anlegen",
     "saveError": "Wartungsaufgabe konnte nicht gespeichert werden. Bitte versuche es erneut.",
+    "deleteTitle": "Wartungsaufgabe löschen?",
     "confirmDelete": "„{{name}}“ wirklich löschen?"
   },
   "taskStatus": {

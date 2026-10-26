@@ -54,7 +54,8 @@
     "rename": "Rename",
     "renameLabel": "Rename {{name}}",
     "deleteLabel": "Delete {{name}}",
-    "confirmDelete": "Delete “{{name}}”?",
+    "deleteTitle": "Delete person?",
+    "confirmDelete": "Do you really want to delete “{{name}}”?",
     "errors": {
       "nameRequired": "Please enter a name.",
       "nameTaken": "This name is already taken.",
@@ -141,6 +142,7 @@
     "notes": "Notes",
     "submitNew": "Save maintenance",
     "saveError": "The maintenance could not be saved. Please try again.",
+    "deleteTitle": "Delete maintenance entry?",
     "confirmDelete": "Really delete the maintenance entry from {{date}}?"
   },
   "taskForm": {
@@ -158,6 +160,7 @@
     "active": "Active",
     "submitNew": "Add task",
     "saveError": "The maintenance task could not be saved. Please try again.",
+    "deleteTitle": "Delete maintenance task?",
     "confirmDelete": "Really delete \"{{name}}\"?"
   },
   "taskStatus": {
