@@ -22,7 +22,7 @@ jobs:
     steps:
       # npm run generate:api reads the spec via ../bike-maintainer-api, so both repos are checked out side by side.
       - name: Check out frontend
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: bike-maintainer-frontend
 
@@ -39,14 +39,14 @@ jobs:
           fi
 
       - name: Check out API spec (${{ steps.api-branch.outputs.ref }})
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: stargazer74/bike-maintainer-api
           ref: ${{ steps.api-branch.outputs.ref }}
           path: bike-maintainer-api
 
       - name: Set up Node 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
@@ -54,7 +54,7 @@ jobs:
 
       # The OpenAPI generator CLI runs a Java jar.
       - name: Set up Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
