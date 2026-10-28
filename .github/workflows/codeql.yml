@@ -1,0 +1,42 @@
+name: CodeQL
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  # Weekly, so that new queries and newly published vulnerability patterns also hit unchanged code.
+  schedule:
+    - cron: '41 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - name: Check out frontend
+        uses: actions/checkout@v7
+
+      # TypeScript needs no build for CodeQL. The generated API client (src/app/api-client/) is gitignored and
+      # therefore not part of the analysis.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-and-quality
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:javascript-typescript
