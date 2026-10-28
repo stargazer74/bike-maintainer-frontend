@@ -104,6 +104,22 @@ Compose-Dateien für den Betrieb liegen in
 Vor `docker build` muss `npm run generate:api` gelaufen sein, weil `src/app/api-client/`
 im Build-Kontext liegen muss.
 
+### Veröffentlichte Images
+
+Die CI veröffentlicht das Image für `linux/amd64` und `linux/arm64` in der GitHub Container
+Registry, `ghcr.io/stargazer74/bike-maintainer-frontend` – **nur bei Release-Tags**. PRs und
+Pushes auf `main` werden nur gebaut und getestet.
+
+| Git-Tag | Image-Tags |
+|---|---|
+| `vX.Y.Z` | `X.Y.Z`, `X.Y`, `X`, `latest` |
+
+Die Angular-Build-Stage läuft nativ auf dem Runner
+(`--platform=$BUILDPLATFORM`), nur die nginx-Stage wird pro Plattform gebaut.
+
+**Release anlegen:** dieselbe Version hier und in `bike-maintainer-backend` taggen (z. B.
+`v1.2.0`) und die Tags pushen – Backend und Frontend haben immer dieselbe Versionsnummer.
+
 ## Mehrsprachigkeit
 
 Die Oberfläche gibt es auf Deutsch und Englisch. Übersetzt wird zur Laufzeit mit Transloco, es gibt also
