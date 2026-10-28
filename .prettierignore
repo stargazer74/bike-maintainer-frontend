@@ -1,0 +1,9 @@
+# Generated or build output
+src/app/api-client/
+dist/
+.angular/
+coverage/
+package-lock.json
+
+# Markdown is wrapped by hand
+*.md

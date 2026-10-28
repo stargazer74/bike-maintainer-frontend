@@ -24,6 +24,8 @@ npm start              # dev server at http://localhost:4200 (proxies /api to :8
 npm run build          # production build to dist/
 npm run watch          # dev build in watch mode
 npm test               # unit tests (Vitest via @angular/build:unit-test)
+npm run lint           # ESLint (angular-eslint: TS, templates, accessibility); CI fails on findings
+npm run format         # Prettier (.prettierrc); `npm run format:check` in CI. Markdown is not formatted.
 ```
 
 Single test / filtering:
@@ -34,9 +36,10 @@ npx ng test --filter "some test name"                            # by test name 
 npx ng test --watch=false                                        # single run, no watch
 ```
 
-There is no linter configured (no ESLint config in the repo). Use `npx tsc -p tsconfig.app.json --noEmit`
-to type-check and `npx ng build` to catch Angular template compile errors — `tsc` alone does not
-validate templates.
+ESLint is configured in `eslint.config.js` (flat config; `src/app/api-client/` is ignored). Run `npm run lint`
+and `npm run format` before committing – CI fails on lint findings and unformatted files. Use
+`npx tsc -p tsconfig.app.json --noEmit` to type-check and `npx ng build` to catch Angular template compile
+errors — `tsc` alone does not validate templates.
 
 ## API client (generated, do not hand-edit)
 

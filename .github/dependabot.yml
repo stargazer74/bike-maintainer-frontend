@@ -8,14 +8,14 @@ updates:
       # Angular pins TypeScript to a narrow range (e.g. >=6.0 <6.1 for Angular 22.2); newer TypeScript versions fail
       # `npm ci`. TypeScript moves together with Angular via `ng update`, so only patch updates come from here.
       - dependency-name: typescript
-        update-types: [ version-update:semver-minor, version-update:semver-major ]
+        update-types: [version-update:semver-minor, version-update:semver-major]
     groups:
       # Angular packages must move together; major updates (ng update) still come as separate PRs.
       angular:
-        patterns: [ '@angular/*', '@angular-devkit/*', '@schematics/angular' ]
-        update-types: [ minor, patch ]
+        patterns: ['@angular/*', '@angular-devkit/*', '@schematics/angular']
+        update-types: [minor, patch]
       npm-minor-and-patch:
-        update-types: [ minor, patch ]
+        update-types: [minor, patch]
 
   # Base images in the Dockerfile (node for the build stage, nginx for the runtime).
   - package-ecosystem: docker
@@ -25,7 +25,7 @@ updates:
     ignore:
       # Stay on the current Node LTS line (same as the CI); the next LTS is a deliberate switch.
       - dependency-name: node
-        update-types: [ version-update:semver-major ]
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /
@@ -33,4 +33,4 @@ updates:
       interval: weekly
     groups:
       github-actions:
-        patterns: [ '*' ]
+        patterns: ['*']

@@ -27,15 +27,21 @@
       <a class="vehicle-summary" [routerLink]="['/fahrzeuge', summary.vehicle.id]">
         <div class="vehicle-summary__header">
           <span class="vehicle-summary__icon">
-            <mat-icon fontSet="material-symbols-outlined">{{ vehicleIcon(summary.vehicle.type) }}</mat-icon>
+            <mat-icon fontSet="material-symbols-outlined">{{
+              vehicleIcon(summary.vehicle.type)
+            }}</mat-icon>
           </span>
           <span class="vehicle-summary__title">
             <span class="vehicle-summary__name">{{ summary.vehicle.name }}</span>
             @if (vehicleSubtitle(summary.vehicle); as subtitle) {
-              <span class="vehicle-summary__subtitle">{{ subtitle.key | transloco: subtitle.params }}</span>
+              <span class="vehicle-summary__subtitle">{{
+                subtitle.key | transloco: subtitle.params
+              }}</span>
             }
           </span>
-          <span class="vehicle-summary__mileage">{{ summary.vehicle.currentMileage ?? 0 | localNumber }} km</span>
+          <span class="vehicle-summary__mileage"
+            >{{ summary.vehicle.currentMileage ?? 0 | localNumber }} km</span
+          >
         </div>
 
         <div class="vehicle-summary__divider"></div>
@@ -48,13 +54,14 @@
             </span>
             @if (summary.lastLog; as lastLog) {
               <span class="vehicle-summary__block-meta">
-                {{ lastLog.log.performedAt | localDate }} · {{
-                  lastLog.log.mileageAtPerformed | localNumber
-                }} km
+                {{ lastLog.log.performedAt | localDate }} ·
+                {{ lastLog.log.mileageAtPerformed | localNumber }} km
               </span>
               <span class="vehicle-summary__block-content">{{ lastLog.title }}</span>
             } @else {
-              <span class="vehicle-summary__block-empty">{{ 'dashboard.noMaintenance' | transloco }}</span>
+              <span class="vehicle-summary__block-empty">{{
+                'dashboard.noMaintenance' | transloco
+              }}</span>
             }
           </div>
 

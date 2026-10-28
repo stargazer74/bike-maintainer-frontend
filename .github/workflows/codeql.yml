@@ -3,7 +3,7 @@ name: CodeQL
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
   # Weekly, so that new queries and newly published vulnerability patterns also hit unchanged code.
   schedule:
     - cron: '41 4 * * 1'

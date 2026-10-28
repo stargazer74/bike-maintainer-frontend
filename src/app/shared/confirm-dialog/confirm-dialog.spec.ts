@@ -18,9 +18,12 @@ describe('ConfirmDialog', () => {
   });
 
   async function openDialog() {
-    const ref = TestBed.inject(MatDialog).open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
-      data: DATA,
-    });
+    const ref = TestBed.inject(MatDialog).open<ConfirmDialog, ConfirmDialogData, boolean>(
+      ConfirmDialog,
+      {
+        data: DATA,
+      },
+    );
     TestBed.inject(MatDialog).openDialogs[0].componentRef!.changeDetectorRef.detectChanges();
     const element = document.querySelector<HTMLElement>('app-confirm-dialog')!;
     return { ref, element };

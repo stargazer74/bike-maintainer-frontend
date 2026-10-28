@@ -167,7 +167,9 @@
   border: 1px solid var(--bm-border-strong);
   color: var(--bm-text-muted);
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 
   mat-icon {
     font-size: 16px;

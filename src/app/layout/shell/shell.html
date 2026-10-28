@@ -17,7 +17,11 @@
           <mat-icon fontSet="material-symbols-outlined">dashboard</mat-icon>
         </button>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="shell__vehicle-select">
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="shell__vehicle-select"
+        >
           <mat-select
             [value]="selectedVehicleId()"
             [placeholder]="'shell.selectVehicle' | transloco"
@@ -47,7 +51,12 @@
       </div>
 
       @if (authStore.isLoggedIn()) {
-        <button mat-stroked-button type="button" class="shell__add-button" (click)="onAddVehicleClick()">
+        <button
+          mat-stroked-button
+          type="button"
+          class="shell__add-button"
+          (click)="onAddVehicleClick()"
+        >
           <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
           <span>{{ 'shell.addVehicle' | transloco }}</span>
         </button>

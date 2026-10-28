@@ -17,7 +17,9 @@
                   class="field__input profile__name-input"
                   name="displayName"
                   maxlength="50"
-                  [attr.aria-label]="'profiles.renameLabel' | transloco: { name: profile.displayName }"
+                  [attr.aria-label]="
+                    'profiles.renameLabel' | transloco: { name: profile.displayName }
+                  "
                   [ngModel]="editing()?.name"
                   (ngModelChange)="onEditName($event)"
                 />
@@ -35,14 +37,18 @@
                 [disabled]="busy()"
                 (click)="onSelect(profile)"
               >
-                <mat-icon fontSet="material-symbols-outlined" class="profile__avatar">person</mat-icon>
+                <mat-icon fontSet="material-symbols-outlined" class="profile__avatar"
+                  >person</mat-icon
+                >
                 <span class="profile__name">{{ profile.displayName }}</span>
               </button>
               <button
                 type="button"
                 class="profile__action profile__rename"
                 [title]="'profiles.rename' | transloco"
-                [attr.aria-label]="'profiles.renameLabel' | transloco: { name: profile.displayName }"
+                [attr.aria-label]="
+                  'profiles.renameLabel' | transloco: { name: profile.displayName }
+                "
                 (click)="onStartRename(profile)"
               >
                 <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
@@ -51,7 +57,9 @@
                 type="button"
                 class="profile__action profile__delete"
                 [title]="'common.delete' | transloco"
-                [attr.aria-label]="'profiles.deleteLabel' | transloco: { name: profile.displayName }"
+                [attr.aria-label]="
+                  'profiles.deleteLabel' | transloco: { name: profile.displayName }
+                "
                 (click)="onDelete(profile)"
               >
                 <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
@@ -68,7 +76,9 @@
 
     <form class="profile-select__add" novalidate (ngSubmit)="onAdd()">
       <div class="field profile-select__add-field">
-        <label class="field__label" for="profile-new-name">{{ 'profiles.newName' | transloco }}</label>
+        <label class="field__label" for="profile-new-name">{{
+          'profiles.newName' | transloco
+        }}</label>
         <input
           id="profile-new-name"
           name="newName"

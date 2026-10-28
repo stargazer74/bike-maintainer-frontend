@@ -14,7 +14,10 @@
   @let vehicle = result.vehicle;
 
   <mat-card class="vehicle-header" appearance="outlined">
-    <mat-icon class="vehicle-header__decoration" fontSet="material-symbols-outlined" aria-hidden="true"
+    <mat-icon
+      class="vehicle-header__decoration"
+      fontSet="material-symbols-outlined"
+      aria-hidden="true"
       >speed</mat-icon
     >
 
@@ -41,7 +44,9 @@
       </div>
 
       <div class="vehicle-header__stat">
-        <span class="vehicle-header__stat-label">{{ 'vehicleDetail.currentMileage' | transloco }}</span>
+        <span class="vehicle-header__stat-label">{{
+          'vehicleDetail.currentMileage' | transloco
+        }}</span>
         @if (editingMileage()) {
           <div class="vehicle-header__stat-edit">
             <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -53,10 +58,20 @@
                 (ngModelChange)="mileageInput.set($event)"
               />
             </mat-form-field>
-            <button mat-icon-button type="button" [attr.aria-label]="'common.save' | transloco" (click)="saveMileage(vehicle)">
+            <button
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'common.save' | transloco"
+              (click)="saveMileage(vehicle)"
+            >
               <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
             </button>
-            <button mat-icon-button type="button" [attr.aria-label]="'common.cancel' | transloco" (click)="cancelEditMileage()">
+            <button
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'common.cancel' | transloco"
+              (click)="cancelEditMileage()"
+            >
               <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
             </button>
           </div>
@@ -117,7 +132,10 @@
                       {{
                         'vehicleDetail.lastService'
                           | transloco
-                            : { mileage: (lastService.mileage | localNumber), date: (lastService.date | localDate) }
+                            : {
+                                mileage: (lastService.mileage | localNumber),
+                                date: (lastService.date | localDate),
+                              }
                       }}
                     } @else {
                       {{ 'vehicleDetail.pending' | transloco }}
@@ -161,12 +179,24 @@
                 <div class="log-card__header">
                   <span class="log-card__date">{{ card.log.performedAt | localDate }}</span>
                   <div class="log-card__header-right">
-                    <span class="log-card__mileage">{{ card.log.mileageAtPerformed | localNumber }} km</span>
+                    <span class="log-card__mileage"
+                      >{{ card.log.mileageAtPerformed | localNumber }} km</span
+                    >
                     <span class="log-card__actions">
-                      <button mat-icon-button type="button" [attr.aria-label]="'common.edit' | transloco" (click)="startEditLog(card.log)">
+                      <button
+                        mat-icon-button
+                        type="button"
+                        [attr.aria-label]="'common.edit' | transloco"
+                        (click)="startEditLog(card.log)"
+                      >
                         <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
                       </button>
-                      <button mat-icon-button type="button" [attr.aria-label]="'common.delete' | transloco" (click)="deleteLog(vehicle, card.log)">
+                      <button
+                        mat-icon-button
+                        type="button"
+                        [attr.aria-label]="'common.delete' | transloco"
+                        (click)="deleteLog(vehicle, card.log)"
+                      >
                         <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
                       </button>
                     </span>
@@ -214,7 +244,9 @@
               </div>
 
               <div class="field">
-                <label class="field__label" for="log-mileage">{{ 'logForm.mileage' | transloco }}</label>
+                <label class="field__label" for="log-mileage">{{
+                  'logForm.mileage' | transloco
+                }}</label>
                 <input
                   id="log-mileage"
                   class="field__input"
@@ -264,7 +296,12 @@
 
             <div class="log-form__actions">
               @if (editingLogId() !== null) {
-                <button type="button" class="btn btn--ghost" [disabled]="savingLog()" (click)="cancelLogEdit()">
+                <button
+                  type="button"
+                  class="btn btn--ghost"
+                  [disabled]="savingLog()"
+                  (click)="cancelLogEdit()"
+                >
                   {{ 'common.cancel' | transloco }}
                 </button>
               }
@@ -278,7 +315,10 @@
                   <mat-spinner diameter="18" />
                 } @else {
                   <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
-                  {{ (editingLogId() === null ? 'logForm.submitNew' : 'common.saveChanges') | transloco }}
+                  {{
+                    (editingLogId() === null ? 'logForm.submitNew' : 'common.saveChanges')
+                      | transloco
+                  }}
                 }
               </button>
             </div>
@@ -296,7 +336,9 @@
         <mat-card class="log-form-card" appearance="outlined">
           <mat-card-content>
             <h3 class="tasks-manage__form-title">
-              {{ (editingTaskId() === null ? 'taskForm.titleNew' : 'taskForm.titleEdit') | transloco }}
+              {{
+                (editingTaskId() === null ? 'taskForm.titleNew' : 'taskForm.titleEdit') | transloco
+              }}
             </h3>
 
             <div class="field">
@@ -312,7 +354,9 @@
 
             <div class="log-form__row">
               <div class="field">
-                <label class="field__label" for="task-interval-km">{{ 'taskForm.intervalKm' | transloco }}</label>
+                <label class="field__label" for="task-interval-km">{{
+                  'taskForm.intervalKm' | transloco
+                }}</label>
                 <input
                   id="task-interval-km"
                   class="field__input"
@@ -324,7 +368,9 @@
                 />
               </div>
               <div class="field">
-                <label class="field__label" for="task-interval-months">{{ 'taskForm.intervalMonths' | transloco }}</label>
+                <label class="field__label" for="task-interval-months">{{
+                  'taskForm.intervalMonths' | transloco
+                }}</label>
                 <input
                   id="task-interval-months"
                   class="field__input"
@@ -339,7 +385,9 @@
 
             <div class="log-form__row">
               <div class="field">
-                <label class="field__label" for="task-first-due-km">{{ 'taskForm.firstDueKm' | transloco }}</label>
+                <label class="field__label" for="task-first-due-km">{{
+                  'taskForm.firstDueKm' | transloco
+                }}</label>
                 <input
                   id="task-first-due-km"
                   class="field__input"
@@ -350,7 +398,9 @@
                 />
               </div>
               <div class="field">
-                <label class="field__label" for="task-first-due-months">{{ 'taskForm.firstDueMonths' | transloco }}</label>
+                <label class="field__label" for="task-first-due-months">{{
+                  'taskForm.firstDueMonths' | transloco
+                }}</label>
                 <input
                   id="task-first-due-months"
                   class="field__input"
@@ -387,7 +437,12 @@
 
             <div class="tasks-manage__form-actions">
               @if (editingTaskId() !== null) {
-                <button type="button" class="btn btn--ghost" [disabled]="savingTask()" (click)="cancelTaskEdit()">
+                <button
+                  type="button"
+                  class="btn btn--ghost"
+                  [disabled]="savingTask()"
+                  (click)="cancelTaskEdit()"
+                >
                   {{ 'common.cancel' | transloco }}
                 </button>
               }
@@ -403,7 +458,10 @@
                   <mat-icon fontSet="material-symbols-outlined">{{
                     editingTaskId() === null ? 'add' : 'save'
                   }}</mat-icon>
-                  {{ (editingTaskId() === null ? 'taskForm.submitNew' : 'common.saveChanges') | transloco }}
+                  {{
+                    (editingTaskId() === null ? 'taskForm.submitNew' : 'common.saveChanges')
+                      | transloco
+                  }}
                 }
               </button>
             </div>
@@ -423,20 +481,36 @@
               @let interval = describeTaskInterval(task, language.locale());
               <mat-card class="tasks-manage__item" appearance="outlined">
                 <span class="tasks-manage__item-icon">
-                  <mat-icon fontSet="material-symbols-outlined">{{ resolveTaskIcon(task.name) }}</mat-icon>
+                  <mat-icon fontSet="material-symbols-outlined">{{
+                    resolveTaskIcon(task.name)
+                  }}</mat-icon>
                 </span>
                 <div class="tasks-manage__item-body">
                   <span class="tasks-manage__item-title">{{ task.name }}</span>
-                  <span class="tasks-manage__item-subtitle">{{ interval.key | transloco: interval.params }}</span>
+                  <span class="tasks-manage__item-subtitle">{{
+                    interval.key | transloco: interval.params
+                  }}</span>
                   @if (task.active === false) {
-                    <span class="status-badge status-badge--none">{{ 'vehicleDetail.inactive' | transloco }}</span>
+                    <span class="status-badge status-badge--none">{{
+                      'vehicleDetail.inactive' | transloco
+                    }}</span>
                   }
                 </div>
                 <div class="tasks-manage__item-actions">
-                  <button mat-icon-button type="button" [attr.aria-label]="'common.edit' | transloco" (click)="startEditTask(task)">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [attr.aria-label]="'common.edit' | transloco"
+                    (click)="startEditTask(task)"
+                  >
                     <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
                   </button>
-                  <button mat-icon-button type="button" [attr.aria-label]="'common.delete' | transloco" (click)="deleteTask(vehicle, task)">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [attr.aria-label]="'common.delete' | transloco"
+                    (click)="deleteTask(vehicle, task)"
+                  >
                     <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
                   </button>
                 </div>

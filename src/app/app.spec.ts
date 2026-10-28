@@ -88,7 +88,9 @@ describe('App', () => {
     page.querySelector<HTMLButtonElement>('.shell__user-button')!.click();
     await fixture.whenStable();
     const logout = document.querySelector<HTMLButtonElement>('.shell__logout')!;
-    expect(document.querySelector('.shell__user-email')?.textContent).toContain('admin@example.com');
+    expect(document.querySelector('.shell__user-email')?.textContent).toContain(
+      'admin@example.com',
+    );
     logout.click();
     httpMock.expectOne('http://localhost/api/v1/auth/logout').flush(null, {
       status: 204,
