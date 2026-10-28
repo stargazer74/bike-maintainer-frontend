@@ -3,8 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { Language, UserRole } from '../api-client';
-import { authGuard, guestGuard } from './auth-guards';
+import { Language, OperatingMode, UserRole } from '../api-client';
+import { AppConfigStore } from '../config/app-config-store';
+import { authGuard, guestGuard, householdOnlyGuard, portalOnlyGuard } from './auth-guards';
 import { AuthStore } from './auth-store';
 
 @Component({ template: 'page' })
@@ -19,7 +20,8 @@ describe('auth guards', () => {
       providers: [
         provideHttpClientTesting(),
         provideRouter([
-          { path: 'anmelden', component: Page, canMatch: [guestGuard] },
+          { path: 'anmelden', component: Page, canMatch: [portalOnlyGuard, guestGuard] },
+          { path: 'person-waehlen', component: Page, canMatch: [householdOnlyGuard, guestGuard] },
           { path: '', canMatch: [authGuard], children: [{ path: '**', component: Page }] },
         ]),
       ],
@@ -66,5 +68,46 @@ describe('auth guards', () => {
     await harness.navigateByUrl('/anmelden');
 
     expect(router.url).toBe('/dashboard');
+  });
+
+  describe('in household mode', () => {
+    beforeEach(async () => {
+      const loaded = TestBed.inject(AppConfigStore).load();
+      TestBed.inject(HttpTestingController)
+        .expectOne('http://localhost/api/v1/config')
+        .flush({ mode: OperatingMode.Household });
+      await loaded;
+    });
+
+    it('redirects users without a profile to the profile selection with the requested URL', async () => {
+      await harness.navigateByUrl('/fahrzeuge/3');
+
+      expect(router.url).toBe('/person-waehlen?returnUrl=%2Ffahrzeuge%2F3');
+    });
+
+    it('has no login page', async () => {
+      await harness.navigateByUrl('/anmelden');
+
+      expect(router.url).toBe('/person-waehlen?returnUrl=%2Fanmelden');
+    });
+
+    it('shows the profile selection to users without a profile', async () => {
+      await harness.navigateByUrl('/person-waehlen');
+
+      expect(router.url).toBe('/person-waehlen');
+    });
+
+    it('sends users with a profile away from the profile selection to the dashboard', async () => {
+      await logIn();
+      await harness.navigateByUrl('/person-waehlen');
+
+      expect(router.url).toBe('/dashboard');
+    });
+  });
+
+  it('has no profile selection in portal mode', async () => {
+    await harness.navigateByUrl('/person-waehlen');
+
+    expect(router.url).toBe('/anmelden?returnUrl=%2Fperson-waehlen');
   });
 });

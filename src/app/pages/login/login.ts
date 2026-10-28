@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthStore } from '../../auth/auth-store';
+import { isSafeReturnUrl } from '../../auth/return-url';
 
 /** Translation key of the message for a failed login. */
 function loginErrorKey(error: unknown): string {
@@ -28,11 +29,6 @@ function loginErrorKey(error: unknown): string {
     default:
       return 'login.errors.unknown';
   }
-}
-
-/** Only paths within this app are followed; `//host` or absolute URLs could lead to another site. */
-function isSafeReturnUrl(url: string | undefined): url is string {
-  return !!url && url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\');
 }
 
 @Component({

@@ -1,15 +1,22 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './auth/auth-guards';
+import { authGuard, guestGuard, householdOnlyGuard, portalOnlyGuard } from './auth/auth-guards';
 
 export const routes: Routes = [
   {
     path: 'anmelden',
-    canMatch: [guestGuard],
+    canMatch: [portalOnlyGuard, guestGuard],
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   {
-    // All app pages require a logged-in user; logged-out users are sent to the login page for any
-    // URL other than /anmelden, unknown ones included.
+    // Household mode: pick a profile instead of logging in.
+    path: 'person-waehlen',
+    canMatch: [householdOnlyGuard, guestGuard],
+    loadComponent: () =>
+      import('./pages/profile-select/profile-select').then((m) => m.ProfileSelect),
+  },
+  {
+    // All app pages require a session (logged in or profile selected); everyone else is sent to the
+    // entry page of the operating mode for any other URL, unknown ones included.
     path: '',
     canMatch: [authGuard],
     children: [

@@ -21,7 +21,8 @@
     "selectVehicle": "Select vehicle",
     "addVehicle": "Add bike",
     "userMenu": "User menu",
-    "logout": "Log out"
+    "logout": "Log out",
+    "switchProfile": "Switch person"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -42,6 +43,25 @@
       "emailNotVerified": "Your email address has not been verified yet.",
       "tooManyAttempts": "Too many attempts, please try again later.",
       "unknown": "Login failed, please try again later."
+    }
+  },
+  "profiles": {
+    "title": "Who are you?",
+    "subtitle": "Pick your profile to see your vehicles.",
+    "newName": "New person",
+    "newNamePlaceholder": "Name",
+    "add": "Add",
+    "rename": "Rename",
+    "renameLabel": "Rename {{name}}",
+    "deleteLabel": "Delete {{name}}",
+    "deleteTitle": "Delete person?",
+    "confirmDelete": "Do you really want to delete “{{name}}”?",
+    "errors": {
+      "nameRequired": "Please enter a name.",
+      "nameTaken": "This name is already taken.",
+      "hasVehicles": "This person still has vehicles. Please delete the vehicles first.",
+      "loadFailed": "The profiles could not be loaded.",
+      "unknown": "That did not work, please try again later."
     }
   },
   "task": {
@@ -122,6 +142,7 @@
     "notes": "Notes",
     "submitNew": "Save maintenance",
     "saveError": "The maintenance could not be saved. Please try again.",
+    "deleteTitle": "Delete maintenance entry?",
     "confirmDelete": "Really delete the maintenance entry from {{date}}?"
   },
   "taskForm": {
@@ -139,6 +160,7 @@
     "active": "Active",
     "submitNew": "Add task",
     "saveError": "The maintenance task could not be saved. Please try again.",
+    "deleteTitle": "Delete maintenance task?",
     "confirmDelete": "Really delete \"{{name}}\"?"
   },
   "taskStatus": {

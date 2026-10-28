@@ -5,7 +5,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { firstValueFrom } from 'rxjs';
-import { Language, UserRole } from '../api-client';
+import { Language, OperatingMode, UserRole } from '../api-client';
+import { AppConfigStore } from '../config/app-config-store';
 import { authInterceptor } from './auth-interceptor';
 import { AuthStore } from './auth-store';
 
@@ -65,6 +66,16 @@ describe('authInterceptor', () => {
 
     expect(store.isLoggedIn()).toBe(false);
     expect(router.url).toBe('/anmelden?returnUrl=%2Ffahrzeuge%2F3');
+  });
+
+  it('in household mode sends them to the profile selection instead', async () => {
+    const loaded = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne('http://localhost/api/v1/config').flush({ mode: OperatingMode.Household });
+    await loaded;
+
+    await failRequest('/api/v1/vehicles');
+
+    expect(router.url).toBe('/person-waehlen?returnUrl=%2Ffahrzeuge%2F3');
   });
 
   it('passes the error on to the caller', async () => {

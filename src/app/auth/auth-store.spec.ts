@@ -7,6 +7,7 @@ import { AuthStore } from './auth-store';
 const ME_URL = 'http://localhost/api/v1/auth/me';
 const LOGIN_URL = 'http://localhost/api/v1/auth/login';
 const LOGOUT_URL = 'http://localhost/api/v1/auth/logout';
+const SELECT_URL = 'http://localhost/api/v1/profiles/7/select';
 
 const USER: UserResponse = {
   id: 1,
@@ -104,5 +105,16 @@ describe('AuthStore', () => {
     await done;
 
     expect(store.isLoggedIn()).toBe(false);
+  });
+
+  it('selectProfile() posts the selection and stores the profile as current user', async () => {
+    const profile: UserResponse = { ...USER, id: 7, email: undefined, displayName: 'Anna' };
+    const result = firstValueFrom(store.selectProfile(7));
+    const request = httpMock.expectOne(SELECT_URL);
+    expect(request.request.method).toBe('POST');
+    request.flush(profile);
+
+    expect(await result).toEqual(profile);
+    expect(store.currentUser()).toEqual(profile);
   });
 });

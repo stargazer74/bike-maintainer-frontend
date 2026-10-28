@@ -1,11 +1,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { catchError, finalize, firstValueFrom, map, Observable, of, tap } from 'rxjs';
-import { AuthService, UserResponse, UserRole } from '../api-client';
+import { AuthService, ProfilesService, UserResponse, UserRole } from '../api-client';
 
 /** The logged-in user of this browser session; `null` while logged out. */
 @Injectable({ providedIn: 'root' })
 export class AuthStore {
   private readonly authService = inject(AuthService);
+  private readonly profilesService = inject(ProfilesService);
   private readonly user = signal<UserResponse | null>(null);
 
   readonly currentUser = this.user.asReadonly();
@@ -30,6 +31,11 @@ export class AuthStore {
 
   login(email: string, password: string): Observable<UserResponse> {
     return this.authService.login({ email, password }).pipe(tap((user) => this.user.set(user)));
+  }
+
+  /** Household mode: uses the app as this profile; the backend starts a session as on login. */
+  selectProfile(profileId: number): Observable<UserResponse> {
+    return this.profilesService.selectProfile(profileId).pipe(tap((user) => this.user.set(user)));
   }
 
   /** Logs out; the local user is cleared even if the session had already expired on the server. */

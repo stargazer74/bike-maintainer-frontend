@@ -100,3 +100,15 @@ textarea.field__input {
     }
   }
 }
+
+// Destructive actions, e.g. the confirm button of a delete dialog.
+.btn--danger {
+  background: var(--status-overdue-bg);
+  border: 1px solid var(--status-overdue-border);
+  color: var(--status-overdue);
+
+  &:hover:not(:disabled) {
+    background: var(--status-overdue-border);
+    color: white;
+  }
+}
