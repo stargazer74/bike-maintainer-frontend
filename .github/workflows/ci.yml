@@ -51,10 +51,10 @@ jobs:
           ref: ${{ steps.api-branch.outputs.ref }}
           path: bike-maintainer-api
 
-      - name: Set up Node 22
+      - name: Set up Node 24
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
           cache-dependency-path: bike-maintainer-frontend/package-lock.json
 
