@@ -45,7 +45,8 @@ from `../bike-maintainer-api`'s spec and is gitignored — it does not exist rig
 and must be regenerated. It provides one injectable service per resource tag (`VehiclesService`,
 `MaintenanceTasksService`, `MaintenanceLogsService`) plus typed request/response models, wired up via
 `provideApi('')` in `app.config.ts` (empty base path so calls are relative, e.g. `/api/v1/vehicles`,
-and go through the dev proxy / a reverse proxy in production). Never edit files under `api-client/`
+and go through the dev proxy / the image's own nginx in production, which forwards `/api/` to
+`BACKEND_HOST` — see `nginx.conf.template`, rendered by the nginx image's envsubst entrypoint). Never edit files under `api-client/`
 directly — re-run the generator instead; if the backend spec changes, regenerate before trusting
 service signatures or model shapes.
 
