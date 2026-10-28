@@ -139,7 +139,14 @@ npm run build
 
 # Unit-Tests (Vitest)
 npm test
+
+# Lint (ESLint mit angular-eslint) und Formatierung (Prettier) – beides prüft auch die CI
+npm run lint
+npm run format          # formatiert; npm run format:check prüft nur
 ```
+
+Reine Formatierungs-Commits stehen in `.git-blame-ignore-revs`; lokal blendet
+`git config blame.ignoreRevsFile .git-blame-ignore-revs` sie in `git blame` aus.
 
 ## Status
 

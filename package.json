@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate:api": "openapi-generator-cli generate -i ../bike-maintainer-api/src/main/resources/maintenance-api.yaml -g typescript-angular -o src/app/api-client --additional-properties=ngVersion=22.1.8,stringEnums=true,fileNaming=kebab-case,withInterfaces=true",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "private": true,
   "packageManager": "npm@10.9.8",
