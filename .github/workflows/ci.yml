@@ -77,9 +77,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Trivy results are report-only for now (exit-code 0) and go to Security → Code scanning. Once the existing
-      # findings are dealt with, switch to exit-code 1 so that CRITICAL/HIGH vulnerabilities with an available fix fail
-      # the build – publish needs this job, so that would also stop a release.
+      # Trivy: the report steps send all findings from MEDIUM up to Security → Code scanning without failing the build;
+      # the gate steps fail it – and thereby a release, since publish needs this job – on CRITICAL/HIGH vulnerabilities
+      # that have a fix. Accepted exceptions go into .trivyignore with a reason.
 
       # npm dependencies from package-lock.json (runtime dependencies; the image itself only ships the built files).
       - name: Scan npm dependencies for vulnerabilities (Trivy)
@@ -93,6 +93,17 @@ jobs:
           format: sarif
           output: trivy-dependencies.sarif
           exit-code: '0'
+
+      - name: Fail on fixable CRITICAL/HIGH vulnerabilities in npm dependencies (Trivy)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: bike-maintainer-frontend/package-lock.json
+          scanners: vuln
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: '1'
 
       # The runtime image (nginx on Alpine) as it would be published; scanned for linux/amd64.
       - name: Build image for scanning
@@ -109,6 +120,17 @@ jobs:
           format: sarif
           output: trivy-image.sarif
           exit-code: '0'
+
+      - name: Fail on fixable CRITICAL/HIGH vulnerabilities in the image (Trivy)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: image
+          image-ref: bike-maintainer-frontend:scan
+          scanners: vuln
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: '1'
 
       # Pull requests from forks get no write token; their results are only in the log.
       - name: Upload Trivy results (dependencies)
