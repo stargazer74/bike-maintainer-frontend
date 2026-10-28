@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      # Angular packages must move together; major updates (ng update) still come as separate PRs.
+      angular:
+        patterns: [ '@angular/*', '@angular-devkit/*', '@schematics/angular' ]
+        update-types: [ minor, patch ]
+      npm-minor-and-patch:
+        update-types: [ minor, patch ]
+
+  # Base images in the Dockerfile (node for the build stage, nginx for the runtime).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: [ '*' ]
