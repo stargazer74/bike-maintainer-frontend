@@ -41,7 +41,8 @@ npm start
 ```
 
 Der Dev-Server leitet Requests an `/api` per Proxy (`proxy.conf.json`) an das lokal
-laufende Backend unter `http://localhost:8080` weiter, um CORS-Probleme in der
+laufende Backend unter `http://localhost:8090` weiter (Port des Backend-Containers aus
+`bike-maintainer-backend/compose.yaml`; bei `./mvnw spring-boot:run` ist es `8080`), um CORS-Probleme in der
 Entwicklung zu vermeiden.
 
 ## API-Client
@@ -64,7 +65,8 @@ ausgeführt werden.
 
 Eingebunden werden die Services über `provideApi('')` in `app.config.ts`
 (leerer Base-Path, damit Requests relativ – z. B. `/api/v1/vehicles` – an den
-Dev-Proxy bzw. im Produktivbetrieb an den vorgeschalteten Reverse-Proxy gehen).
+Dev-Proxy bzw. im Container an den nginx des Frontend-Images gehen, siehe
+„Docker-Image“).
 Verwendung in einer Komponente z. B. so:
 
 ```ts
@@ -76,6 +78,31 @@ export class VehicleListComponent {
   vehicles$ = this.vehiclesService.listVehicles();
 }
 ```
+
+## Docker-Image
+
+Das Image (`Dockerfile`) baut die App und liefert sie mit nginx aus. Der nginx ist zugleich
+der einzige Container, der nach außen erreichbar sein muss: Er leitet `/api/` an den
+Backend-Container im internen Docker-Netz weiter (`nginx.conf.template`).
+
+```
+Internet ──443──▶ TLS-Proxy ──▶ frontend (nginx)
+                                  ├── /      → SPA
+                                  └── /api/  → backend:8080 (intern)
+```
+
+| Umgebungsvariable | Standard | Bedeutung |
+|---|---|---|
+| `BACKEND_HOST` | `bm-backend:8080` | Host und Port des Backends im Docker-Netz |
+| `NGINX_RESOLVER` | `127.0.0.11` | DNS-Server, über den `BACKEND_HOST` pro Request aufgelöst wird (Dockers eingebautes DNS) |
+
+`X-Forwarded-Proto`, `-Host` und `-For` eines vorgeschalteten TLS-Proxys werden ans Backend
+durchgereicht (für `Secure`-Cookies und die Client-IP beim Rate-Limit). Fertige
+Compose-Dateien für den Betrieb liegen in
+[`bike-maintainer-deploy`](https://github.com/stargazer74/bike-maintainer-deploy).
+
+Vor `docker build` muss `npm run generate:api` gelaufen sein, weil `src/app/api-client/`
+im Build-Kontext liegen muss.
 
 ## Mehrsprachigkeit
 
