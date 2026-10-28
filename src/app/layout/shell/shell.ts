@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -39,7 +39,6 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
