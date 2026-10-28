@@ -1,0 +1,6 @@
+# Generated or build output
+src/app/api-client/
+dist/
+.angular/
+coverage/
+package-lock.json

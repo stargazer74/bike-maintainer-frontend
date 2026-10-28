@@ -1,4 +1,4 @@
-const ICON_RULES: ReadonlyArray<readonly [RegExp, string]> = [
+const ICON_RULES: readonly (readonly [RegExp, string])[] = [
   [/zündkerze|spark/i, 'bolt'],
   [/öl|filter|oil/i, 'oil_barrel'],
   [/kette|antrieb|chain|drivetrain/i, 'link'],

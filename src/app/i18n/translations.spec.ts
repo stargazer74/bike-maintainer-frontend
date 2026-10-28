@@ -1,7 +1,7 @@
 import de from '../../../public/i18n/de.json';
 import en from '../../../public/i18n/en.json';
 
-type TranslationTree = { [key: string]: string | TranslationTree };
+interface TranslationTree { [key: string]: string | TranslationTree }
 
 function flatten(tree: TranslationTree, prefix = ''): Map<string, string> {
   const result = new Map<string, string>();

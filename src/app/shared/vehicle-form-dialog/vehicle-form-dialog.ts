@@ -31,7 +31,7 @@ export class VehicleFormDialog {
   protected readonly maxYear = CURRENT_YEAR + 1;
 
   /** Labels are translation keys. */
-  protected readonly vehicleTypes: ReadonlyArray<{ value: VehicleType; label: string }> = [
+  protected readonly vehicleTypes: readonly { value: VehicleType; label: string }[] = [
     { value: VehicleType.Motorcycle, label: 'vehicleType.MOTORCYCLE' },
     { value: VehicleType.Car, label: 'vehicleType.CAR' },
   ];
