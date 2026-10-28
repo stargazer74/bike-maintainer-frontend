@@ -4,6 +4,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Angular pins TypeScript to a narrow range (e.g. >=6.0 <6.1 for Angular 22.2); newer TypeScript versions fail
+      # `npm ci`. TypeScript moves together with Angular via `ng update`, so only patch updates come from here.
+      - dependency-name: typescript
+        update-types: [ version-update:semver-minor, version-update:semver-major ]
     groups:
       # Angular packages must move together; major updates (ng update) still come as separate PRs.
       angular:
