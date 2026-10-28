@@ -72,9 +72,12 @@ export class Dashboard {
     // language are already loaded by then (see LanguageService.use).
     const locale = this.language.locale();
     const lang = this.language.lang();
-    const t = (key: string, params?: Record<string, number>) => this.transloco.translate(key, params ?? {}, lang);
+    const t = (key: string, params?: Record<string, number>) =>
+      this.transloco.translate(key, params ?? {}, lang);
     const summaries = vehicleData.map((entry) => {
-      const taskNames = new Map(entry.tasks.map((task) => [task.id, task.name ?? t('task.unnamed')]));
+      const taskNames = new Map(
+        entry.tasks.map((task) => [task.id, task.name ?? t('task.unnamed')]),
+      );
       const lastLog = [...entry.logs].sort((a, b) =>
         (b.performedAt ?? '').localeCompare(a.performedAt ?? ''),
       )[0];
@@ -96,7 +99,9 @@ export class Dashboard {
       const lastLogNamesOverflow = Math.max(0, lastLogNames.length - LAST_LOG_TASK_NAMES_SHOWN);
       const lastLogTitle = shownLastLogNames.length
         ? shownLastLogNames.join(', ') +
-          (lastLogNamesOverflow > 0 ? ' ' + t('common.moreCount', { count: lastLogNamesOverflow }) : '')
+          (lastLogNamesOverflow > 0
+            ? ' ' + t('common.moreCount', { count: lastLogNamesOverflow })
+            : '')
         : t('dashboard.maintenanceFallback');
 
       return {

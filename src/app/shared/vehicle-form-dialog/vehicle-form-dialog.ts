@@ -14,7 +14,13 @@ export interface VehicleFormDialogData {
 
 @Component({
   selector: 'app-vehicle-form-dialog',
-  imports: [ReactiveFormsModule, MatDialogModule, MatIconModule, MatProgressSpinnerModule, TranslocoPipe],
+  imports: [
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslocoPipe,
+  ],
   templateUrl: './vehicle-form-dialog.html',
   styleUrl: './vehicle-form-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +63,10 @@ export class VehicleFormDialog {
       this.editingVehicle?.firstRegistrationDate ?? `${CURRENT_YEAR}-01-01`,
       Validators.required,
     ),
-    currentMileage: this.fb.nonNullable.control(this.editingVehicle?.currentMileage ?? 0, Validators.min(0)),
+    currentMileage: this.fb.nonNullable.control(
+      this.editingVehicle?.currentMileage ?? 0,
+      Validators.min(0),
+    ),
   });
 
   protected submit(): void {

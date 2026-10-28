@@ -1,7 +1,9 @@
 import de from '../../../public/i18n/de.json';
 import en from '../../../public/i18n/en.json';
 
-interface TranslationTree { [key: string]: string | TranslationTree }
+interface TranslationTree {
+  [key: string]: string | TranslationTree;
+}
 
 function flatten(tree: TranslationTree, prefix = ''): Map<string, string> {
   const result = new Map<string, string>();
@@ -35,7 +37,8 @@ describe('translation files', () => {
 
   it('use the same placeholders in both languages', () => {
     const mismatches = [...german.keys()].filter(
-      (key) => placeholders(german.get(key)!).join() !== placeholders(english.get(key) ?? '').join(),
+      (key) =>
+        placeholders(german.get(key)!).join() !== placeholders(english.get(key) ?? '').join(),
     );
     expect(mismatches).toEqual([]);
   });

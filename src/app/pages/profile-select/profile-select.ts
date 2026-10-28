@@ -16,7 +16,9 @@ import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 
 /** Translation key of the message for a failed create/rename/delete. */
 function profileErrorKey(error: unknown, conflictKey: string): string {
-  return error instanceof HttpErrorResponse && error.status === 409 ? conflictKey : 'profiles.errors.unknown';
+  return error instanceof HttpErrorResponse && error.status === 409
+    ? conflictKey
+    : 'profiles.errors.unknown';
 }
 
 /**
@@ -61,10 +63,14 @@ export class ProfileSelect {
       this.errorKey.set('profiles.errors.nameRequired');
       return;
     }
-    this.run(this.profilesService.createProfile({ displayName }), 'profiles.errors.nameTaken', () => {
-      this.newName.set('');
-      this.profiles.reload();
-    });
+    this.run(
+      this.profilesService.createProfile({ displayName }),
+      'profiles.errors.nameTaken',
+      () => {
+        this.newName.set('');
+        this.profiles.reload();
+      },
+    );
   }
 
   protected onStartRename(profile: ProfileResponse): void {
@@ -111,8 +117,10 @@ export class ProfileSelect {
       confirm: 'common.delete',
     }).subscribe((confirmed) => {
       if (confirmed) {
-        this.run(this.profilesService.deleteProfile(profile.id), 'profiles.errors.hasVehicles', () =>
-          this.profiles.reload(),
+        this.run(
+          this.profilesService.deleteProfile(profile.id),
+          'profiles.errors.hasVehicles',
+          () => this.profiles.reload(),
         );
       }
     });

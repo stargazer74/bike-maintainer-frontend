@@ -31,10 +31,14 @@
         <span class="vehicle-card__body">
           <span class="vehicle-card__name">{{ vehicle.name }}</span>
           @if (vehicleSubtitle(vehicle); as subtitle) {
-            <span class="vehicle-card__subtitle">{{ subtitle.key | transloco: subtitle.params }}</span>
+            <span class="vehicle-card__subtitle">{{
+              subtitle.key | transloco: subtitle.params
+            }}</span>
           }
         </span>
-        <span class="vehicle-card__mileage">{{ vehicle.currentMileage ?? 0 | localNumber }} km</span>
+        <span class="vehicle-card__mileage"
+          >{{ vehicle.currentMileage ?? 0 | localNumber }} km</span
+        >
       </a>
     }
   </div>

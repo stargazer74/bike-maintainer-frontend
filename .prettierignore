@@ -4,3 +4,6 @@ dist/
 .angular/
 coverage/
 package-lock.json
+
+# Markdown is wrapped by hand
+*.md

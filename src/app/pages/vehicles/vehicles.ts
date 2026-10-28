@@ -11,7 +11,14 @@ import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 
 @Component({
   selector: 'app-vehicles',
-  imports: [RouterLink, LocalNumberPipe, MatCardModule, MatIconModule, MatProgressSpinnerModule, TranslocoPipe],
+  imports: [
+    RouterLink,
+    LocalNumberPipe,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslocoPipe,
+  ],
   templateUrl: './vehicles.html',
   styleUrl: './vehicles.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

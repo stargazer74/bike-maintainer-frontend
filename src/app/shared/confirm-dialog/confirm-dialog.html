@@ -11,7 +11,12 @@
   <button type="button" class="btn btn--ghost confirm-dialog__cancel" (click)="close(false)">
     {{ 'common.cancel' | transloco }}
   </button>
-  <button type="button" class="btn btn--danger confirm-dialog__confirm" cdkFocusInitial (click)="close(true)">
+  <button
+    type="button"
+    class="btn btn--danger confirm-dialog__confirm"
+    cdkFocusInitial
+    (click)="close(true)"
+  >
     {{ data.confirm | transloco }}
   </button>
 </mat-dialog-actions>

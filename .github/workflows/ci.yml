@@ -3,9 +3,9 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
     # Release tags (vX.Y.Z) additionally publish the images, see the publish job.
-    tags: [ 'v*.*.*' ]
+    tags: ['v*.*.*']
 
 permissions:
   contents: read

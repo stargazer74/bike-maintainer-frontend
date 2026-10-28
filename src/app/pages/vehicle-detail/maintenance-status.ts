@@ -77,7 +77,13 @@ function remainingLabel(
   // `+ 0` normalizes -0 (e.g. an exactly-due task) to 0 before formatting.
   const rounded = Math.round(shown) + 0;
   const prefix =
-    state === 'overdue' ? 'overdue' : state === 'due-soon' ? 'dueSoon' : neverPerformed ? 'firstDue' : 'ok';
+    state === 'overdue'
+      ? 'overdue'
+      : state === 'due-soon'
+        ? 'dueSoon'
+        : neverPerformed
+          ? 'firstDue'
+          : 'ok';
   const suffix = unit === 'Days' && Math.abs(rounded) === 1 ? 'Day' : unit;
   return { key: `taskStatus.${prefix}${suffix}`, params: { value: formatNumber(rounded, locale) } };
 }

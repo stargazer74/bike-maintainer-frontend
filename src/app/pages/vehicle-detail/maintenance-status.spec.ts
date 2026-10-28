@@ -16,7 +16,11 @@ function task(overrides: Partial<MaintenanceTaskResponse>): MaintenanceTaskRespo
 
 describe('computeTaskStatus', () => {
   it('formats overdue kilometres with the given locale', () => {
-    const overdue = task({ status: MaintenanceTaskStatus.Overdue, kmRemaining: -1200, lastServiceMileage: 5000 });
+    const overdue = task({
+      status: MaintenanceTaskStatus.Overdue,
+      kmRemaining: -1200,
+      lastServiceMileage: 5000,
+    });
 
     expect(computeTaskStatus(overdue, 'de-DE').label).toEqual({
       key: 'taskStatus.overdueKm',
@@ -26,7 +30,11 @@ describe('computeTaskStatus', () => {
   });
 
   it('uses the singular key for exactly one day', () => {
-    const dueSoon = task({ status: MaintenanceTaskStatus.DueSoon, daysRemaining: 1, lastServiceDate: '2026-01-01' });
+    const dueSoon = task({
+      status: MaintenanceTaskStatus.DueSoon,
+      daysRemaining: 1,
+      lastServiceDate: '2026-01-01',
+    });
 
     expect(computeTaskStatus(dueSoon, 'de-DE').label.key).toBe('taskStatus.dueSoonDay');
   });
@@ -44,7 +52,11 @@ describe('computeTaskStatus', () => {
   });
 
   it('formats the completion date of done tasks with the given locale', () => {
-    const done = task({ status: MaintenanceTaskStatus.Done, lastServiceDate: '2026-10-09', lastServiceMileage: 100 });
+    const done = task({
+      status: MaintenanceTaskStatus.Done,
+      lastServiceDate: '2026-10-09',
+      lastServiceMileage: 100,
+    });
 
     expect(computeTaskStatus(done, 'de-DE').label).toEqual({
       key: 'taskStatus.doneOn',
@@ -54,7 +66,11 @@ describe('computeTaskStatus', () => {
   });
 
   it('normalizes an exactly-due task to 0 instead of -0', () => {
-    const exactlyDue = task({ status: MaintenanceTaskStatus.Overdue, kmRemaining: -0, lastServiceMileage: 1 });
+    const exactlyDue = task({
+      status: MaintenanceTaskStatus.Overdue,
+      kmRemaining: -0,
+      lastServiceMileage: 1,
+    });
 
     expect(computeTaskStatus(exactlyDue, 'de-DE').label.params).toEqual({ value: '0' });
   });

@@ -35,6 +35,6 @@ export const appConfig: ApplicationConfig = {
     provideI18n(),
     // Empty base path: requests go to the same origin (e.g. /api/v1/vehicles) and
     // are forwarded to the backend via proxy.conf.json in development.
-    provideApi('')
-  ]
+    provideApi(''),
+  ],
 };

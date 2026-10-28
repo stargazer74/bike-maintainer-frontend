@@ -385,5 +385,7 @@ function todayIso(): string {
 
 function formatIsoDate(iso: string | undefined, locale: string): string {
   const date = iso ? new Date(iso) : null;
-  return date && !Number.isNaN(date.getTime()) ? formatDate(date, 'mediumDate', locale) : (iso ?? '');
+  return date && !Number.isNaN(date.getTime())
+    ? formatDate(date, 'mediumDate', locale)
+    : (iso ?? '');
 }

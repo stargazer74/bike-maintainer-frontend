@@ -33,7 +33,9 @@ describe('describeTaskInterval', () => {
   });
 
   it('uses the singular wording for a one-month interval', () => {
-    expect(describeTaskInterval(task({ intervalMonths: 1 }), 'de-DE').key).toBe('taskInterval.everyMonth');
+    expect(describeTaskInterval(task({ intervalMonths: 1 }), 'de-DE').key).toBe(
+      'taskInterval.everyMonth',
+    );
   });
 
   it('reports a missing interval', () => {
