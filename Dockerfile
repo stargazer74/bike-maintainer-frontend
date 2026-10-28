@@ -14,7 +14,9 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.30-alpine AS runtime
+# The official image often lags behind Alpine's security fixes; pull them in at build time.
+RUN apk upgrade --no-cache
 # Backend address for /api/ (host:port in the Docker network) and the DNS resolver used to look it up at request
 # time (127.0.0.11 is Docker's embedded DNS). Both can be overridden per container.
 ENV BACKEND_HOST=bike-maintainer-backend:8080 \
