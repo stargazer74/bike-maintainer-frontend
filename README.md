@@ -22,7 +22,7 @@ liegen in den Nachbarprojekten:
 
 ## Voraussetzungen
 
-- Node.js 22+
+- Node.js 24 (LTS, wie in CI und Docker-Build); 22.22+ funktioniert ebenfalls
 - Java 17+ (nur für die Generierung des API-Clients, siehe unten)
 - Laufendes Backend (siehe `bike-maintainer-backend/compose.yaml` für die
   MariaDB-Datenbank sowie `./mvnw spring-boot:run` für den Service)

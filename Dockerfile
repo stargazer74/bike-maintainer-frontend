@@ -2,7 +2,7 @@
 
 # The build output is static files, so this stage always runs natively on the build machine ($BUILDPLATFORM) instead
 # of under emulation; only the nginx stage below is built per target platform.
-FROM --platform=$BUILDPLATFORM node:26-alpine AS build
+FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./

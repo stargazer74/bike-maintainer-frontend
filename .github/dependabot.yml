@@ -22,6 +22,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Stay on the current Node LTS line (same as the CI); the next LTS is a deliberate switch.
+      - dependency-name: node
+        update-types: [ version-update:semver-major ]
 
   - package-ecosystem: github-actions
     directory: /
