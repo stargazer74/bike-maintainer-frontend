@@ -14,7 +14,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:1.30-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 # The official image often lags behind Alpine's security fixes; pull them in at build time.
 RUN apk upgrade --no-cache
 # Backend address for /api/ (host:port in the Docker network) and the DNS resolver used to look it up at request
