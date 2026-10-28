@@ -93,7 +93,7 @@ Internet ──443──▶ TLS-Proxy ──▶ frontend (nginx)
 
 | Umgebungsvariable | Standard | Bedeutung |
 |---|---|---|
-| `BACKEND_HOST` | `bm-backend:8080` | Host und Port des Backends im Docker-Netz |
+| `BACKEND_HOST` | `bike-maintainer-backend:8080` | Host und Port des Backends im Docker-Netz |
 | `NGINX_RESOLVER` | `127.0.0.11` | DNS-Server, über den `BACKEND_HOST` pro Request aufgelöst wird (Dockers eingebautes DNS) |
 
 `X-Forwarded-Proto`, `-Host` und `-For` eines vorgeschalteten TLS-Proxys werden ans Backend
