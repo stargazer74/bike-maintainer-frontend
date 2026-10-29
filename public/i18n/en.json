@@ -261,5 +261,18 @@
       "verifying": "Verifying …",
       "waitAlert": "Verifying … please wait."
     }
+  },
+  "checklist": {
+    "open": "Print checklist",
+    "title": "Print checklist",
+    "intro": "Choose the tasks for the checklist. Overdue and soon due tasks are already selected; the list is sorted by urgency.",
+    "create": "Create PDF",
+    "selected": "{{count}} selected",
+    "empty": "There are no open tasks for a checklist.",
+    "fallbackFileName": "checklist.pdf",
+    "errors": {
+      "invalid": "The selection no longer matches the vehicle, please reload the page.",
+      "unknown": "The checklist could not be created, please try again later."
+    }
   }
 }

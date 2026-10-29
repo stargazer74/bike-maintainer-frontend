@@ -261,5 +261,18 @@
       "verifying": "Wird bestätigt …",
       "waitAlert": "Wird bestätigt … bitte warten."
     }
+  },
+  "checklist": {
+    "open": "Checkliste drucken",
+    "title": "Checkliste drucken",
+    "intro": "Wähle die Aufgaben für die Checkliste. Überfällige und bald fällige sind schon ausgewählt, die Liste ist nach Dringlichkeit sortiert.",
+    "create": "PDF erstellen",
+    "selected": "{{count}} ausgewählt",
+    "empty": "Es gibt keine offenen Aufgaben für eine Checkliste.",
+    "fallbackFileName": "checkliste.pdf",
+    "errors": {
+      "invalid": "Die Auswahl passt nicht mehr zum Fahrzeug, bitte lade die Seite neu.",
+      "unknown": "Die Checkliste konnte nicht erstellt werden, bitte später erneut versuchen."
+    }
   }
 }

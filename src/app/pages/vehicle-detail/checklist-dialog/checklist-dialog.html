@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>{{ 'checklist.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  @if (rows().length) {
+    <p class="checklist__intro">{{ 'checklist.intro' | transloco }}</p>
+    <ul class="checklist__list">
+      @for (row of rows(); track row.task.id) {
+        <li class="checklist__row">
+          <label class="checklist__label">
+            <input
+              type="checkbox"
+              class="checklist__checkbox"
+              [checked]="selected().has(row.task.id)"
+              (change)="toggle(row.task.id)"
+            />
+            <span class="checklist__name">{{ row.task.name }}</span>
+            <span
+              class="checklist__due status-badge"
+              [class]="'status-badge--' + row.status.state"
+              >{{ row.status.label.key | transloco: row.status.label.params }}</span
+            >
+          </label>
+        </li>
+      }
+    </ul>
+    <p class="checklist__count">
+      {{ 'checklist.selected' | transloco: { count: selected().size } }}
+    </p>
+  } @else {
+    <p class="checklist__intro">{{ 'checklist.empty' | transloco }}</p>
+  }
+
+  @if (errorKey(); as key) {
+    <p class="field__error checklist__error" role="alert">{{ key | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn--ghost" mat-dialog-close>
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    type="button"
+    class="btn btn--primary checklist__create"
+    [disabled]="creating() || selected().size === 0"
+    (click)="create()"
+  >
+    @if (creating()) {
+      <mat-spinner diameter="16" />
+    } @else {
+      <mat-icon fontSet="material-symbols-outlined">picture_as_pdf</mat-icon>
+    }
+    {{ 'checklist.create' | transloco }}
+  </button>
+</mat-dialog-actions>

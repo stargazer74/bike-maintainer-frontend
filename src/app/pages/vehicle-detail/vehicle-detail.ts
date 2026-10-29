@@ -35,6 +35,7 @@ import {
 import { LanguageService } from '../../i18n/language';
 import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
 import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
+import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { computeTaskStatus } from './maintenance-status';
@@ -120,6 +121,13 @@ export class VehicleDetail {
   });
 
   protected readonly selectedTabIndex = signal(0);
+
+  protected openChecklistDialog(vehicleId: number, tasks: MaintenanceTaskResponse[]): void {
+    this.dialog.open<ChecklistDialog, ChecklistDialogData>(ChecklistDialog, {
+      autoFocus: 'first-tabbable',
+      data: { vehicleId, tasks },
+    });
+  }
 
   protected openEditVehicleDialog(vehicle: VehicleResponse): void {
     this.dialog

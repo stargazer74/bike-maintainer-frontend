@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 520px;
+}
+
+.checklist__intro,
+.checklist__count {
+  margin: 0 0 12px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.checklist__count {
+  margin: 12px 0 0;
+}
+
+.checklist__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist__row + .checklist__row {
+  border-top: 1px solid var(--bm-border);
+}
+
+.checklist__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 2px;
+  cursor: pointer;
+}
+
+.checklist__checkbox {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--bm-orange);
+}
+
+.checklist__name {
+  flex: 1;
+  color: var(--bm-text);
+}
+
+.checklist__error {
+  margin: 12px 0 0;
+}
+
+.checklist__create mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+// Same badge as on the status cards of the vehicle page.
+.status-badge {
+  flex: none;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--overdue {
+    color: var(--status-overdue);
+    background: var(--status-overdue-bg);
+    border-color: var(--status-overdue-border);
+  }
+
+  &--due-soon {
+    color: var(--status-due);
+    background: var(--status-due-bg);
+    border-color: var(--status-due-border);
+  }
+
+  &--ok {
+    color: var(--status-ok);
+    background: var(--status-ok-bg);
+    border-color: var(--status-ok-border);
+  }
+}
