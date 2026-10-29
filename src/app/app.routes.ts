@@ -19,6 +19,19 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/verify-email/verify-email').then((m) => m.VerifyEmail),
   },
   {
+    path: 'passwort-vergessen',
+    canMatch: [portalOnlyGuard, guestGuard],
+    loadComponent: () =>
+      import('./pages/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
+    // Target of the link in the password reset email; works with or without a session.
+    path: 'passwort-zuruecksetzen',
+    canMatch: [portalOnlyGuard],
+    loadComponent: () =>
+      import('./pages/reset-password/reset-password').then((m) => m.ResetPassword),
+  },
+  {
     // Household mode: pick a profile instead of logging in.
     path: 'person-waehlen',
     canMatch: [householdOnlyGuard, guestGuard],
@@ -54,6 +67,13 @@ export const routes: Routes = [
         path: 'historie',
         loadComponent: () =>
           import('./pages/maintenance-logs/maintenance-logs').then((m) => m.MaintenanceLogs),
+      },
+      {
+        // Household profiles have no password.
+        path: 'konto',
+        canMatch: [portalOnlyGuard],
+        loadComponent: () =>
+          import('./pages/account-settings/account-settings').then((m) => m.AccountSettings),
       },
       { path: '**', redirectTo: 'dashboard' },
     ],

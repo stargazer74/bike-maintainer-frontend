@@ -22,7 +22,8 @@
     "addVehicle": "Bike hinzufügen",
     "userMenu": "Benutzermenü",
     "logout": "Abmelden",
-    "switchProfile": "Person wechseln"
+    "switchProfile": "Person wechseln",
+    "account": "Konto"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -44,7 +45,9 @@
       "tooManyAttempts": "Zu viele Versuche, bitte später erneut.",
       "unknown": "Anmeldung fehlgeschlagen, bitte später erneut versuchen."
     },
-    "createAccount": "Noch kein Konto? Konto anlegen"
+    "createAccount": "Noch kein Konto? Konto anlegen",
+    "forgotPassword": "Passwort vergessen?",
+    "passwordReset": "Dein Passwort wurde geändert. Du kannst dich jetzt mit dem neuen Passwort anmelden."
   },
   "profiles": {
     "title": "Wer bist du?",
@@ -203,7 +206,6 @@
     "subtitle": "Lege ein Konto an, um deine Fahrzeuge und Wartungen zu verwalten.",
     "email": "E-Mail",
     "password": "Passwort",
-    "passwordHint": "10 bis 72 Zeichen",
     "passwordRepeat": "Passwort wiederholen",
     "website": "Website (bitte leer lassen)",
     "submit": "Konto anlegen",
@@ -215,9 +217,6 @@
     },
     "errors": {
       "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
-      "passwordLength": "Das Passwort muss 10 bis 72 Zeichen lang sein.",
-      "passwordTooLong": "Das Passwort ist zu lang (höchstens 72 Byte, Umlaute zählen doppelt).",
-      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
       "captchaRequired": "Bitte bestätige zuerst, dass du ein Mensch bist.",
       "invalid": "Bitte prüfe deine Eingaben."
     }
@@ -260,6 +259,14 @@
       "verified": "Bestätigt",
       "verifying": "Wird bestätigt …",
       "waitAlert": "Wird bestätigt … bitte warten."
+    },
+    "password": {
+      "hint": "10 bis 72 Zeichen",
+      "errors": {
+        "length": "Das Passwort muss 10 bis 72 Zeichen lang sein.",
+        "tooLong": "Das Passwort ist zu lang (höchstens 72 Byte, Umlaute zählen doppelt).",
+        "mismatch": "Die Passwörter stimmen nicht überein."
+      }
     }
   },
   "checklist": {
@@ -273,6 +280,35 @@
     "errors": {
       "invalid": "Die Auswahl passt nicht mehr zum Fahrzeug, bitte lade die Seite neu.",
       "unknown": "Die Checkliste konnte nicht erstellt werden, bitte später erneut versuchen."
+    }
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen",
+    "subtitle": "Gib die E-Mail-Adresse deines Kontos ein. Wir schicken dir einen Link, über den du ein neues Passwort festlegen kannst.",
+    "email": "E-Mail",
+    "submit": "Link anfordern",
+    "sent": "Falls zu dieser Adresse ein Konto gehört, ist eine E-Mail mit einem Link unterwegs. Der Link ist 1 Stunde gültig; ältere Links sind damit ungültig.",
+    "toLogin": "Zurück zur Anmeldung"
+  },
+  "resetPassword": {
+    "title": "Neues Passwort festlegen",
+    "password": "Neues Passwort",
+    "passwordRepeat": "Neues Passwort wiederholen",
+    "submit": "Passwort speichern",
+    "invalid": "Dieser Link ist ungültig, abgelaufen oder wurde schon verwendet.",
+    "requestNew": "Neuen Link anfordern"
+  },
+  "accountSettings": {
+    "title": "Konto",
+    "passwordTitle": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "newPasswordRepeat": "Neues Passwort wiederholen",
+    "submit": "Passwort ändern",
+    "changed": "Dein Passwort wurde geändert. Auf anderen Geräten bist du jetzt abgemeldet.",
+    "errors": {
+      "currentRequired": "Bitte gib dein aktuelles Passwort ein.",
+      "wrongCurrent": "Das aktuelle Passwort ist falsch."
     }
   }
 }

@@ -3,6 +3,10 @@
     <h1 class="login__title">{{ 'login.title' | transloco }}</h1>
     <p class="login__subtitle">{{ 'login.subtitle' | transloco }}</p>
 
+    @if (passwordReset() === 'true') {
+      <p class="login__notice" role="status">{{ 'login.passwordReset' | transloco }}</p>
+    }
+
     <form novalidate (ngSubmit)="onSubmit()">
       <div class="field">
         <label class="field__label" for="login-email">{{ 'login.email' | transloco }}</label>
@@ -51,6 +55,9 @@
       }
     }
 
+    <a class="login__link" routerLink="/passwort-vergessen">{{
+      'login.forgotPassword' | transloco
+    }}</a>
     <a class="login__link" routerLink="/registrieren">{{ 'login.createAccount' | transloco }}</a>
   </mat-card>
 </div>

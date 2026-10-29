@@ -22,7 +22,8 @@
     "addVehicle": "Add bike",
     "userMenu": "User menu",
     "logout": "Log out",
-    "switchProfile": "Switch person"
+    "switchProfile": "Switch person",
+    "account": "Account"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -44,7 +45,9 @@
       "tooManyAttempts": "Too many attempts, please try again later.",
       "unknown": "Login failed, please try again later."
     },
-    "createAccount": "No account yet? Create one"
+    "createAccount": "No account yet? Create one",
+    "forgotPassword": "Forgot your password?",
+    "passwordReset": "Your password has been changed. You can now log in with your new password."
   },
   "profiles": {
     "title": "Who are you?",
@@ -203,7 +206,6 @@
     "subtitle": "Create an account to manage your vehicles and their maintenance.",
     "email": "Email",
     "password": "Password",
-    "passwordHint": "10 to 72 characters",
     "passwordRepeat": "Repeat password",
     "website": "Website (please leave empty)",
     "submit": "Create account",
@@ -215,9 +217,6 @@
     },
     "errors": {
       "emailRequired": "Please enter your email address.",
-      "passwordLength": "The password must be 10 to 72 characters long.",
-      "passwordTooLong": "The password is too long (at most 72 bytes; accented characters count double).",
-      "passwordMismatch": "The passwords do not match.",
       "captchaRequired": "Please confirm that you are human first.",
       "invalid": "Please check your input."
     }
@@ -260,6 +259,14 @@
       "verified": "Verified",
       "verifying": "Verifying …",
       "waitAlert": "Verifying … please wait."
+    },
+    "password": {
+      "hint": "10 to 72 characters",
+      "errors": {
+        "length": "The password must be 10 to 72 characters long.",
+        "tooLong": "The password is too long (at most 72 bytes; accented characters count double).",
+        "mismatch": "The passwords do not match."
+      }
     }
   },
   "checklist": {
@@ -273,6 +280,35 @@
     "errors": {
       "invalid": "The selection no longer matches the vehicle, please reload the page.",
       "unknown": "The checklist could not be created, please try again later."
+    }
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "subtitle": "Enter the email address of your account. We will send you a link to set a new password.",
+    "email": "Email",
+    "submit": "Send link",
+    "sent": "If an account belongs to this address, an email with a link is on its way. The link is valid for 1 hour; older links are no longer valid.",
+    "toLogin": "Back to login"
+  },
+  "resetPassword": {
+    "title": "Set a new password",
+    "password": "New password",
+    "passwordRepeat": "Repeat new password",
+    "submit": "Save password",
+    "invalid": "This link is invalid, expired or has already been used.",
+    "requestNew": "Request a new link"
+  },
+  "accountSettings": {
+    "title": "Account",
+    "passwordTitle": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "newPasswordRepeat": "Repeat new password",
+    "submit": "Change password",
+    "changed": "Your password has been changed. You are now logged out on other devices.",
+    "errors": {
+      "currentRequired": "Please enter your current password.",
+      "wrongCurrent": "The current password is wrong."
     }
   }
 }

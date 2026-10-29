@@ -179,6 +179,28 @@ describe('Login', () => {
     expect(page.querySelector('a[href="/registrieren"]')?.textContent).toContain('Konto anlegen');
   });
 
+  it('links to the forgotten password page', async () => {
+    const page = await open();
+
+    expect(page.querySelector('a[href="/passwort-vergessen"]')?.textContent).toContain(
+      'Passwort vergessen?',
+    );
+  });
+
+  it('confirms a reset password', async () => {
+    const page = await open('/anmelden?passwordReset=true');
+
+    expect(page.querySelector('.login__notice')?.textContent).toContain(
+      'Dein Passwort wurde geändert.',
+    );
+  });
+
+  it('shows no notice on a normal visit', async () => {
+    const page = await open();
+
+    expect(page.querySelector('.login__notice')).toBeNull();
+  });
+
   it('offers to resend the confirmation email for an unverified address', async () => {
     const page = await open();
     fill(page, 'new@example.org', 'secret');

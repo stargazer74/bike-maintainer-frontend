@@ -49,6 +49,8 @@ function loginErrorKey(error: unknown): string {
 export class Login {
   /** Page to return to after logging in (query parameter, set by the guard and the interceptor). */
   readonly returnUrl = input<string>();
+  /** Set by the password reset page after the new password was saved (query parameter). */
+  readonly passwordReset = input<string>();
 
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
