@@ -117,8 +117,18 @@ Pushes auf `main` werden nur gebaut und getestet.
 Die Angular-Build-Stage läuft nativ auf dem Runner
 (`--platform=$BUILDPLATFORM`), nur die nginx-Stage wird pro Plattform gebaut.
 
-**Release anlegen:** dieselbe Version hier und in `bike-maintainer-backend` taggen (z. B.
-`v1.2.0`) und die Tags pushen – Backend und Frontend haben immer dieselbe Versionsnummer.
+**Versionsnummer:** `main` trägt in `package.json` immer die *kommende* Version als
+`X.Y.Z-SNAPSHOT`; Backend und Frontend haben immer dieselbe Versionsnummer.
+
+**Release anlegen:**
+
+1. Die Version von `main` ohne `-SNAPSHOT` hier und in `bike-maintainer-backend` taggen (z. B.
+   `v0.3.0` bei `0.3.0-SNAPSHOT`) und die Tags pushen. Passt der Tag nicht zur Version in
+   `package.json`, bricht die CI den Release-Build vor dem Veröffentlichen ab. Fürs Image setzt die
+   CI die Version per `npm version` auf die Tag-Version.
+2. `main` in beiden Repos per PR auf die nächste Snapshot-Version heben – Minor oder Patch nach
+   Bedarf: `npm version --no-git-tag-version 0.4.0-SNAPSHOT` hier,
+   `./mvnw versions:set -DnewVersion=0.4.0-SNAPSHOT -DgenerateBackupPoms=false` im Backend.
 
 ## Mehrsprachigkeit
 
