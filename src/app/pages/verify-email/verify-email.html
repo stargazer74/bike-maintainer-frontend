@@ -15,11 +15,23 @@
           {{ 'verifyEmail.toLogin' | transloco }}
         </a>
       }
+      @case ('error') {
+        <p class="field__error verify__text" role="alert">{{ 'verifyEmail.error' | transloco }}</p>
+        <button
+          type="button"
+          class="btn btn--primary verify__action verify__retry"
+          (click)="verify()"
+        >
+          {{ 'verifyEmail.retry' | transloco }}
+        </button>
+      }
       @case ('invalid') {
         <p class="field__error verify__text" role="alert">
           {{ 'verifyEmail.invalid' | transloco }}
         </p>
-        <app-resend-verification />
+        @defer {
+          <app-resend-verification />
+        }
       }
     }
   </mat-card>

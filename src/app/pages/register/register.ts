@@ -97,9 +97,8 @@ export class Register {
         error: (error: unknown) => {
           this.submitting.set(false);
           this.errorKey.set(this.errorKeyFor(error));
-          if (isCaptchaInvalid(error)) {
-            this.altcha()?.reset();
-          }
+          // The backend checks (and uses up) the solution before anything else can fail.
+          this.altcha()?.reset();
         },
       });
   }

@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '../../api-client';
-import { accountErrorKey, isCaptchaInvalid } from '../../auth/account-errors';
+import { accountErrorKey } from '../../auth/account-errors';
 import { Altcha, AltchaControl } from '../altcha/altcha';
 
 /**
@@ -63,9 +63,8 @@ export class ResendVerification {
       error: (error: unknown) => {
         this.submitting.set(false);
         this.errorKey.set(accountErrorKey(error));
-        if (isCaptchaInvalid(error)) {
-          this.altcha()?.reset();
-        }
+        // The backend checks (and uses up) the solution before anything else can fail.
+        this.altcha()?.reset();
       },
     });
   }

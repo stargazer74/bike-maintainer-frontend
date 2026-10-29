@@ -227,7 +227,9 @@
     "verifying": "Deine E-Mail-Adresse wird bestätigt …",
     "success": "Deine E-Mail-Adresse ist bestätigt. Du kannst dich jetzt anmelden.",
     "toLogin": "Zur Anmeldung",
-    "invalid": "Dieser Link ist ungültig oder abgelaufen. Du kannst dir eine neue Bestätigungsmail schicken lassen."
+    "invalid": "Dieser Link ist ungültig oder abgelaufen. Du kannst dir eine neue Bestätigungsmail schicken lassen.",
+    "error": "Die Bestätigung hat gerade nicht geklappt. Dein Link ist vermutlich noch gültig, bitte versuche es gleich noch einmal.",
+    "retry": "Erneut versuchen"
   },
   "account": {
     "errors": {

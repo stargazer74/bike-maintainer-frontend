@@ -45,7 +45,10 @@
     </form>
 
     @if (offerResend()) {
-      <app-resend-verification [email]="email().trim()" />
+      <!-- Deferred: keeps the ALTCHA library out of the login page until it is needed. -->
+      @defer {
+        <app-resend-verification [email]="email().trim()" />
+      }
     }
 
     <a class="login__link" routerLink="/registrieren">{{ 'login.createAccount' | transloco }}</a>

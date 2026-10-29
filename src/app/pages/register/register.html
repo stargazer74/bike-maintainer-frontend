@@ -68,12 +68,17 @@
         <!-- Honeypot against bots: outside the visible area instead of display:none, which bots skip. -->
         <div class="register__honeypot" aria-hidden="true">
           <label for="register-website">{{ 'register.website' | transloco }}</label>
+          <!-- Neutral name and ignore hints, so password managers do not autofill it for real users. -->
           <input
             id="register-website"
-            name="website"
+            name="hp-field"
             type="text"
             tabindex="-1"
             autocomplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-bwignore
+            data-form-type="other"
             [ngModel]="website()"
             (ngModelChange)="website.set($event)"
           />

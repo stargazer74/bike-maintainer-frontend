@@ -52,15 +52,18 @@ describe('Altcha', () => {
     expect(component.payload()).toBeNull();
   });
 
-  it('starts over on reset', () => {
+  it('solves a new challenge on reset', () => {
     const { component, widget } = create();
     const resetSpy = vi.fn();
+    const verifySpy = vi.fn().mockResolvedValue(null);
     Object.defineProperty(widget, 'reset', { value: resetSpy, configurable: true });
+    Object.defineProperty(widget, 'verify', { value: verifySpy, configurable: true });
     widget.dispatchEvent(new CustomEvent('verified', { detail: { payload: 'solved-payload' } }));
 
     component.reset();
 
     expect(component.payload()).toBeNull();
     expect(resetSpy).toHaveBeenCalled();
+    expect(verifySpy).toHaveBeenCalled();
   });
 });

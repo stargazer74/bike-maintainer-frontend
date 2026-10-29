@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -64,6 +64,10 @@ describe('VerifyEmail', () => {
       .expectOne(VERIFY_URL)
       .flush({ status: 400 }, { status: 400, statusText: 'Bad Request' });
     await settle();
+    // The resend form is a deferred block (loads ALTCHA only when needed).
+    for (const block of await harness.fixture.getDeferBlocks()) {
+      await block.render(DeferBlockState.Complete);
+    }
 
     expect(page.textContent).toContain('Dieser Link ist ungültig oder abgelaufen.');
     expect(page.querySelector('app-resend-verification')).not.toBeNull();
@@ -75,5 +79,21 @@ describe('VerifyEmail', () => {
 
     httpMock.expectNone(VERIFY_URL);
     expect(page.textContent).toContain('Dieser Link ist ungültig oder abgelaufen.');
+  });
+  it('offers to try again instead of a new email when the server could not be reached', async () => {
+    const page = await open('/email-bestaetigen?token=still-valid');
+    httpMock.expectOne(VERIFY_URL).flush(null, { status: 503, statusText: 'Service Unavailable' });
+    await settle();
+
+    expect(page.textContent).not.toContain('ungültig oder abgelaufen');
+    expect(page.querySelector('app-resend-verification')).toBeNull();
+    page.querySelector<HTMLButtonElement>('.verify__retry')!.click();
+    await settle();
+
+    const retry = httpMock.expectOne(VERIFY_URL);
+    expect(retry.request.body).toEqual({ token: 'still-valid' });
+    retry.flush(null, { status: 204, statusText: 'No Content' });
+    await settle();
+    expect(page.textContent).toContain('Deine E-Mail-Adresse ist bestätigt.');
   });
 });

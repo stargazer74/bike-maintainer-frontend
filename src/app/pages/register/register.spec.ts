@@ -125,6 +125,21 @@ describe('Register', () => {
     expect(input.getAttribute('autocomplete')).toBe('off');
   });
 
+  it('keeps password managers away from the honeypot', async () => {
+    const page = await open();
+    const input = page.querySelector<HTMLInputElement>('#register-website')!;
+
+    expect(input.name).not.toMatch(/web|site|url|homepage/i);
+    for (const attribute of [
+      'data-1p-ignore',
+      'data-lpignore',
+      'data-bwignore',
+      'data-form-type',
+    ]) {
+      expect(input.hasAttribute(attribute), attribute).toBe(true);
+    }
+  });
+
   it.each([
     ['', PASSWORD, PASSWORD, 'Bitte gib deine E-Mail-Adresse ein.'],
     ['new@example.org', 'too-short', 'too-short', 'Das Passwort muss 10 bis 72 Zeichen lang sein.'],
@@ -184,6 +199,8 @@ describe('Register', () => {
     await settle();
 
     expect(error(page)).toContain(message);
+    // The backend used up the solution before failing, so it must not be sent again.
+    expect(altcha().resets()).toBe(1);
   });
 
   it('links to the login page', async () => {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -188,6 +188,10 @@ describe('Login', () => {
       .flush({ status: 403, code: 'EMAIL_NOT_VERIFIED' }, { status: 403, statusText: 'Forbidden' });
     await harness.fixture.whenStable();
     harness.detectChanges();
+    // The resend form is a deferred block (keeps ALTCHA out of the login chunk).
+    for (const block of await harness.fixture.getDeferBlocks()) {
+      await block.render(DeferBlockState.Complete);
+    }
     await harness.fixture.whenStable();
     harness.detectChanges();
 

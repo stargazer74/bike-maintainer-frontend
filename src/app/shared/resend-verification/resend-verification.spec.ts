@@ -117,5 +117,6 @@ describe('ResendVerification', () => {
     expect(page().querySelector('.field__error')?.textContent).toContain(
       'Heute können keine weiteren E-Mails versendet werden',
     );
+    expect(altcha().resets()).toBe(1);
   });
 });

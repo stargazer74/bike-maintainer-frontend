@@ -227,7 +227,9 @@
     "verifying": "Confirming your email address …",
     "success": "Your email address is confirmed. You can log in now.",
     "toLogin": "Go to login",
-    "invalid": "This link is invalid or has expired. You can request a new confirmation email."
+    "invalid": "This link is invalid or has expired. You can request a new confirmation email.",
+    "error": "Confirming did not work right now. Your link is probably still valid, please try again in a moment.",
+    "retry": "Try again"
   },
   "account": {
     "errors": {

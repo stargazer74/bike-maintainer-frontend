@@ -59,11 +59,18 @@ export class Altcha implements AltchaControl {
     });
   }
 
-  /** After the backend rejected the solution (`CAPTCHA_INVALID`): solve a new challenge. */
+  /**
+   * After a failed request the backend has already used up the solution: forget it and solve a new
+   * challenge right away (the widget's own `reset()` only returns to the unsolved state).
+   */
   reset(): void {
     this.solved.set(null);
-    const element = this.widget().nativeElement as HTMLElement & { reset?: () => void };
+    const element = this.widget().nativeElement as HTMLElement & {
+      reset?: () => void;
+      verify?: () => Promise<unknown>;
+    };
     element.reset?.();
+    void element.verify?.();
   }
 
   protected onVerified(event: Event): void {
