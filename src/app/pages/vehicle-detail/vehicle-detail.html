@@ -106,10 +106,22 @@
         {{ 'vehicleDetail.tabStatus' | transloco }}
       </ng-template>
       <section class="status-section">
-        <h2>
-          <mat-icon fontSet="material-symbols-outlined">shield</mat-icon>
-          {{ 'vehicleDetail.statusHeading' | transloco }}
-        </h2>
+        <div class="status-section__header">
+          <h2>
+            <mat-icon fontSet="material-symbols-outlined">shield</mat-icon>
+            {{ 'vehicleDetail.statusHeading' | transloco }}
+          </h2>
+          @if (taskCards().length) {
+            <button
+              type="button"
+              class="btn btn--ghost status-section__checklist"
+              (click)="openChecklistDialog(result.vehicle.id, result.tasks)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">print</mat-icon>
+              {{ 'checklist.open' | transloco }}
+            </button>
+          }
+        </div>
 
         @if (!taskCards().length) {
           <mat-card class="stub-card" appearance="outlined">
