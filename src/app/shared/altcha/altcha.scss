@@ -1,0 +1,19 @@
+// The widget reads these custom properties; mapped onto the workshop theme.
+:host {
+  display: block;
+  margin: 0 0 16px;
+  --altcha-max-width: 100%;
+  --altcha-border-color: var(--bm-border);
+  --altcha-color-base: var(--bm-surface-inset);
+  --altcha-color-base-content: var(--bm-text);
+  --altcha-color-neutral: var(--bm-border-strong);
+  --altcha-color-neutral-content: var(--bm-text-muted);
+  --altcha-color-primary: var(--bm-orange);
+  --altcha-color-primary-content: var(--bm-bg);
+  --altcha-color-success: var(--status-ok);
+  --altcha-color-success-content: var(--bm-bg);
+  --altcha-color-error: var(--status-overdue);
+  --altcha-color-error-content: var(--bm-text);
+  --altcha-spinner-color: var(--bm-orange);
+  --altcha-checkbox-border-color: var(--bm-border-strong);
+}

@@ -43,7 +43,8 @@
       "emailNotVerified": "Your email address has not been verified yet.",
       "tooManyAttempts": "Too many attempts, please try again later.",
       "unknown": "Login failed, please try again later."
-    }
+    },
+    "createAccount": "No account yet? Create one"
   },
   "profiles": {
     "title": "Who are you?",
@@ -196,5 +197,67 @@
   "history": {
     "title": "History",
     "subtitle": "Recently logged maintenance."
+  },
+  "register": {
+    "title": "Create account",
+    "subtitle": "Create an account to manage your vehicles and their maintenance.",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "10 to 72 characters",
+    "passwordRepeat": "Repeat password",
+    "website": "Website (please leave empty)",
+    "submit": "Create account",
+    "haveAccount": "Already have an account? Log in",
+    "checkInbox": {
+      "title": "Please check your inbox",
+      "text": "We have sent an email to {{email}}. Confirm your address with the link in it, then you can log in. The link is valid for 24 hours.",
+      "toLogin": "Go to login"
+    },
+    "errors": {
+      "emailRequired": "Please enter your email address.",
+      "passwordLength": "The password must be 10 to 72 characters long.",
+      "passwordTooLong": "The password is too long (at most 72 bytes; accented characters count double).",
+      "passwordMismatch": "The passwords do not match.",
+      "captchaRequired": "Please confirm that you are human first.",
+      "invalid": "Please check your input."
+    }
+  },
+  "verifyEmail": {
+    "title": "Confirm email",
+    "verifying": "Confirming your email address …",
+    "success": "Your email address is confirmed. You can log in now.",
+    "toLogin": "Go to login",
+    "invalid": "This link is invalid or has expired. You can request a new confirmation email."
+  },
+  "account": {
+    "errors": {
+      "captchaInvalid": "The verification has expired, please verify again.",
+      "mailQuotaExceeded": "No more emails can be sent today, please try again tomorrow.",
+      "tooManyAttempts": "Too many attempts, please try again later.",
+      "unknown": "That did not work, please try again later."
+    },
+    "resend": {
+      "title": "Resend confirmation email",
+      "email": "Email",
+      "submit": "Resend confirmation email",
+      "sent": "If an unconfirmed account belongs to this address, a new confirmation email is on its way. Older links are no longer valid."
+    },
+    "altcha": {
+      "ariaLinkLabel": "Visit altcha.org",
+      "enterCode": "Enter code",
+      "enterCodeAria": "Enter the code you hear. Press Space to play the audio.",
+      "error": "Verification failed, please try again later.",
+      "expired": "Verification expired, please try again.",
+      "footer": "Protected by <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"Visit altcha.org\">ALTCHA</a>",
+      "getAudioChallenge": "Play audio challenge",
+      "label": "I'm not a robot",
+      "loading": "Loading …",
+      "reload": "Reload",
+      "verify": "Verify",
+      "verificationRequired": "Verification required!",
+      "verified": "Verified",
+      "verifying": "Verifying …",
+      "waitAlert": "Verifying … please wait."
+    }
   }
 }

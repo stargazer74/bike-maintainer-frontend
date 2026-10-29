@@ -43,7 +43,8 @@
       "emailNotVerified": "Deine E-Mail-Adresse ist noch nicht bestätigt.",
       "tooManyAttempts": "Zu viele Versuche, bitte später erneut.",
       "unknown": "Anmeldung fehlgeschlagen, bitte später erneut versuchen."
-    }
+    },
+    "createAccount": "Noch kein Konto? Konto anlegen"
   },
   "profiles": {
     "title": "Wer bist du?",
@@ -196,5 +197,67 @@
   "history": {
     "title": "Historie",
     "subtitle": "Protokollierte Wartungen der letzten Zeit."
+  },
+  "register": {
+    "title": "Konto anlegen",
+    "subtitle": "Lege ein Konto an, um deine Fahrzeuge und Wartungen zu verwalten.",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "passwordHint": "10 bis 72 Zeichen",
+    "passwordRepeat": "Passwort wiederholen",
+    "website": "Website (bitte leer lassen)",
+    "submit": "Konto anlegen",
+    "haveAccount": "Schon ein Konto? Anmelden",
+    "checkInbox": {
+      "title": "Bitte prüfe dein Postfach",
+      "text": "Wir haben eine E-Mail an {{email}} geschickt. Bestätige deine Adresse über den Link darin, danach kannst du dich anmelden. Der Link ist 24 Stunden gültig.",
+      "toLogin": "Zur Anmeldung"
+    },
+    "errors": {
+      "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
+      "passwordLength": "Das Passwort muss 10 bis 72 Zeichen lang sein.",
+      "passwordTooLong": "Das Passwort ist zu lang (höchstens 72 Byte, Umlaute zählen doppelt).",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+      "captchaRequired": "Bitte bestätige zuerst, dass du ein Mensch bist.",
+      "invalid": "Bitte prüfe deine Eingaben."
+    }
+  },
+  "verifyEmail": {
+    "title": "E-Mail bestätigen",
+    "verifying": "Deine E-Mail-Adresse wird bestätigt …",
+    "success": "Deine E-Mail-Adresse ist bestätigt. Du kannst dich jetzt anmelden.",
+    "toLogin": "Zur Anmeldung",
+    "invalid": "Dieser Link ist ungültig oder abgelaufen. Du kannst dir eine neue Bestätigungsmail schicken lassen."
+  },
+  "account": {
+    "errors": {
+      "captchaInvalid": "Die Bestätigung ist abgelaufen, bitte bestätige erneut.",
+      "mailQuotaExceeded": "Heute können keine weiteren E-Mails versendet werden, bitte versuche es morgen erneut.",
+      "tooManyAttempts": "Zu viele Versuche, bitte später erneut.",
+      "unknown": "Das hat nicht geklappt, bitte später erneut versuchen."
+    },
+    "resend": {
+      "title": "Bestätigungsmail erneut senden",
+      "email": "E-Mail",
+      "submit": "Bestätigungsmail erneut senden",
+      "sent": "Falls zu dieser Adresse ein unbestätigtes Konto gehört, ist eine neue Bestätigungsmail unterwegs. Ältere Links sind damit ungültig."
+    },
+    "altcha": {
+      "ariaLinkLabel": "altcha.org besuchen",
+      "enterCode": "Code eingeben",
+      "enterCodeAria": "Gib den Code ein, den du hörst. Drücke Leertaste, um die Audiodatei abzuspielen.",
+      "error": "Bestätigung fehlgeschlagen, bitte später erneut versuchen.",
+      "expired": "Bestätigung abgelaufen, bitte erneut versuchen.",
+      "footer": "Geschützt durch <a href=\"https://altcha.org/\" target=\"_blank\" aria-label=\"altcha.org besuchen\">ALTCHA</a>",
+      "getAudioChallenge": "Audio-Aufgabe abspielen",
+      "label": "Ich bin kein Roboter",
+      "loading": "Wird geladen …",
+      "reload": "Neu laden",
+      "verify": "Bestätigen",
+      "verificationRequired": "Bestätigung erforderlich!",
+      "verified": "Bestätigt",
+      "verifying": "Wird bestätigt …",
+      "waitAlert": "Wird bestätigt … bitte warten."
+    }
   }
 }
