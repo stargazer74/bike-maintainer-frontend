@@ -27,9 +27,17 @@ describe('fileNameFromContentDisposition', () => {
 });
 
 describe('saveFile', () => {
-  afterEach(() => vi.restoreAllMocks());
+  // jsdom has no object URLs; install stand-ins and restore the originals afterwards.
+  const original = { create: URL.createObjectURL, revoke: URL.revokeObjectURL };
+
+  afterEach(() => {
+    Object.assign(URL, { createObjectURL: original.create, revokeObjectURL: original.revoke });
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
   it('downloads the body under the name from the response', () => {
+    vi.useFakeTimers();
     const createObjectURL = vi.fn().mockReturnValue('blob:checklist');
     const revokeObjectURL = vi.fn();
     Object.assign(URL, { createObjectURL, revokeObjectURL });
@@ -62,8 +70,11 @@ describe('saveFile', () => {
     expect(anchors[0].download).toBe('checkliste.pdf');
     expect(anchors[0].href).toBe('blob:checklist');
     expect(click).toHaveBeenCalled();
-    expect(revokeObjectURL).toHaveBeenCalledWith('blob:checklist');
     expect(document.body.contains(anchors[0])).toBe(false);
+    // Safari starts the download asynchronously; revoking right away would lose the file.
+    expect(revokeObjectURL).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(30_000);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:checklist');
   });
 
   it('uses the fallback name without Content-Disposition', () => {

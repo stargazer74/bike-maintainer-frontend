@@ -57,9 +57,15 @@ describe('ChecklistDialog', () => {
     fixture.detectChanges();
   }
 
+  const originalUrl = { create: URL.createObjectURL, revoke: URL.revokeObjectURL };
+
   beforeEach(() => close.mockReset());
   afterEach(() => {
     httpMock.verify();
+    Object.assign(URL, {
+      createObjectURL: originalUrl.create,
+      revokeObjectURL: originalUrl.revoke,
+    });
     vi.restoreAllMocks();
   });
 

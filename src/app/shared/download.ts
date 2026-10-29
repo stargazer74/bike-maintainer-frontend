@@ -1,5 +1,11 @@
 import { HttpResponse } from '@angular/common/http';
 
+/**
+ * How long the object URL stays valid after the click. Safari (especially iOS) starts the download
+ * asynchronously and fails with an empty file if the URL is revoked right away.
+ */
+const REVOKE_DELAY_MS = 30_000;
+
 /** File name from a `Content-Disposition` header; the RFC 5987 form (`filename*=UTF-8''…`) wins. */
 export function fileNameFromContentDisposition(header: string | null): string | null {
   if (!header) {
@@ -37,5 +43,5 @@ export function saveFile(
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), REVOKE_DELAY_MS);
 }
