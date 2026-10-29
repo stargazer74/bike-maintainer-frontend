@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "Bike Maintainer"
+    "name": "Bike Maintainer",
+    "waitingForServer": "Connecting to the server …"
   },
   "language": {
     "switch": "Choose language",

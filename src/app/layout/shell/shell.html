@@ -94,6 +94,12 @@
 
   <div class="shell__content">
     <main class="shell__main">
+      @if (config.waitingForServer()) {
+        <p class="shell__waiting" role="status">
+          <mat-spinner diameter="16" />
+          {{ 'app.waitingForServer' | transloco }}
+        </p>
+      }
       <router-outlet />
     </main>
   </div>

@@ -191,4 +191,32 @@ describe('App', () => {
     await fixture.whenStable();
     expect(document.querySelector('.shell__account')).toBeNull();
   });
+
+  it('shows that it waits for the server while the mode is unknown', async () => {
+    vi.useFakeTimers();
+    try {
+      const config = TestBed.inject(AppConfigStore);
+      const loaded = config.load();
+      httpMock
+        .expectOne('http://localhost/api/v1/config')
+        .flush(null, { status: 502, statusText: 'Bad Gateway' });
+      await vi.advanceTimersByTimeAsync(0);
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const page = fixture.nativeElement as HTMLElement;
+
+      expect(page.querySelector('.shell__waiting')?.textContent).toContain(
+        'Verbindung zum Server wird hergestellt',
+      );
+
+      await vi.advanceTimersByTimeAsync(3000);
+      httpMock.expectOne('http://localhost/api/v1/config').flush({ mode: OperatingMode.Portal });
+      await loaded;
+      fixture.detectChanges();
+
+      expect(page.querySelector('.shell__waiting')).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

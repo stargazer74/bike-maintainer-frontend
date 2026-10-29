@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -43,6 +44,7 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
     MatFormFieldModule,
     MatIconModule,
     MatMenuModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     MatTabsModule,
     MatToolbarModule,

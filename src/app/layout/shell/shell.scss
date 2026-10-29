@@ -212,6 +212,16 @@
   padding: 24px;
 }
 
+.shell__waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 48px 0;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
 @media (max-width: 768px) {
   .shell__main {
     padding: 16px;
