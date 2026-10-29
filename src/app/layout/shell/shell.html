@@ -78,6 +78,10 @@
               <span>{{ 'shell.switchProfile' | transloco }}</span>
             </button>
           } @else {
+            <a mat-menu-item class="shell__account" routerLink="/konto">
+              <mat-icon fontSet="material-symbols-outlined">manage_accounts</mat-icon>
+              <span>{{ 'shell.account' | transloco }}</span>
+            </a>
             <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
               <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
               <span>{{ 'shell.logout' | transloco }}</span>

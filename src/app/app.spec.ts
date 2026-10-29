@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
-import { Language, UserRole } from './api-client';
+import { Language, OperatingMode, UserRole } from './api-client';
 import { App } from './app';
 import { routes } from './app.routes';
 import { AuthStore } from './auth/auth-store';
+import { AppConfigStore } from './config/app-config-store';
 import { translocoTesting } from './i18n/testing';
 import './i18n/i18n.config';
 
@@ -145,5 +146,49 @@ describe('App', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(
       'Deine E-Mail-Adresse ist bestätigt.',
     );
+  });
+
+  it('lets logged-out users request a new password', async () => {
+    const page = (await render('/passwort-vergessen')).nativeElement as HTMLElement;
+
+    expect(router.url).toBe('/passwort-vergessen');
+    expect(page.querySelector('#forgot-email')).not.toBeNull();
+  });
+
+  it('opens the password reset link without a session', async () => {
+    const page = (await render('/passwort-zuruecksetzen?token=abc')).nativeElement as HTMLElement;
+
+    expect(router.url).toBe('/passwort-zuruecksetzen?token=abc');
+    expect(page.querySelector('#reset-password')).not.toBeNull();
+  });
+
+  it('opens the account page from the user menu', async () => {
+    await logIn();
+    const fixture = await render('/fahrzeuge');
+
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLButtonElement>('.shell__user-button')!
+      .click();
+    await fixture.whenStable();
+    document.querySelector<HTMLAnchorElement>('.shell__account')!.click();
+    await fixture.whenStable();
+
+    expect(router.url).toBe('/konto');
+    expect(document.querySelector('#account-current-password')).not.toBeNull();
+  });
+
+  it('has no account page in household mode', async () => {
+    const configLoaded = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne('http://localhost/api/v1/config').flush({ mode: OperatingMode.Household });
+    await configLoaded;
+    await logIn();
+    const fixture = await render('/konto');
+
+    expect(router.url).toBe('/dashboard');
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLButtonElement>('.shell__user-button')!
+      .click();
+    await fixture.whenStable();
+    expect(document.querySelector('.shell__account')).toBeNull();
   });
 });

@@ -1,0 +1,62 @@
+.account {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.account__card {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  background: var(--bm-surface);
+  border: 1px solid var(--bm-border);
+}
+
+.account__title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  color: var(--bm-text);
+}
+
+.account__subtitle,
+.account__text {
+  margin: 0 0 24px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.account__hint {
+  display: block;
+  margin-top: 4px;
+  color: var(--bm-text-dim);
+  font-size: 0.75rem;
+}
+
+.account__error {
+  margin: 0 0 14px;
+}
+
+.account__submit {
+  width: 100%;
+  justify-content: center;
+}
+
+.account__link {
+  display: block;
+  margin-top: 16px;
+  color: var(--bm-orange-light);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.account__section-title {
+  margin: 0 0 16px;
+  font-size: 1.125rem;
+  color: var(--bm-text);
+}
+
+.account__success {
+  margin: 0 0 14px;
+  color: var(--status-ok);
+  font-size: 0.875rem;
+}

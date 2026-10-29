@@ -1,0 +1,74 @@
+<div class="account">
+  <mat-card class="account__card">
+    <h1 class="account__title">{{ 'accountSettings.title' | transloco }}</h1>
+    <h2 class="account__section-title">{{ 'accountSettings.passwordTitle' | transloco }}</h2>
+
+    <form novalidate (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label class="field__label" for="account-current-password">
+          {{ 'accountSettings.currentPassword' | transloco }}
+        </label>
+        <input
+          id="account-current-password"
+          name="currentPassword"
+          type="password"
+          class="field__input"
+          autocomplete="current-password"
+          required
+          [ngModel]="currentPassword()"
+          (ngModelChange)="currentPassword.set($event)"
+        />
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="account-new-password">
+          {{ 'accountSettings.newPassword' | transloco }}
+        </label>
+        <input
+          id="account-new-password"
+          name="newPassword"
+          type="password"
+          class="field__input"
+          autocomplete="new-password"
+          required
+          aria-describedby="account-new-password-hint"
+          [ngModel]="newPassword()"
+          (ngModelChange)="newPassword.set($event)"
+        />
+        <span id="account-new-password-hint" class="account__hint">
+          {{ 'account.password.hint' | transloco }}
+        </span>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="account-new-password-repeat">
+          {{ 'accountSettings.newPasswordRepeat' | transloco }}
+        </label>
+        <input
+          id="account-new-password-repeat"
+          name="newPasswordRepeat"
+          type="password"
+          class="field__input"
+          autocomplete="new-password"
+          required
+          [ngModel]="newPasswordRepeat()"
+          (ngModelChange)="newPasswordRepeat.set($event)"
+        />
+      </div>
+
+      @if (errorKey(); as key) {
+        <p class="field__error account__error" role="alert">{{ key | transloco }}</p>
+      }
+      @if (changed()) {
+        <p class="account__success" role="status">{{ 'accountSettings.changed' | transloco }}</p>
+      }
+
+      <button type="submit" class="btn btn--primary account__submit" [disabled]="submitting()">
+        @if (submitting()) {
+          <mat-spinner diameter="16" />
+        }
+        {{ 'accountSettings.submit' | transloco }}
+      </button>
+    </form>
+  </mat-card>
+</div>

@@ -40,3 +40,17 @@
   font-size: 0.875rem;
   text-align: center;
 }
+
+.login__notice {
+  margin: 0 0 20px;
+  padding: 10px 12px;
+  border: 1px solid var(--status-ok-border);
+  border-radius: 6px;
+  background: var(--status-ok-bg);
+  color: var(--status-ok);
+  font-size: 0.875rem;
+}
+
+.login__link + .login__link {
+  margin-top: 8px;
+}
