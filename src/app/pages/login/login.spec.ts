@@ -6,6 +6,9 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { Language, UserResponse, UserRole } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
+import { Altcha } from '../../shared/altcha/altcha';
+import { AltchaStub } from '../../shared/altcha/altcha-stub';
+import { ResendVerification } from '../../shared/resend-verification/resend-verification';
 import { Login } from './login';
 
 @Component({ template: 'target' })
@@ -41,6 +44,9 @@ describe('Login', () => {
           withComponentInputBinding(),
         ),
       ],
+    }).overrideComponent(ResendVerification, {
+      remove: { imports: [Altcha] },
+      add: { imports: [AltchaStub] },
     });
     httpMock = TestBed.inject(HttpTestingController);
     harness = await RouterTestingHarness.create();
@@ -166,5 +172,32 @@ describe('Login', () => {
     expect(await loginFailsWith(500)).toBe(
       'Anmeldung fehlgeschlagen, bitte später erneut versuchen.',
     );
+  });
+  it('links to the registration', async () => {
+    const page = await open();
+
+    expect(page.querySelector('a[href="/registrieren"]')?.textContent).toContain('Konto anlegen');
+  });
+
+  it('offers to resend the confirmation email for an unverified address', async () => {
+    const page = await open();
+    fill(page, 'new@example.org', 'secret');
+    submit(page);
+    httpMock
+      .expectOne(LOGIN_URL)
+      .flush({ status: 403, code: 'EMAIL_NOT_VERIFIED' }, { status: 403, statusText: 'Forbidden' });
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+
+    expect(page.querySelector('app-resend-verification')).not.toBeNull();
+    expect(page.querySelector<HTMLInputElement>('#resend-email')!.value).toBe('new@example.org');
+  });
+
+  it('does not offer to resend for other login errors', async () => {
+    await loginFailsWith(401);
+
+    expect(harness.routeNativeElement!.querySelector('app-resend-verification')).toBeNull();
   });
 });

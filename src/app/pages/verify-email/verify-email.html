@@ -1,0 +1,26 @@
+<div class="verify">
+  <mat-card class="verify__card">
+    <h1 class="verify__title">{{ 'verifyEmail.title' | transloco }}</h1>
+
+    @switch (state()) {
+      @case ('verifying') {
+        <p class="verify__text verify__text--busy" role="status">
+          <mat-spinner diameter="16" />
+          {{ 'verifyEmail.verifying' | transloco }}
+        </p>
+      }
+      @case ('success') {
+        <p class="verify__text" role="status">{{ 'verifyEmail.success' | transloco }}</p>
+        <a class="btn btn--primary verify__action" routerLink="/anmelden">
+          {{ 'verifyEmail.toLogin' | transloco }}
+        </a>
+      }
+      @case ('invalid') {
+        <p class="field__error verify__text" role="alert">
+          {{ 'verifyEmail.invalid' | transloco }}
+        </p>
+        <app-resend-verification />
+      }
+    }
+  </mat-card>
+</div>
