@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthStore } from '../../auth/auth-store';
 import { isSafeReturnUrl } from '../../auth/return-url';
+import { ResendVerification } from '../../shared/resend-verification/resend-verification';
 
 /** Translation key of the message for a failed login. */
 function loginErrorKey(error: unknown): string {
@@ -33,7 +34,14 @@ function loginErrorKey(error: unknown): string {
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, MatCardModule, MatProgressSpinnerModule, TranslocoPipe],
+  imports: [
+    FormsModule,
+    RouterLink,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    TranslocoPipe,
+    ResendVerification,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,6 +58,10 @@ export class Login {
   protected readonly submitting = signal(false);
   /** Translation key of the current error message. */
   protected readonly errorKey = signal<string | null>(null);
+  /** Correct password, but the address is not confirmed yet: offer a new confirmation email. */
+  protected readonly offerResend = computed(
+    () => this.errorKey() === 'login.errors.emailNotVerified',
+  );
 
   protected onSubmit(): void {
     const email = this.email().trim();

@@ -8,6 +8,17 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   {
+    path: 'registrieren',
+    canMatch: [portalOnlyGuard, guestGuard],
+    loadComponent: () => import('./pages/register/register').then((m) => m.Register),
+  },
+  {
+    // Target of the link in the confirmation email; works with or without a session.
+    path: 'email-bestaetigen',
+    canMatch: [portalOnlyGuard],
+    loadComponent: () => import('./pages/verify-email/verify-email').then((m) => m.VerifyEmail),
+  },
+  {
     // Household mode: pick a profile instead of logging in.
     path: 'person-waehlen',
     canMatch: [householdOnlyGuard, guestGuard],

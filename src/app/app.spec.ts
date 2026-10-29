@@ -119,4 +119,31 @@ describe('App', () => {
     expect(englishButton.getAttribute('aria-pressed')).toBe('true');
     expect(localStorage.getItem('bm.language')).toBe('en');
   });
+  it('lets logged-out users open the registration', async () => {
+    const page = (await render('/registrieren')).nativeElement as HTMLElement;
+
+    expect(router.url).toBe('/registrieren');
+    expect(page.querySelector('#register-email')).not.toBeNull();
+  });
+
+  it('sends logged-in users from the registration to the dashboard', async () => {
+    await logIn();
+    await render('/registrieren');
+
+    expect(router.url).toBe('/dashboard');
+  });
+
+  it('confirms the email from the link without a session', async () => {
+    const fixture = await render('/email-bestaetigen?token=abc');
+
+    expect(router.url).toBe('/email-bestaetigen?token=abc');
+    httpMock.expectOne('http://localhost/api/v1/auth/verify-email').flush(null, {
+      status: 204,
+      statusText: 'No Content',
+    });
+    await fixture.whenStable();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(
+      'Deine E-Mail-Adresse ist bestätigt.',
+    );
+  });
 });

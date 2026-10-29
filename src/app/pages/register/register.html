@@ -1,0 +1,104 @@
+<div class="register">
+  <mat-card class="register__card">
+    @if (sentTo(); as address) {
+      <h1 class="register__title">{{ 'register.checkInbox.title' | transloco }}</h1>
+      <p class="register__text" role="status">
+        {{ 'register.checkInbox.text' | transloco: { email: address } }}
+      </p>
+      <a class="btn btn--primary register__submit" routerLink="/anmelden">
+        {{ 'register.checkInbox.toLogin' | transloco }}
+      </a>
+    } @else {
+      <h1 class="register__title">{{ 'register.title' | transloco }}</h1>
+      <p class="register__subtitle">{{ 'register.subtitle' | transloco }}</p>
+
+      <form novalidate (ngSubmit)="onSubmit()">
+        <div class="field">
+          <label class="field__label" for="register-email">{{
+            'register.email' | transloco
+          }}</label>
+          <input
+            id="register-email"
+            name="email"
+            type="email"
+            class="field__input"
+            autocomplete="email"
+            required
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="register-password">
+            {{ 'register.password' | transloco }}
+          </label>
+          <input
+            id="register-password"
+            name="password"
+            type="password"
+            class="field__input"
+            autocomplete="new-password"
+            required
+            aria-describedby="register-password-hint"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+          />
+          <span id="register-password-hint" class="register__hint">
+            {{ 'register.passwordHint' | transloco }}
+          </span>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="register-password-repeat">
+            {{ 'register.passwordRepeat' | transloco }}
+          </label>
+          <input
+            id="register-password-repeat"
+            name="passwordRepeat"
+            type="password"
+            class="field__input"
+            autocomplete="new-password"
+            required
+            [ngModel]="passwordRepeat()"
+            (ngModelChange)="passwordRepeat.set($event)"
+          />
+        </div>
+
+        <!-- Honeypot against bots: outside the visible area instead of display:none, which bots skip. -->
+        <div class="register__honeypot" aria-hidden="true">
+          <label for="register-website">{{ 'register.website' | transloco }}</label>
+          <!-- Neutral name and ignore hints, so password managers do not autofill it for real users. -->
+          <input
+            id="register-website"
+            name="hp-field"
+            type="text"
+            tabindex="-1"
+            autocomplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-bwignore
+            data-form-type="other"
+            [ngModel]="website()"
+            (ngModelChange)="website.set($event)"
+          />
+        </div>
+
+        <app-altcha #altcha />
+
+        @if (errorKey(); as key) {
+          <p class="field__error register__error" role="alert">{{ key | transloco }}</p>
+        }
+
+        <button type="submit" class="btn btn--primary register__submit" [disabled]="submitting()">
+          @if (submitting()) {
+            <mat-spinner diameter="16" />
+          }
+          {{ 'register.submit' | transloco }}
+        </button>
+      </form>
+
+      <a class="register__link" routerLink="/anmelden">{{ 'register.haveAccount' | transloco }}</a>
+    }
+  </mat-card>
+</div>
