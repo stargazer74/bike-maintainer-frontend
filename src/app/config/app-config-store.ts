@@ -1,6 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { catchError, firstValueFrom, map, of, tap } from 'rxjs';
+import { firstValueFrom, map, retry, tap, timer } from 'rxjs';
 import { ConfigService, OperatingMode } from '../api-client';
+
+/** Pause before asking the backend again, e.g. while it is still starting after an update. */
+export const CONFIG_RETRY_DELAY_MS = 3000;
 
 /**
  * Operating mode of the backend: `portal` (accounts with login) or `household` (profile selection
@@ -10,20 +13,30 @@ import { ConfigService, OperatingMode } from '../api-client';
 export class AppConfigStore {
   private readonly configService = inject(ConfigService);
   private readonly currentMode = signal<OperatingMode>(OperatingMode.Portal);
+  private readonly waiting = signal(false);
 
   readonly mode = this.currentMode.asReadonly();
   readonly isHousehold = computed(() => this.currentMode() === OperatingMode.Household);
+  /** The backend did not answer yet; the app waits instead of starting in a mode it only guessed. */
+  readonly waitingForServer = this.waiting.asReadonly();
 
   /**
-   * Asks the backend for its mode (runs once at app start). If that fails, the app stays in portal mode:
-   * better to show a login page that does not work than to skip one that is needed.
+   * Asks the backend for its mode (runs once at app start) and asks again until it answers. Guessing would
+   * show a household the portal login, or skip a login that is needed.
    */
   load(): Promise<void> {
     return firstValueFrom(
       this.configService.getAppConfig().pipe(
-        map((config) => config.mode),
-        catchError(() => of(OperatingMode.Portal)),
-        tap((mode) => this.currentMode.set(mode)),
+        retry({
+          delay: () => {
+            this.waiting.set(true);
+            return timer(CONFIG_RETRY_DELAY_MS);
+          },
+        }),
+        tap((config) => {
+          this.currentMode.set(config.mode);
+          this.waiting.set(false);
+        }),
         map(() => undefined),
       ),
     );
