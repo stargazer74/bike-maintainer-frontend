@@ -1,0 +1,38 @@
+<section class="resend">
+  <h2 class="resend__title">{{ 'account.resend.title' | transloco }}</h2>
+
+  @if (sent()) {
+    <p class="resend__sent" role="status">{{ 'account.resend.sent' | transloco }}</p>
+  } @else {
+    <form novalidate (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label class="field__label" for="resend-email">{{
+          'account.resend.email' | transloco
+        }}</label>
+        <input
+          id="resend-email"
+          name="email"
+          type="email"
+          class="field__input"
+          autocomplete="email"
+          required
+          [ngModel]="address()"
+          (ngModelChange)="address.set($event)"
+        />
+      </div>
+
+      <app-altcha #altcha />
+
+      @if (errorKey(); as key) {
+        <p class="field__error resend__error" role="alert">{{ key | transloco }}</p>
+      }
+
+      <button type="submit" class="btn btn--ghost resend__submit" [disabled]="submitting()">
+        @if (submitting()) {
+          <mat-spinner diameter="16" />
+        }
+        {{ 'account.resend.submit' | transloco }}
+      </button>
+    </form>
+  }
+</section>

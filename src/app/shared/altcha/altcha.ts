@@ -12,6 +12,12 @@ import {
 import { TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../i18n/language';
 
+/** What forms need from the widget; also implemented by the test double `AltchaStub`. */
+export interface AltchaControl {
+  payload(): string | null;
+  reset(): void;
+}
+
 /** Path the widget fetches a new proof-of-work challenge from (portal mode only). */
 export const ALTCHA_CHALLENGE_URL = '/api/v1/auth/challenge';
 
@@ -35,7 +41,7 @@ export const ALTCHA_CHALLENGE_URL = '/api/v1/auth/challenge';
   styleUrl: './altcha.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Altcha {
+export class Altcha implements AltchaControl {
   protected readonly language = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
   private readonly widget = viewChild.required<ElementRef<HTMLElement>>('widget');
