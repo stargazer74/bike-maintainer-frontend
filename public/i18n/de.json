@@ -110,6 +110,12 @@
     "createError": "Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.",
     "updateError": "Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut."
   },
+  "costTile": {
+    "title": "Kosten",
+    "total": "Gesamt",
+    "currentYear": "Dieses Jahr",
+    "empty": "Noch keine Kosten erfasst"
+  },
   "vehicleDetail": {
     "loadError": "Fahrzeug konnte nicht geladen werden.",
     "editVehicle": "Fahrzeugdaten bearbeiten",

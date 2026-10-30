@@ -110,6 +110,12 @@
     "createError": "The vehicle could not be added. Please try again.",
     "updateError": "The vehicle could not be updated. Please try again."
   },
+  "costTile": {
+    "title": "Costs",
+    "total": "Total",
+    "currentYear": "This year",
+    "empty": "No costs recorded yet"
+  },
   "vehicleDetail": {
     "loadError": "The vehicle could not be loaded.",
     "editVehicle": "Edit vehicle details",

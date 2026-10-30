@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import {
   Currency,
+  CostSummaryEntry,
   MaintenanceLogResponse,
   MaintenanceTaskResponse,
   MaintenanceTaskStatus,
@@ -53,6 +54,7 @@ describe('VehicleDetail', () => {
   async function render(
     logs: MaintenanceLogResponse[],
     tasks: MaintenanceTaskResponse[] = [],
+    costSummary: CostSummaryEntry[] = [],
   ): Promise<void> {
     TestBed.configureTestingModule({
       imports: [translocoTesting()],
@@ -66,6 +68,7 @@ describe('VehicleDetail', () => {
     httpMock.expectOne(BASE).flush(VEHICLE);
     httpMock.expectOne(`${BASE}/maintenance-tasks`).flush(tasks);
     httpMock.expectOne(`${BASE}/maintenance-logs`).flush(logs);
+    httpMock.expectOne(`${BASE}/cost-summary`).flush(costSummary);
     await fixture.whenStable();
   }
 
@@ -263,6 +266,7 @@ describe('VehicleDetail', () => {
     httpMock.expectOne(BASE).flush(VEHICLE);
     httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
     httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
+    httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
     await fixture.whenStable();
 
     expect(page().querySelectorAll('.new-task')).toHaveLength(0);
@@ -461,5 +465,15 @@ describe('VehicleDetail', () => {
     await openHistoryTab();
 
     expect(page().querySelector('.log-card__costs')).toBeNull();
+  });
+
+  it('shows the cost summary from the request in the status tab', async () => {
+    await render([], [], [{ currency: Currency.Chf, total: 123.4, currentYear: 20 }]);
+
+    const tile = page().querySelector('app-cost-tile')!;
+    const text = (tile.textContent ?? '').replace(/\u00a0/g, ' ');
+    expect(text).toContain('Kosten');
+    expect(text).toContain('123,40 CHF');
+    expect(text).toContain('20,00 CHF');
   });
 });

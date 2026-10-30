@@ -42,6 +42,7 @@ import { LocalCurrencyPipe, LocalDatePipe, LocalNumberPipe } from '../../i18n/lo
 import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
+import { CostTile } from './cost-tile/cost-tile';
 import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
 import { MaterialEditor } from './material-editor/material-editor';
 import {
@@ -75,6 +76,7 @@ import { resolveTaskIcon } from './task-icon';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatTabsModule,
+    CostTile,
     MaterialEditor,
     NewTaskEditor,
     TranslocoPipe,
@@ -108,6 +110,7 @@ export class VehicleDetail {
         vehicle: this.vehiclesService.getVehicle(params.id),
         tasks: this.tasksService.listMaintenanceTasks(params.id),
         logs: this.logsService.listMaintenanceLogs(params.id),
+        costSummary: this.logsService.getCostSummary(params.id),
       }),
   });
 
