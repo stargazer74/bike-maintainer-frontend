@@ -138,7 +138,11 @@
     "submitNew": "Wartung speichern",
     "saveError": "Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.",
     "deleteTitle": "Wartungseintrag löschen?",
-    "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?"
+    "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?",
+    "materials": "Material",
+    "laborCost": "Arbeitskosten ({{currency}})",
+    "total": "Gesamtkosten",
+    "costsInvalid": "Bitte korrigiere das Material und die Arbeitskosten."
   },
   "newTask": {
     "title": "Weitere Arbeit {{number}}",
@@ -353,8 +357,15 @@
       "nameRequired": "Bitte gib eine Bezeichnung ein.",
       "quantityRequired": "Bitte gib eine Menge größer als 0 ein.",
       "quantityDecimals": "Die Menge darf höchstens 3 Nachkommastellen haben.",
-      "priceNegative": "Der Preis darf nicht negativ sein.",
-      "priceDecimals": "Der Preis darf höchstens 2 Nachkommastellen haben."
+      "priceNegative": "Der Betrag darf nicht negativ sein.",
+      "priceDecimals": "Der Betrag darf höchstens 2 Nachkommastellen haben.",
+      "priceTooHigh": "Der Betrag darf höchstens 99.999,99 betragen.",
+      "quantityTooHigh": "Die Menge darf höchstens 999.999,999 betragen."
     }
+  },
+  "logCosts": {
+    "total": "Kosten",
+    "partNumber": "Teilenr. {{number}}",
+    "labor": "Arbeitskosten"
   }
 }

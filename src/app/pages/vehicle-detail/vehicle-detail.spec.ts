@@ -8,9 +8,11 @@ import {
   MaintenanceLogResponse,
   MaintenanceTaskResponse,
   MaintenanceTaskStatus,
+  MaterialUnit,
   VehicleResponse,
   VehicleType,
 } from '../../api-client';
+import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
 import '../../i18n/i18n.config';
 import { VehicleDetail } from './vehicle-detail';
@@ -279,5 +281,185 @@ describe('VehicleDetail', () => {
     expect(page().querySelector('.new-task__error')?.textContent).toContain(
       'Bitte gib einen Namen ein.',
     );
+  });
+
+  const OIL_CHANGE: MaintenanceTaskResponse = {
+    id: 5,
+    vehicleId: 7,
+    name: 'Ölwechsel',
+    oneTime: false,
+    active: true,
+    intervalKm: 6000,
+    status: MaintenanceTaskStatus.Ok,
+  };
+
+  function setValue(selector: string, value: string, index = 0): Promise<void> {
+    const element = page().querySelectorAll<HTMLInputElement | HTMLSelectElement>(selector)[index];
+    element.value = value;
+    element.dispatchEvent(new Event(element instanceof HTMLSelectElement ? 'change' : 'input'));
+    return fixture.whenStable();
+  }
+
+  async function addMaterial(name: string, price: string): Promise<void> {
+    page().querySelector<HTMLButtonElement>('.material__add')!.click();
+    await fixture.whenStable();
+    const index = page().querySelectorAll('.material').length - 1;
+    await setValue('.material__name', name, index);
+    await setValue('.material__price', price, index);
+  }
+
+  function checkFirstTask(): Promise<void> {
+    page().querySelector<HTMLInputElement>('.log-form__task-option input')!.click();
+    return fixture.whenStable();
+  }
+
+  function costLog(): MaintenanceLogResponse {
+    return {
+      ...log(1, '2026-05-01'),
+      currency: Currency.Chf,
+      performedTaskIds: [5],
+      materials: [
+        {
+          name: 'Motoröl 10W-40',
+          partNumber: 'MO-1',
+          quantity: 3.5,
+          unit: MaterialUnit.Liter,
+          price: 42.5,
+          taskId: 5,
+        },
+      ],
+      laborCost: 80,
+      totalCost: 122.5,
+    };
+  }
+
+  async function signIn(currency: Currency): Promise<void> {
+    TestBed.inject(AuthStore).selectProfile(3).subscribe();
+    httpMock
+      .expectOne((req) => req.url.endsWith('/profiles/3/select'))
+      .flush({ id: 3, name: 'Chris', role: 'USER', language: 'de', currency });
+    await fixture.whenStable();
+  }
+
+  it('uses the currency of the user for a new log', async () => {
+    await render([], [OIL_CHANGE]);
+    await signIn(Currency.Sek);
+    await openTab(2);
+
+    expect(page().querySelector('.log-form__labor .field__label')!.textContent).toContain('SEK');
+  });
+
+  it('sends materials and labor cost with the log and shows one overall sum', async () => {
+    await render([], [OIL_CHANGE]);
+    await openTab(2);
+    await checkFirstTask();
+    await addMaterial('Motoröl', '42.5');
+    await setValue('.material__task', '1: 5');
+    await setValue('#log-labor-cost', '80');
+
+    expect(page().querySelector('.log-form__total')?.textContent).toContain('122,50');
+    expect(page().querySelector('.material__total')).toBeNull();
+    saveLogButton().click();
+    const request = httpMock.expectOne(
+      (req) => req.method === 'POST' && req.url === `${BASE}/maintenance-logs`,
+    );
+    expect(request.request.body.materials).toEqual([
+      {
+        name: 'Motoröl',
+        partNumber: undefined,
+        quantity: 1,
+        unit: MaterialUnit.Piece,
+        price: 42.5,
+        taskId: 5,
+      },
+    ]);
+    expect(request.request.body.laborCost).toBe(80);
+    request.flush(log(1, '2026-10-30'));
+  });
+
+  it('clears the task of a material when that task is unchecked', async () => {
+    await render([], [OIL_CHANGE]);
+    await openTab(2);
+    await checkFirstTask();
+    await addMaterial('Motoröl', '10');
+    await setValue('.material__task', '1: 5');
+    expect(
+      page().querySelector<HTMLSelectElement>('.material__task')!.selectedOptions[0].text,
+    ).toBe('Ölwechsel');
+
+    await checkFirstTask();
+    saveLogButton().click();
+
+    const request = httpMock.expectOne(
+      (req) => req.method === 'POST' && req.url === `${BASE}/maintenance-logs`,
+    );
+    expect(request.request.body.materials[0].taskId).toBeUndefined();
+    request.flush(log(1, '2026-10-30'));
+  });
+
+  it('does not save invalid materials or labor cost', async () => {
+    await render([]);
+    await openTab(2);
+    await addMaterial('Öl', '1.005');
+    await setValue('#log-labor-cost', '100000');
+
+    saveLogButton().click();
+    await fixture.whenStable();
+
+    httpMock.expectNone((req) => req.method === 'POST');
+    expect(page().textContent).toContain('Bitte korrigiere das Material und die Arbeitskosten.');
+    expect(page().querySelector('.material__error')?.textContent).toContain('2 Nachkommastellen');
+    expect(page().textContent).toContain('höchstens 99.999,99');
+  });
+
+  it('edits a log in its own currency with its materials and labor cost', async () => {
+    await render([costLog()], [OIL_CHANGE]);
+    await signIn(Currency.Eur);
+    await openHistoryTab();
+    page().querySelector<HTMLButtonElement>('.log-card__actions button:nth-child(2)')!.click();
+    await fixture.whenStable();
+
+    expect(page().querySelector<HTMLInputElement>('.material__name')!.value).toBe('Motoröl 10W-40');
+    expect(page().querySelector<HTMLInputElement>('#log-labor-cost')!.value).toBe('80');
+    expect(page().querySelector('.material__price')!.previousElementSibling!.textContent).toContain(
+      'CHF',
+    );
+    expect(page().querySelector('.log-form__total')?.textContent).toMatch(/122,50\s*CHF/);
+
+    saveLogButton().click();
+    const request = httpMock.expectOne(
+      (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-logs/1`,
+    );
+    expect(request.request.body.materials[0]).toMatchObject({ name: 'Motoröl 10W-40', taskId: 5 });
+    expect(request.request.body.laborCost).toBe(80);
+    request.flush(costLog());
+  });
+
+  it('shows the total of a log in its currency and expands the details', async () => {
+    await render([costLog()], [OIL_CHANGE]);
+    await openHistoryTab();
+
+    const toggle = page().querySelector<HTMLButtonElement>('.log-card__costs-toggle')!;
+    expect(toggle.textContent).toMatch(/122,50\s*CHF/);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(page().querySelector('.log-card__costs-details')).toBeNull();
+
+    toggle.click();
+    await fixture.whenStable();
+
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    const details = page().querySelector('.log-card__costs-details')!.textContent!;
+    expect(details).toContain('Motoröl 10W-40');
+    expect(details).toContain('Teilenr. MO-1');
+    expect(details).toMatch(/3,5\s*l/);
+    expect(details).toMatch(/42,50\s*CHF/);
+    expect(details).toMatch(/Arbeitskosten\s*80,00\s*CHF/);
+  });
+
+  it('shows no cost area for a log without costs', async () => {
+    await render([log(1, '2026-05-01')]);
+    await openHistoryTab();
+
+    expect(page().querySelector('.log-card__costs')).toBeNull();
   });
 });

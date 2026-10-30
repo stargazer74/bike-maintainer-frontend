@@ -25,6 +25,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  Currency,
   MaintenanceLogRequest,
   MaintenanceLogResponse,
   MaintenanceLogsService,
@@ -35,12 +36,22 @@ import {
   VehicleResponse,
   VehiclesService,
 } from '../../api-client';
+import { AuthStore } from '../../auth/auth-store';
 import { LanguageService } from '../../i18n/language';
-import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
+import { LocalCurrencyPipe, LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
 import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
 import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
+import { MaterialEditor } from './material-editor/material-editor';
+import {
+  amountError,
+  draftTotalCents,
+  emptyMaterial,
+  MaterialDraft,
+  materialDraftError,
+  toMaterialRequests,
+} from './material-editor/material-draft';
 import { NewTaskEditor } from './new-task-editor/new-task-editor';
 import { draftError, NewTaskDraft, toNewTaskRequests } from './new-task-editor/new-task-draft';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
@@ -52,6 +63,7 @@ import { resolveTaskIcon } from './task-icon';
 @Component({
   selector: 'app-vehicle-detail',
   imports: [
+    LocalCurrencyPipe,
     LocalDatePipe,
     LocalNumberPipe,
     FormsModule,
@@ -63,6 +75,7 @@ import { resolveTaskIcon } from './task-icon';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatTabsModule,
+    MaterialEditor,
     NewTaskEditor,
     TranslocoPipe,
   ],
@@ -78,6 +91,7 @@ export class VehicleDetail {
   private readonly logsService = inject(MaintenanceLogsService);
   private readonly dialog = inject(MatDialog);
   private readonly transloco = inject(TranslocoService);
+  private readonly authStore = inject(AuthStore);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly language = inject(LanguageService);
@@ -129,6 +143,22 @@ export class VehicleDetail {
         taskNames: (log.performedTaskIds ?? []).map((id) => taskNames.get(id) ?? unknown),
       }));
   });
+
+  /** Logs whose cost details are expanded in the history. */
+  protected readonly expandedLogIds = signal<ReadonlySet<number>>(new Set());
+
+  protected toggleLogCosts(logId: number | undefined): void {
+    if (logId === undefined) {
+      return;
+    }
+    this.expandedLogIds.update((ids) => {
+      const next = new Set(ids);
+      if (!next.delete(logId)) {
+        next.add(logId);
+      }
+      return next;
+    });
+  }
 
   protected readonly selectedTabIndex = signal(0);
 
@@ -231,7 +261,28 @@ export class VehicleDetail {
   /** Work that becomes new tasks when the log is saved. */
   protected readonly logNewTasks = signal<readonly NewTaskDraft[]>([]);
   protected readonly logShowNewTaskErrors = signal(false);
+  protected readonly logMaterials = signal<readonly MaterialDraft[]>([]);
+  protected readonly logLaborCost = signal<number | null>(null);
+  protected readonly logShowCostErrors = signal(false);
   protected readonly editingLogId = signal<number | null>(null);
+  /** Currency of the log being edited; a new log uses the one of the user. */
+  private readonly editingCurrency = signal<Currency | null>(null);
+  protected readonly logCurrency = computed(
+    () => this.editingCurrency() ?? this.authStore.currentUser()?.currency ?? Currency.Eur,
+  );
+  /** The checked tasks (also inactive ones of an edited log) that materials can be assigned to. */
+  protected readonly logCheckedTasks = computed(() => {
+    const ids = this.logTaskIds();
+    const unnamed = this.transloco.translate('task.unnamed', {}, this.language.lang());
+    return (this.data.value()?.tasks ?? [])
+      .filter((task) => ids.has(task.id))
+      .map((task) => ({ id: task.id, name: task.name ?? unnamed }));
+  });
+  protected readonly logLaborCostError = computed(() => amountError(this.logLaborCost()));
+  protected readonly logTotal = computed(() => {
+    const cents = draftTotalCents(this.logMaterials(), this.logLaborCost());
+    return cents === null ? null : cents / 100;
+  });
   protected readonly savingLog = signal(false);
   /** Translation key of the error to show. */
   protected readonly logSubmitError = signal<string | null>(null);
@@ -256,6 +307,9 @@ export class VehicleDetail {
       const next = new Set(ids);
       if (next.has(taskId)) {
         next.delete(taskId);
+        this.logMaterials.update((drafts) =>
+          drafts.map((draft) => (draft.taskId === taskId ? { ...draft, taskId: null } : draft)),
+        );
       } else {
         next.add(taskId);
       }
@@ -271,6 +325,20 @@ export class VehicleDetail {
     this.logTaskIds.set(new Set(log.performedTaskIds ?? []));
     this.logNewTasks.set([]);
     this.logShowNewTaskErrors.set(false);
+    this.logMaterials.set(
+      (log.materials ?? []).map((material) => ({
+        ...emptyMaterial(),
+        name: material.name,
+        partNumber: material.partNumber ?? '',
+        quantity: material.quantity,
+        unit: material.unit,
+        price: material.price ?? null,
+        taskId: material.taskId ?? null,
+      })),
+    );
+    this.logLaborCost.set(log.laborCost ?? null);
+    this.logShowCostErrors.set(false);
+    this.editingCurrency.set(log.currency);
     this.logSubmitError.set(null);
     this.selectedTabIndex.set(2);
   }
@@ -289,12 +357,23 @@ export class VehicleDetail {
       this.logSubmitError.set('newTask.errors.fix');
       return;
     }
+    if (
+      this.logMaterials().some((draft) => materialDraftError(draft) !== null) ||
+      this.logLaborCostError()
+    ) {
+      this.logShowCostErrors.set(true);
+      this.logSubmitError.set('logForm.costsInvalid');
+      return;
+    }
+    const materials = this.logMaterials();
     const request: MaintenanceLogRequest = {
       performedAt: this.logDate(),
       mileageAtPerformed: this.logMileage(),
       notes: this.logNotes().trim() || undefined,
       performedTaskIds: [...this.logTaskIds()],
       newTasks: newTasks.length ? toNewTaskRequests(newTasks) : undefined,
+      materials: materials.length ? toMaterialRequests(materials) : undefined,
+      laborCost: this.logLaborCost() ?? undefined,
     };
     const logId = this.editingLogId();
     const request$ =
@@ -350,6 +429,10 @@ export class VehicleDetail {
     this.logTaskIds.set(new Set());
     this.logNewTasks.set([]);
     this.logShowNewTaskErrors.set(false);
+    this.logMaterials.set([]);
+    this.logLaborCost.set(null);
+    this.logShowCostErrors.set(false);
+    this.editingCurrency.set(null);
     this.logSubmitError.set(null);
   }
 

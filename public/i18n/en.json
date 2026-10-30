@@ -138,7 +138,11 @@
     "submitNew": "Save maintenance",
     "saveError": "The maintenance could not be saved. Please try again.",
     "deleteTitle": "Delete maintenance entry?",
-    "confirmDelete": "Really delete the maintenance entry from {{date}}?"
+    "confirmDelete": "Really delete the maintenance entry from {{date}}?",
+    "materials": "Material",
+    "laborCost": "Labor cost ({{currency}})",
+    "total": "Total cost",
+    "costsInvalid": "Please correct the material and the labor cost."
   },
   "newTask": {
     "title": "Additional work {{number}}",
@@ -353,8 +357,15 @@
       "nameRequired": "Please enter a name.",
       "quantityRequired": "Please enter a quantity greater than 0.",
       "quantityDecimals": "The quantity may have at most 3 decimal places.",
-      "priceNegative": "The price must not be negative.",
-      "priceDecimals": "The price may have at most 2 decimal places."
+      "priceNegative": "The amount must not be negative.",
+      "priceDecimals": "The amount may have at most 2 decimal places.",
+      "priceTooHigh": "The amount must not exceed 99,999.99.",
+      "quantityTooHigh": "The quantity must not exceed 999,999.999."
     }
+  },
+  "logCosts": {
+    "total": "Costs",
+    "partNumber": "Part no. {{number}}",
+    "labor": "Labor cost"
   }
 }

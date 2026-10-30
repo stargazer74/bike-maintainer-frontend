@@ -122,7 +122,7 @@
   </button>
 }
 
-@if (total() !== null) {
+@if (showTotal() && total() !== null) {
   <p class="material__total">
     {{ 'materialForm.total' | transloco }}:
     <strong class="material__total-value">{{ total() | localCurrency: currency() }}</strong>

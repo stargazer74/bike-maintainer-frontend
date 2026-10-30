@@ -31,6 +31,8 @@ export class MaterialEditor {
   readonly currency = input('EUR');
   /** Shows the problems of incomplete rows, e.g. after a save attempt. */
   readonly showErrors = input(false);
+  /** Shows the sum of the material prices below the rows; turn off if the parent shows an overall sum. */
+  readonly showTotal = input(true);
 
   protected readonly maxMaterials = MAX_MATERIALS;
   protected readonly units = Object.values(MaterialUnit);

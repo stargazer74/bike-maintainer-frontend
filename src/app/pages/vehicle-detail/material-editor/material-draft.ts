@@ -41,16 +41,32 @@ export function materialDraftError(draft: MaterialDraft): string | null {
   if (draft.quantity === null || !(draft.quantity > 0)) {
     return 'materialForm.errors.quantityRequired';
   }
+  if (draft.quantity > MAX_QUANTITY) {
+    return 'materialForm.errors.quantityTooHigh';
+  }
   if (!hasAtMostDecimals(draft.quantity, 3)) {
     return 'materialForm.errors.quantityDecimals';
   }
-  if (draft.price !== null) {
-    if (draft.price < 0) {
-      return 'materialForm.errors.priceNegative';
-    }
-    if (!hasAtMostDecimals(draft.price, 2)) {
-      return 'materialForm.errors.priceDecimals';
-    }
+  return amountError(draft.price);
+}
+
+/** Highest price / labor cost and quantity the backend accepts. */
+export const MAX_AMOUNT = 99999.99;
+export const MAX_QUANTITY = 999999.999;
+
+/** Translation key of the problem with a price or labor cost (empty is fine), or `null` if it is valid. */
+export function amountError(amount: number | null): string | null {
+  if (amount === null) {
+    return null;
+  }
+  if (amount < 0) {
+    return 'materialForm.errors.priceNegative';
+  }
+  if (amount > MAX_AMOUNT) {
+    return 'materialForm.errors.priceTooHigh';
+  }
+  if (!hasAtMostDecimals(amount, 2)) {
+    return 'materialForm.errors.priceDecimals';
   }
   return null;
 }

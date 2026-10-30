@@ -3,6 +3,7 @@ import {
   draftTotalCents,
   emptyMaterial,
   MaterialDraft,
+  amountError,
   materialDraftError,
   toMaterialRequests,
 } from './material-draft';
@@ -27,6 +28,10 @@ describe('material drafts', () => {
     [draft({ quantity: 1.125 }), null],
     [draft({ price: -0.01 }), 'materialForm.errors.priceNegative'],
     [draft({ price: 1.005 }), 'materialForm.errors.priceDecimals'],
+    [draft({ price: 100000 }), 'materialForm.errors.priceTooHigh'],
+    [draft({ price: 99999.99 }), null],
+    [draft({ quantity: 1000000 }), 'materialForm.errors.quantityTooHigh'],
+    [draft({ quantity: 999999.999 }), null],
     [draft({ price: 0 }), null],
     [draft({ price: 12.9 }), null],
     [draft({}), null],
@@ -69,5 +74,13 @@ describe('material drafts', () => {
     expect(draftTotalCents([draft({})], null)).toBeNull();
     expect(draftTotalCents([], null)).toBeNull();
     expect(draftTotalCents([], 0)).toBe(0);
+  });
+
+  it('validates a labor cost like a price', () => {
+    expect(amountError(null)).toBeNull();
+    expect(amountError(0)).toBeNull();
+    expect(amountError(-1)).toBe('materialForm.errors.priceNegative');
+    expect(amountError(100000)).toBe('materialForm.errors.priceTooHigh');
+    expect(amountError(1.005)).toBe('materialForm.errors.priceDecimals');
   });
 });
