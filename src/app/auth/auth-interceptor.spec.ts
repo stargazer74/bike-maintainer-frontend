@@ -9,6 +9,7 @@ import { Language, OperatingMode, UserRole } from '../api-client';
 import { AppConfigStore } from '../config/app-config-store';
 import { authInterceptor } from './auth-interceptor';
 import { AuthStore } from './auth-store';
+import { translocoTesting } from '../i18n/testing';
 
 @Component({ template: 'page' })
 class Page {}
@@ -23,6 +24,7 @@ describe('authInterceptor', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      imports: [translocoTesting()],
       providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),

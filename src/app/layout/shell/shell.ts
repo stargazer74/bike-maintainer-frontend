@@ -56,9 +56,12 @@ export class Shell {
   private readonly vehiclesService = inject(VehiclesService);
   private readonly dialog = inject(MatDialog);
 
+  /** Only a different user reloads the vehicles, not a change of their settings (e.g. language). */
+  private readonly userId = computed(() => this.authStore.currentUser()?.id);
+
   /** Loaded per logged-in user; idle (and empty) while logged out, reloaded when the user changes. */
   protected readonly vehicles = rxResource({
-    params: () => this.authStore.currentUser()?.id,
+    params: () => this.userId(),
     stream: () => this.vehiclesService.listVehicles(),
   });
 
@@ -80,7 +83,7 @@ export class Shell {
   }
 
   protected onSelectLanguage(lang: AppLanguage): void {
-    void this.language.use(lang);
+    this.authStore.changeLanguage(lang);
   }
 
   /** Ends the session; in household mode this means switching to another profile. */

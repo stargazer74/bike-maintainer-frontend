@@ -7,6 +7,7 @@ import { Language, OperatingMode, UserRole } from '../api-client';
 import { AppConfigStore } from '../config/app-config-store';
 import { authGuard, guestGuard, householdOnlyGuard, portalOnlyGuard } from './auth-guards';
 import { AuthStore } from './auth-store';
+import { translocoTesting } from '../i18n/testing';
 
 @Component({ template: 'page' })
 class Page {}
@@ -17,6 +18,7 @@ describe('auth guards', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      imports: [translocoTesting()],
       providers: [
         provideHttpClientTesting(),
         provideRouter([
