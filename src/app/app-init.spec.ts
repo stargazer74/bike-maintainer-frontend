@@ -4,6 +4,7 @@ import { provideRouter, Router, withDisabledInitialNavigation } from '@angular/r
 import { Component } from '@angular/core';
 import { OperatingMode } from './api-client';
 import { startApp } from './app-init';
+import { translocoTesting } from './i18n/testing';
 
 @Component({ template: '' })
 class Page {}
@@ -14,6 +15,7 @@ describe('startApp', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [translocoTesting()],
       providers: [
         provideHttpClientTesting(),
         provideRouter([{ path: '**', component: Page }], withDisabledInitialNavigation()),

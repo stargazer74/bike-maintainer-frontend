@@ -127,6 +127,25 @@ describe('App', () => {
     expect(englishButton.getAttribute('aria-pressed')).toBe('true');
     expect(localStorage.getItem('bm.language')).toBe('en');
   });
+
+  it('saves the language in the account when switching while logged in', async () => {
+    await logIn();
+    const fixture = await render('/dashboard');
+    const page = fixture.nativeElement as HTMLElement;
+
+    [...page.querySelectorAll<HTMLButtonElement>('.shell__language-option')]
+      .find((button) => button.textContent?.trim() === 'EN')!
+      .click();
+    const request = httpMock.expectOne('http://localhost/api/v1/auth/me');
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({ language: 'en' });
+    request.flush({ id: 1, role: UserRole.Admin, language: Language.En, createdAt: '' });
+    await fixture.whenStable();
+
+    expect(document.documentElement.lang).toBe('en');
+    expect(TestBed.inject(AuthStore).currentUser()?.language).toBe(Language.En);
+  });
+
   it('lets logged-out users open the registration', async () => {
     const page = (await render('/registrieren')).nativeElement as HTMLElement;
 

@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
 import { Language, UserResponse, UserRole } from '../api-client';
+import { LanguageService } from '../i18n/language';
+import { translocoTesting } from '../i18n/testing';
 import { AuthStore } from './auth-store';
 
 const ME_URL = 'http://localhost/api/v1/auth/me';
@@ -22,14 +24,29 @@ const USER: UserResponse = {
 describe('AuthStore', () => {
   let store: AuthStore;
   let httpMock: HttpTestingController;
+  let language: LanguageService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClientTesting()] });
+  beforeEach(async () => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting()],
+    });
     store = TestBed.inject(AuthStore);
     httpMock = TestBed.inject(HttpTestingController);
+    language = TestBed.inject(LanguageService);
+    await language.use('de', false);
   });
 
-  afterEach(() => httpMock.verify());
+  afterEach(() => {
+    httpMock.verify();
+    localStorage.clear();
+  });
+
+  /** The language switch loads its translations asynchronously. */
+  function settle(): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve));
+  }
 
   it('starts logged out', () => {
     expect(store.currentUser()).toBeNull();
@@ -116,5 +133,77 @@ describe('AuthStore', () => {
 
     expect(await result).toEqual(profile);
     expect(store.currentUser()).toEqual(profile);
+  });
+
+  it('load() switches the UI to the language of the account and remembers it', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush({ ...USER, language: Language.En });
+    await loaded;
+
+    expect(language.lang()).toBe('en');
+    expect(localStorage.getItem('bm.language')).toBe('en');
+  });
+
+  it('load() keeps the UI language when nobody is logged in', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(null, { status: 401, statusText: 'Unauthorized' });
+    await loaded;
+
+    expect(language.lang()).toBe('de');
+  });
+
+  it('login() switches the UI to the language of the account', async () => {
+    const result = firstValueFrom(store.login('admin@example.com', 'secret'));
+    httpMock.expectOne(LOGIN_URL).flush({ ...USER, language: Language.En });
+    await result;
+    await settle();
+
+    expect(language.lang()).toBe('en');
+  });
+
+  it('selectProfile() switches the UI to the language of the profile', async () => {
+    const result = firstValueFrom(store.selectProfile(7));
+    httpMock.expectOne(SELECT_URL).flush({ ...USER, id: 7, language: Language.En });
+    await result;
+    await settle();
+
+    expect(language.lang()).toBe('en');
+  });
+
+  it('changeLanguage() switches the UI and saves the language in the account when logged in', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    store.changeLanguage('en');
+    const request = httpMock.expectOne(ME_URL);
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({ language: 'en' });
+    request.flush({ ...USER, language: Language.En });
+    await settle();
+
+    expect(language.lang()).toBe('en');
+    expect(store.currentUser()?.language).toBe(Language.En);
+  });
+
+  it('changeLanguage() only switches the UI when logged out', async () => {
+    store.changeLanguage('en');
+    await settle();
+
+    httpMock.expectNone(ME_URL);
+    expect(language.lang()).toBe('en');
+  });
+
+  it('changeLanguage() keeps the new UI language when saving it fails', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    store.changeLanguage('en');
+    httpMock.expectOne(ME_URL).flush(null, { status: 500, statusText: 'Error' });
+    await settle();
+
+    expect(language.lang()).toBe('en');
+    expect(store.currentUser()?.language).toBe(Language.De);
   });
 });
