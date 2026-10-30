@@ -265,6 +265,22 @@
       "unknown": "Die Checkliste konnte nicht erstellt werden, bitte später erneut versuchen."
     }
   },
+  "report": {
+    "open": "Bericht herunterladen",
+    "noLogs": "Noch keine Wartungen erfasst – der Bericht steht bereit, sobald eine Wartung erfasst ist.",
+    "title": "Wartungsbericht herunterladen",
+    "intro": "Wähle die Wartungen für den Bericht. Alle sind schon ausgewählt; im Bericht stehen sie in zeitlicher Reihenfolge.",
+    "selectAll": "Alle",
+    "selectNone": "Keine",
+    "create": "PDF erstellen",
+    "selected": "{{count}} ausgewählt",
+    "downloadEntry": "Bericht für diese Wartung herunterladen",
+    "fallbackFileName": "wartungsbericht.pdf",
+    "errors": {
+      "invalid": "Die Auswahl passt nicht mehr zum Fahrzeug, bitte lade die Seite neu.",
+      "unknown": "Der Bericht konnte nicht erstellt werden, bitte später erneut versuchen."
+    }
+  },
   "forgotPassword": {
     "title": "Passwort vergessen",
     "subtitle": "Gib die E-Mail-Adresse deines Kontos ein. Wir schicken dir einen Link, über den du ein neues Passwort festlegen kannst.",

@@ -111,16 +111,30 @@
             <mat-icon fontSet="material-symbols-outlined">shield</mat-icon>
             {{ 'vehicleDetail.statusHeading' | transloco }}
           </h2>
-          @if (taskCards().length) {
-            <button
-              type="button"
-              class="btn btn--ghost status-section__checklist"
-              (click)="openChecklistDialog(result.vehicle.id, result.tasks)"
-            >
-              <mat-icon fontSet="material-symbols-outlined">print</mat-icon>
-              {{ 'checklist.open' | transloco }}
-            </button>
-          }
+          <div class="status-section__actions">
+            @if (taskCards().length) {
+              <button
+                type="button"
+                class="btn btn--ghost status-section__checklist"
+                (click)="openChecklistDialog(result.vehicle.id, result.tasks)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">print</mat-icon>
+                {{ 'checklist.open' | transloco }}
+              </button>
+            }
+            <!-- Disabled buttons get no hover events in every browser, so the hint sits on a wrapper. -->
+            <span [attr.title]="logCards().length ? null : ('report.noLogs' | transloco)">
+              <button
+                type="button"
+                class="btn btn--ghost status-section__report"
+                [disabled]="!logCards().length"
+                (click)="openReportDialog(result.vehicle.id)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">download</mat-icon>
+                {{ 'report.open' | transloco }}
+              </button>
+            </span>
+          </div>
         </div>
 
         @if (!taskCards().length) {
@@ -185,6 +199,9 @@
             </mat-card-content>
           </mat-card>
         } @else {
+          @if (reportErrorKey(); as key) {
+            <p class="field__error history-section__error" role="alert">{{ key | transloco }}</p>
+          }
           <div class="log-list">
             @for (card of logCards(); track card.log.id) {
               <mat-card class="log-card" appearance="outlined">
@@ -195,6 +212,21 @@
                       >{{ card.log.mileageAtPerformed | localNumber }} km</span
                     >
                     <span class="log-card__actions">
+                      <button
+                        mat-icon-button
+                        type="button"
+                        class="log-card__download"
+                        [disabled]="downloadingLogId() !== null"
+                        [attr.aria-label]="'report.downloadEntry' | transloco"
+                        [attr.title]="'report.downloadEntry' | transloco"
+                        (click)="downloadEntryReport(vehicle.id, card.log.id)"
+                      >
+                        @if (downloadingLogId() === card.log.id) {
+                          <mat-spinner diameter="18" />
+                        } @else {
+                          <mat-icon fontSet="material-symbols-outlined">download</mat-icon>
+                        }
+                      </button>
                       <button
                         mat-icon-button
                         type="button"

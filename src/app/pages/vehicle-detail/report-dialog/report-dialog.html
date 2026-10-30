@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>{{ 'report.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  <p class="report__intro">{{ 'report.intro' | transloco }}</p>
+  <div class="report__bulk">
+    <button type="button" class="btn btn--ghost report__all" (click)="selectAll()">
+      {{ 'report.selectAll' | transloco }}
+    </button>
+    <button type="button" class="btn btn--ghost report__none" (click)="selectNone()">
+      {{ 'report.selectNone' | transloco }}
+    </button>
+  </div>
+  <ul class="report__list">
+    @for (entry of data.entries; track entry.log.id) {
+      <li class="report__row">
+        <label class="report__label">
+          <input
+            type="checkbox"
+            class="report__checkbox"
+            [checked]="selected().has(entry.log.id)"
+            (change)="toggle(entry.log.id)"
+          />
+          <span class="report__body">
+            <span class="report__head">
+              <span class="report__date">{{ entry.log.performedAt | localDate }}</span>
+              <span class="report__mileage"
+                >{{ entry.log.mileageAtPerformed | localNumber }} km</span
+              >
+            </span>
+            @if (entry.taskNames.length) {
+              <span class="report__tasks">{{ entry.taskNames.join(', ') }}</span>
+            }
+          </span>
+        </label>
+      </li>
+    }
+  </ul>
+  <p class="report__count">
+    {{ 'report.selected' | transloco: { count: selected().size } }}
+  </p>
+
+  @if (errorKey(); as key) {
+    <p class="field__error report__error" role="alert">{{ key | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn--ghost" mat-dialog-close>
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    type="button"
+    class="btn btn--primary report__create"
+    [disabled]="creating() || selected().size === 0"
+    (click)="create()"
+  >
+    @if (creating()) {
+      <mat-spinner diameter="16" />
+    } @else {
+      <mat-icon fontSet="material-symbols-outlined">picture_as_pdf</mat-icon>
+    }
+    {{ 'report.create' | transloco }}
+  </button>
+</mat-dialog-actions>

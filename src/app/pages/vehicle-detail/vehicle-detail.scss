@@ -234,7 +234,14 @@
     }
   }
 
-  .status-section__checklist mat-icon {
+  .status-section__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .status-section__checklist mat-icon,
+  .status-section__report mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
@@ -354,6 +361,10 @@
 
 .history-section {
   padding-top: 20px;
+}
+
+.history-section__error {
+  margin: 0 0 12px;
 }
 
 .log-list {

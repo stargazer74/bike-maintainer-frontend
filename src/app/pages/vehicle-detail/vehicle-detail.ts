@@ -3,12 +3,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
+  DOCUMENT,
   effect,
   inject,
   input,
   signal,
 } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { filter, forkJoin, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,7 +38,9 @@ import {
 import { LanguageService } from '../../i18n/language';
 import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
 import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
+import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
+import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { computeTaskStatus } from './maintenance-status';
@@ -70,6 +75,8 @@ export class VehicleDetail {
   private readonly logsService = inject(MaintenanceLogsService);
   private readonly dialog = inject(MatDialog);
   private readonly transloco = inject(TranslocoService);
+  private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly language = inject(LanguageService);
 
   protected readonly vehicleIcon = vehicleIcon;
@@ -122,11 +129,53 @@ export class VehicleDetail {
 
   protected readonly selectedTabIndex = signal(0);
 
+  /** Log whose single report is being downloaded; one at a time. */
+  protected readonly downloadingLogId = signal<number | null>(null);
+  protected readonly reportErrorKey = signal<string | null>(null);
+
   protected openChecklistDialog(vehicleId: number, tasks: MaintenanceTaskResponse[]): void {
     this.dialog.open<ChecklistDialog, ChecklistDialogData>(ChecklistDialog, {
       autoFocus: 'first-tabbable',
       data: { vehicleId, tasks },
     });
+  }
+
+  protected openReportDialog(vehicleId: number): void {
+    this.dialog.open<ReportDialog, ReportDialogData>(ReportDialog, {
+      autoFocus: 'first-tabbable',
+      data: { vehicleId, entries: this.logCards() },
+    });
+  }
+
+  protected downloadEntryReport(vehicleId: number, logId: number): void {
+    if (this.downloadingLogId() !== null) {
+      return;
+    }
+    this.downloadingLogId.set(logId);
+    this.reportErrorKey.set(null);
+    // Leaving the page cancels the download.
+    this.logsService
+      .downloadMaintenanceReport(vehicleId, [logId], 'response')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.downloadingLogId.set(null);
+          const fallback = this.transloco.translate(
+            'report.fallbackFileName',
+            {},
+            this.language.lang(),
+          );
+          saveFile(response, fallback, this.document);
+        },
+        error: (error: unknown) => {
+          this.downloadingLogId.set(null);
+          this.reportErrorKey.set(
+            error instanceof HttpErrorResponse && error.status === 400
+              ? 'report.errors.invalid'
+              : 'report.errors.unknown',
+          );
+        },
+      });
   }
 
   protected openEditVehicleDialog(vehicle: VehicleResponse): void {
