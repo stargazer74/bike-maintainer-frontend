@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
-import { Language, UserResponse, UserRole } from '../api-client';
+import { Currency, Language, UserResponse, UserRole } from '../api-client';
 import { LanguageService } from '../i18n/language';
 import { translocoTesting } from '../i18n/testing';
 import { AuthStore } from './auth-store';
@@ -16,6 +16,7 @@ const USER: UserResponse = {
   email: 'admin@example.com',
   role: UserRole.User,
   language: Language.De,
+  currency: Currency.Eur,
   active: true,
   emailVerified: true,
   createdAt: '2026-10-09T12:00:00Z',
@@ -205,5 +206,37 @@ describe('AuthStore', () => {
 
     expect(language.lang()).toBe('en');
     expect(store.currentUser()?.language).toBe(Language.De);
+  });
+
+  it('changeCurrency() saves the currency in the account and stores the returned user', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    store.changeCurrency(Currency.Chf);
+    const request = httpMock.expectOne(ME_URL);
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({ currency: 'CHF' });
+    expect(store.currentUser()?.currency).toBe(Currency.Eur);
+    request.flush({ ...USER, currency: Currency.Chf });
+
+    expect(store.currentUser()?.currency).toBe(Currency.Chf);
+  });
+
+  it('changeCurrency() keeps the old currency when saving fails', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    store.changeCurrency(Currency.Chf);
+    httpMock.expectOne(ME_URL).flush(null, { status: 500, statusText: 'Error' });
+
+    expect(store.currentUser()?.currency).toBe(Currency.Eur);
+  });
+
+  it('changeCurrency() does nothing when logged out', () => {
+    store.changeCurrency(Currency.Chf);
+
+    httpMock.expectNone(ME_URL);
   });
 });

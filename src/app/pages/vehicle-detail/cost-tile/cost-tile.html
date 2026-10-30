@@ -1,0 +1,26 @@
+<section class="cost-tile">
+  <h3 class="cost-tile__title">
+    <mat-icon fontSet="material-symbols-outlined">payments</mat-icon>
+    {{ 'costTile.title' | transloco }}
+  </h3>
+  @if (entries().length) {
+    <div class="cost-tile__rows">
+      @for (entry of entries(); track entry.currency) {
+        <div class="cost-tile__row">
+          <div class="cost-tile__figure cost-tile__total">
+            <span class="cost-tile__label">{{ 'costTile.total' | transloco }}</span>
+            <span class="cost-tile__value">{{ entry.total | localCurrency: entry.currency }}</span>
+          </div>
+          <div class="cost-tile__figure cost-tile__year">
+            <span class="cost-tile__label">{{ 'costTile.currentYear' | transloco }}</span>
+            <span class="cost-tile__value">{{
+              entry.currentYear | localCurrency: entry.currency
+            }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="cost-tile__empty">{{ 'costTile.empty' | transloco }}</p>
+  }
+</section>

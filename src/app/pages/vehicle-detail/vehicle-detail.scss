@@ -449,6 +449,82 @@
   font-size: 0.8125rem;
 }
 
+.log-card__costs {
+  margin-top: 10px;
+}
+
+.log-card__costs-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--bm-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--bm-orange-light);
+  }
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+.log-card__total {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--bm-text);
+}
+
+.log-card__costs-details {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--bm-border);
+  font-size: 0.8125rem;
+  color: #cbd5e1;
+}
+
+.log-card__materials {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.log-card__material,
+.log-card__labor {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.log-card__labor {
+  grid-template-columns: 1fr auto;
+  margin: 8px 0 0;
+}
+
+.log-card__material-part {
+  margin-left: 6px;
+  color: var(--bm-text-muted);
+}
+
+.log-card__material-quantity {
+  color: var(--bm-text-muted);
+}
+
+.log-card__material-price {
+  min-width: 5em;
+  text-align: right;
+}
+
 .log-form-section {
   padding-top: 20px;
 }
@@ -509,6 +585,20 @@
 
 .log-form__new-tasks {
   margin-bottom: 16px;
+}
+
+.log-form__materials,
+.log-form__labor {
+  margin-bottom: 16px;
+}
+
+.log-form__total {
+  margin: 0 0 16px;
+  color: var(--bm-text-muted);
+
+  strong {
+    color: var(--bm-text);
+  }
 }
 
 .log-form__actions {

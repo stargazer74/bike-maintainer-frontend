@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MaintenanceLogResponse } from '../../../api-client';
+import { Currency, MaintenanceLogResponse } from '../../../api-client';
 import { translocoTesting } from '../../../i18n/testing';
 import '../../../i18n/i18n.config';
 import { ReportDialog, ReportDialogData, ReportDialogEntry } from './report-dialog';
@@ -20,6 +20,8 @@ function entry(
     performedAt,
     mileageAtPerformed: mileage,
     performedTaskIds: [],
+    materials: [],
+    currency: Currency.Eur,
     createdAt: '2026-10-30T08:00:00Z',
   };
   return { log, taskNames };

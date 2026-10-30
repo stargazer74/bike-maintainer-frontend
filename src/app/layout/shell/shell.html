@@ -72,6 +72,15 @@
         </button>
         <mat-menu #userMenu="matMenu" xPosition="before">
           <div class="shell__user-email" mat-menu-item disabled>{{ userName() }}</div>
+          <button
+            mat-menu-item
+            type="button"
+            class="shell__currency"
+            [matMenuTriggerFor]="currencyMenu"
+          >
+            <mat-icon fontSet="material-symbols-outlined">payments</mat-icon>
+            <span>{{ 'shell.currency' | transloco }}</span>
+          </button>
           @if (config.isHousehold()) {
             <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
               <mat-icon fontSet="material-symbols-outlined">switch_account</mat-icon>
@@ -85,6 +94,27 @@
             <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
               <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
               <span>{{ 'shell.logout' | transloco }}</span>
+            </button>
+          }
+        </mat-menu>
+        <mat-menu #currencyMenu="matMenu" xPosition="before">
+          <div class="shell__currency-hint" mat-menu-item disabled>
+            {{ 'shell.currencyHint' | transloco }}
+          </div>
+          @for (currency of currencies; track currency) {
+            <button
+              mat-menu-item
+              type="button"
+              role="menuitemradio"
+              class="shell__currency-option"
+              [attr.data-currency]="currency"
+              [attr.aria-checked]="authStore.currentUser()?.currency === currency"
+              (click)="onSelectCurrency(currency)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">{{
+                authStore.currentUser()?.currency === currency ? 'check' : ''
+              }}</mat-icon>
+              <span>{{ currency }} – {{ 'currency.' + currency | transloco }}</span>
             </button>
           }
         </mat-menu>

@@ -137,6 +137,8 @@
           </div>
         </div>
 
+        <app-cost-tile [entries]="result.costSummary" />
+
         @if (!taskCards().length) {
           <mat-card class="stub-card" appearance="outlined">
             <mat-card-content>
@@ -256,6 +258,66 @@
                 @if (card.log.notes) {
                   <p class="log-card__notes">{{ card.log.notes }}</p>
                 }
+                @if (
+                  card.log.materials.length ||
+                  (card.log.laborCost !== undefined && card.log.laborCost !== null)
+                ) {
+                  <div class="log-card__costs">
+                    <button
+                      type="button"
+                      class="log-card__costs-toggle"
+                      [attr.aria-expanded]="expandedLogIds().has(card.log.id)"
+                      [attr.aria-controls]="'log-costs-' + card.log.id"
+                      (click)="toggleLogCosts(card.log.id)"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">{{
+                        expandedLogIds().has(card.log.id) ? 'expand_less' : 'expand_more'
+                      }}</mat-icon>
+                      <span>{{ 'logCosts.total' | transloco }}</span>
+                      @if (card.log.totalCost !== undefined && card.log.totalCost !== null) {
+                        <strong class="log-card__total">{{
+                          card.log.totalCost | localCurrency: card.log.currency
+                        }}</strong>
+                      }
+                    </button>
+                    @if (expandedLogIds().has(card.log.id)) {
+                      <div class="log-card__costs-details" [id]="'log-costs-' + card.log.id">
+                        @if (card.log.materials.length) {
+                          <ul class="log-card__materials">
+                            @for (material of card.log.materials; track $index) {
+                              <li class="log-card__material">
+                                <span class="log-card__material-name">
+                                  {{ material.name }}
+                                  @if (material.partNumber) {
+                                    <span class="log-card__material-part">{{
+                                      'logCosts.partNumber'
+                                        | transloco: { number: material.partNumber }
+                                    }}</span>
+                                  }
+                                </span>
+                                <span class="log-card__material-quantity"
+                                  >{{ material.quantity | localNumber }}
+                                  {{ 'materialUnit.' + material.unit | transloco }}</span
+                                >
+                                <span class="log-card__material-price">
+                                  @if (material.price !== undefined && material.price !== null) {
+                                    {{ material.price | localCurrency: card.log.currency }}
+                                  }
+                                </span>
+                              </li>
+                            }
+                          </ul>
+                        }
+                        @if (card.log.laborCost !== undefined && card.log.laborCost !== null) {
+                          <p class="log-card__labor">
+                            <span>{{ 'logCosts.labor' | transloco }}</span>
+                            <span>{{ card.log.laborCost | localCurrency: card.log.currency }}</span>
+                          </p>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
               </mat-card>
             }
           </div>
@@ -328,6 +390,42 @@
               [(drafts)]="logNewTasks"
               [showErrors]="logShowNewTaskErrors()"
             />
+
+            <div class="field log-form__materials">
+              <span class="field__label">{{ 'logForm.materials' | transloco }}</span>
+              <app-material-editor
+                [(drafts)]="logMaterials"
+                [tasks]="logCheckedTasks()"
+                [currency]="logCurrency()"
+                [showErrors]="logShowCostErrors()"
+                [showTotal]="false"
+              />
+            </div>
+
+            <div class="field log-form__labor">
+              <label class="field__label" for="log-labor-cost">{{
+                'logForm.laborCost' | transloco: { currency: logCurrency() }
+              }}</label>
+              <input
+                id="log-labor-cost"
+                class="field__input"
+                type="number"
+                min="0"
+                step="any"
+                [ngModel]="logLaborCost()"
+                (ngModelChange)="logLaborCost.set(typeof $event === 'number' ? $event : null)"
+              />
+              @if (logShowCostErrors() && logLaborCostError(); as error) {
+                <p class="field__error" role="alert">{{ error | transloco }}</p>
+              }
+            </div>
+
+            @if (logTotal() !== null) {
+              <p class="log-form__total">
+                {{ 'logForm.total' | transloco }}:
+                <strong>{{ logTotal() | localCurrency: logCurrency() }}</strong>
+              </p>
+            }
 
             <div class="field">
               <label class="field__label" for="log-notes">{{ 'logForm.notes' | transloco }}</label>

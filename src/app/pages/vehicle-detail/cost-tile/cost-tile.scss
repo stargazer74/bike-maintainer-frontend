@@ -1,0 +1,54 @@
+.cost-tile {
+  margin: 0 0 16px;
+  padding: 16px;
+  border: 1px solid var(--bm-border);
+  border-radius: 12px;
+  background: var(--bm-surface);
+}
+
+.cost-tile__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font: var(--mat-sys-title-small);
+  color: #e2e8f0;
+
+  mat-icon {
+    color: var(--bm-orange-light);
+  }
+}
+
+.cost-tile__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cost-tile__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+}
+
+.cost-tile__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cost-tile__label {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+}
+
+.cost-tile__value {
+  font: var(--mat-sys-title-medium);
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-tile__empty {
+  margin: 0;
+  color: #94a3b8;
+}

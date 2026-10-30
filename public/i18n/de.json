@@ -8,6 +8,17 @@
     "de": "Deutsch",
     "en": "English"
   },
+  "currency": {
+    "EUR": "Euro (€)",
+    "CHF": "Schweizer Franken",
+    "GBP": "Britisches Pfund (£)",
+    "USD": "US-Dollar ($)",
+    "SEK": "Schwedische Krone",
+    "NOK": "Norwegische Krone",
+    "DKK": "Dänische Krone",
+    "PLN": "Polnischer Złoty",
+    "CZK": "Tschechische Krone"
+  },
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",
@@ -23,7 +34,9 @@
     "userMenu": "Benutzermenü",
     "logout": "Abmelden",
     "switchProfile": "Person wechseln",
-    "account": "Konto"
+    "account": "Konto",
+    "currency": "Währung",
+    "currencyHint": "Gilt für neue Wartungseinträge"
   },
   "login": {
     "title": "Anmelden",
@@ -110,6 +123,12 @@
     "createError": "Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.",
     "updateError": "Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut."
   },
+  "costTile": {
+    "title": "Kosten",
+    "total": "Gesamt",
+    "currentYear": "Dieses Jahr",
+    "empty": "Noch keine Kosten erfasst"
+  },
   "vehicleDetail": {
     "loadError": "Fahrzeug konnte nicht geladen werden.",
     "editVehicle": "Fahrzeugdaten bearbeiten",
@@ -138,7 +157,11 @@
     "submitNew": "Wartung speichern",
     "saveError": "Wartung konnte nicht gespeichert werden. Bitte versuche es erneut.",
     "deleteTitle": "Wartungseintrag löschen?",
-    "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?"
+    "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?",
+    "materials": "Material",
+    "laborCost": "Arbeitskosten ({{currency}})",
+    "total": "Gesamtkosten",
+    "costsInvalid": "Bitte korrigiere das Material und die Arbeitskosten."
   },
   "newTask": {
     "title": "Weitere Arbeit {{number}}",
@@ -327,5 +350,41 @@
       "currentRequired": "Bitte gib dein aktuelles Passwort ein.",
       "wrongCurrent": "Das aktuelle Passwort ist falsch."
     }
+  },
+  "materialUnit": {
+    "PIECE": "Stk.",
+    "LITER": "l",
+    "MILLILITER": "ml",
+    "KILOGRAM": "kg",
+    "GRAM": "g",
+    "METER": "m"
+  },
+  "materialForm": {
+    "title": "Material {{number}}",
+    "groupLabel": "Material {{number}}",
+    "add": "Material hinzufügen",
+    "remove": "Material entfernen",
+    "name": "Bezeichnung *",
+    "partNumber": "Teilenummer",
+    "quantity": "Menge *",
+    "unit": "Einheit",
+    "price": "Preis gesamt ({{currency}})",
+    "task": "Aufgabe",
+    "noTask": "— keine Aufgabe —",
+    "total": "Summe Material",
+    "errors": {
+      "nameRequired": "Bitte gib eine Bezeichnung ein.",
+      "quantityRequired": "Bitte gib eine Menge größer als 0 ein.",
+      "quantityDecimals": "Die Menge darf höchstens 3 Nachkommastellen haben.",
+      "priceNegative": "Der Betrag darf nicht negativ sein.",
+      "priceDecimals": "Der Betrag darf höchstens 2 Nachkommastellen haben.",
+      "priceTooHigh": "Der Betrag darf höchstens 99.999,99 betragen.",
+      "quantityTooHigh": "Die Menge darf höchstens 999.999,999 betragen."
+    }
+  },
+  "logCosts": {
+    "total": "Kosten",
+    "partNumber": "Teilenr. {{number}}",
+    "labor": "Arbeitskosten"
   }
 }

@@ -10,7 +10,14 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { AuthService, Language, ProfilesService, UserResponse, UserRole } from '../api-client';
+import {
+  AuthService,
+  Currency,
+  Language,
+  ProfilesService,
+  UserResponse,
+  UserRole,
+} from '../api-client';
 import { AppLanguage, isAppLanguage, LanguageService } from '../i18n/language';
 
 /**
@@ -80,6 +87,24 @@ export class AuthStore {
     }
     this.authService
       .updateCurrentUser({ language: lang as Language })
+      .pipe(catchError(() => of(null)))
+      .subscribe((user) => {
+        if (user) {
+          this.user.set(user);
+        }
+      });
+  }
+
+  /**
+   * Saves the currency for new maintenance entries in the account. The user only changes once the backend
+   * has confirmed; if saving fails, the old currency stays (like with the language, the error is not shown).
+   */
+  changeCurrency(currency: Currency): void {
+    if (!this.user()) {
+      return;
+    }
+    this.authService
+      .updateCurrentUser({ currency })
       .pipe(catchError(() => of(null)))
       .subscribe((user) => {
         if (user) {

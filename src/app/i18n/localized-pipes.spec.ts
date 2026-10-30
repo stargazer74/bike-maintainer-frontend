@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { LanguageService } from './language';
-import { LocalDatePipe, LocalNumberPipe } from './localized-pipes';
+import { LocalCurrencyPipe, LocalDatePipe, LocalNumberPipe } from './localized-pipes';
 import { translocoTesting } from './testing';
 import './i18n.config';
 
@@ -20,6 +20,10 @@ describe('localized pipes', () => {
     return TestBed.runInInjectionContext(() => new LocalDatePipe()).transform(value);
   }
 
+  function transformCurrency(value: number | null | undefined, currency: string): string {
+    return TestBed.runInInjectionContext(() => new LocalCurrencyPipe()).transform(value, currency);
+  }
+
   it('formats numbers with the separators of the active language', async () => {
     await language.use('de', false);
     expect(transformNumber(12500)).toBe('12.500');
@@ -36,8 +40,19 @@ describe('localized pipes', () => {
     expect(transformDate('2026-10-09')).toBe('9 Oct 2026');
   });
 
+  it('formats amounts with the currency symbol in the style of the active language', async () => {
+    await language.use('de', false);
+    expect(transformCurrency(12.5, 'EUR').replace(/\u00a0/g, ' ')).toBe('12,50 €');
+    expect(transformCurrency(1234.5, 'CHF').replace(/\u00a0/g, ' ')).toBe('1.234,50 CHF');
+
+    await language.use('en', false);
+    expect(transformCurrency(12.5, 'EUR')).toBe('€12.50');
+    expect(transformCurrency(12.5, 'CHF').replace(/\u00a0/g, ' ')).toBe('CHF12.50');
+  });
+
   it('renders missing values as empty text', () => {
     expect(transformNumber(null)).toBe('');
     expect(transformDate(undefined)).toBe('');
+    expect(transformCurrency(null, 'EUR')).toBe('');
   });
 });

@@ -8,6 +8,17 @@
     "de": "Deutsch",
     "en": "English"
   },
+  "currency": {
+    "EUR": "Euro (€)",
+    "CHF": "Swiss franc",
+    "GBP": "British pound (£)",
+    "USD": "US dollar ($)",
+    "SEK": "Swedish krona",
+    "NOK": "Norwegian krone",
+    "DKK": "Danish krone",
+    "PLN": "Polish złoty",
+    "CZK": "Czech koruna"
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",
@@ -23,7 +34,9 @@
     "userMenu": "User menu",
     "logout": "Log out",
     "switchProfile": "Switch person",
-    "account": "Account"
+    "account": "Account",
+    "currency": "Currency",
+    "currencyHint": "Applies to new maintenance entries"
   },
   "login": {
     "title": "Log in",
@@ -110,6 +123,12 @@
     "createError": "The vehicle could not be added. Please try again.",
     "updateError": "The vehicle could not be updated. Please try again."
   },
+  "costTile": {
+    "title": "Costs",
+    "total": "Total",
+    "currentYear": "This year",
+    "empty": "No costs recorded yet"
+  },
   "vehicleDetail": {
     "loadError": "The vehicle could not be loaded.",
     "editVehicle": "Edit vehicle details",
@@ -138,7 +157,11 @@
     "submitNew": "Save maintenance",
     "saveError": "The maintenance could not be saved. Please try again.",
     "deleteTitle": "Delete maintenance entry?",
-    "confirmDelete": "Really delete the maintenance entry from {{date}}?"
+    "confirmDelete": "Really delete the maintenance entry from {{date}}?",
+    "materials": "Material",
+    "laborCost": "Labor cost ({{currency}})",
+    "total": "Total cost",
+    "costsInvalid": "Please correct the material and the labor cost."
   },
   "newTask": {
     "title": "Additional work {{number}}",
@@ -327,5 +350,41 @@
       "currentRequired": "Please enter your current password.",
       "wrongCurrent": "The current password is wrong."
     }
+  },
+  "materialUnit": {
+    "PIECE": "pcs",
+    "LITER": "l",
+    "MILLILITER": "ml",
+    "KILOGRAM": "kg",
+    "GRAM": "g",
+    "METER": "m"
+  },
+  "materialForm": {
+    "title": "Material {{number}}",
+    "groupLabel": "Material {{number}}",
+    "add": "Add material",
+    "remove": "Remove material",
+    "name": "Name *",
+    "partNumber": "Part number",
+    "quantity": "Quantity *",
+    "unit": "Unit",
+    "price": "Total price ({{currency}})",
+    "task": "Task",
+    "noTask": "— no task —",
+    "total": "Material total",
+    "errors": {
+      "nameRequired": "Please enter a name.",
+      "quantityRequired": "Please enter a quantity greater than 0.",
+      "quantityDecimals": "The quantity may have at most 3 decimal places.",
+      "priceNegative": "The amount must not be negative.",
+      "priceDecimals": "The amount may have at most 2 decimal places.",
+      "priceTooHigh": "The amount must not exceed 99,999.99.",
+      "quantityTooHigh": "The quantity must not exceed 999,999.999."
+    }
+  },
+  "logCosts": {
+    "total": "Costs",
+    "partNumber": "Part no. {{number}}",
+    "labor": "Labor cost"
   }
 }
