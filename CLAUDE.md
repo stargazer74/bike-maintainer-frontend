@@ -31,7 +31,7 @@ npm run format         # Prettier (.prettierrc); `npm run format:check` in CI. M
 Single test / filtering:
 
 ```bash
-npx ng test --include src/app/pages/vehicles/vehicles.spec.ts   # one file
+npx ng test --include src/app/shared/download.spec.ts           # one file
 npx ng test --filter "some test name"                            # by test name regex
 npx ng test --watch=false                                        # single run, no watch
 ```

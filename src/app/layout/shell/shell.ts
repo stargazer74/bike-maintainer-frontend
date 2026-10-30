@@ -19,20 +19,6 @@ import { AppConfigStore } from '../../config/app-config-store';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 
-interface NavItem {
-  /** Translation key. */
-  readonly label: string;
-  readonly path: string;
-  readonly icon: string;
-}
-
-const NAV_ITEMS: readonly NavItem[] = [
-  { label: 'nav.dashboard', path: '/dashboard', icon: 'dashboard' },
-  { label: 'nav.vehicles', path: '/fahrzeuge', icon: 'two_wheeler' },
-  { label: 'nav.maintenancePlan', path: '/wartungsplan', icon: 'build' },
-  { label: 'nav.history', path: '/historie', icon: 'history' },
-];
-
 const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
 
 @Component({
@@ -55,7 +41,6 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Shell {
-  protected readonly navItems = NAV_ITEMS;
   protected readonly languages = APP_LANGUAGES;
   protected readonly language = inject(LanguageService);
   protected readonly authStore = inject(AuthStore);

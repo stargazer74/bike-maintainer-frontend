@@ -10,6 +10,7 @@ import { translocoTesting } from './i18n/testing';
 import './i18n/i18n.config';
 
 const VEHICLES_URL = 'http://localhost/api/v1/vehicles';
+const VEHICLE_LISTS_URL = /\/api\/v1\/vehicles\/\d+\/maintenance-(tasks|logs)$/;
 
 describe('App', () => {
   let httpMock: HttpTestingController;
@@ -41,7 +42,10 @@ describe('App', () => {
     await loaded;
   }
 
-  /** Renders the app at `url`, answering the vehicle list requests (shell and page) with `vehicles`. */
+  /**
+   * Renders the app at `url`, answering the vehicle list requests (shell and page) with `vehicles` and
+   * the dashboard's task and log requests per vehicle with empty lists.
+   */
   async function render(url: string, vehicles: unknown[] = []): Promise<ComponentFixture<App>> {
     const fixture = TestBed.createComponent(App);
     fixture.autoDetectChanges();
@@ -50,6 +54,9 @@ describe('App', () => {
     for (let round = 0; round < 3; round++) {
       await new Promise((resolve) => setTimeout(resolve));
       httpMock.match(VEHICLES_URL).forEach((request) => request.flush(vehicles));
+      httpMock
+        .match((request) => VEHICLE_LISTS_URL.test(request.url))
+        .forEach((request) => request.flush([]));
     }
     await fixture.whenStable();
     return fixture;
@@ -61,9 +68,9 @@ describe('App', () => {
   });
 
   it('sends logged-out users to the login page and loads no vehicles', async () => {
-    const page = (await render('/fahrzeuge')).nativeElement as HTMLElement;
+    const page = (await render('/dashboard')).nativeElement as HTMLElement;
 
-    expect(router.url).toBe('/anmelden?returnUrl=%2Ffahrzeuge');
+    expect(router.url).toBe('/anmelden?returnUrl=%2Fdashboard');
     expect(page.textContent).toContain('Bike Maintainer');
     expect(page.querySelector('#login-email')).not.toBeNull();
     expect(page.textContent).not.toContain('Bike hinzufügen');
@@ -72,9 +79,9 @@ describe('App', () => {
 
   it('shows the vehicle selection and the user menu when logged in', async () => {
     await logIn();
-    const page = (await render('/fahrzeuge')).nativeElement as HTMLElement;
+    const page = (await render('/dashboard')).nativeElement as HTMLElement;
 
-    expect(router.url).toBe('/fahrzeuge');
+    expect(router.url).toBe('/dashboard');
     expect(page.textContent).toContain('Bike hinzufügen');
     expect(page.querySelector('.shell__user-button')?.getAttribute('aria-label')).toBe(
       'Benutzermenü',
@@ -83,7 +90,7 @@ describe('App', () => {
 
   it('logs out, hides the vehicle data and shows the login page', async () => {
     await logIn();
-    const fixture = await render('/fahrzeuge', [{ id: 7, name: 'Tenere' }]);
+    const fixture = await render('/dashboard', [{ id: 7, name: 'Tenere' }]);
     const page = fixture.nativeElement as HTMLElement;
 
     page.querySelector<HTMLButtonElement>('.shell__user-button')!.click();
@@ -164,7 +171,7 @@ describe('App', () => {
 
   it('opens the account page from the user menu', async () => {
     await logIn();
-    const fixture = await render('/fahrzeuge');
+    const fixture = await render('/dashboard');
 
     (fixture.nativeElement as HTMLElement)
       .querySelector<HTMLButtonElement>('.shell__user-button')!
