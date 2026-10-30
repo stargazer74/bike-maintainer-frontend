@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  DOCUMENT,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +16,9 @@ import { MaintenanceLogResponse, MaintenanceLogsService } from '../../../api-cli
 import { LanguageService } from '../../../i18n/language';
 import { LocalDatePipe, LocalNumberPipe } from '../../../i18n/localized-pipes';
 import { saveFile } from '../../../shared/download';
+
+/** Most IDs the backend accepts in one request (`maxItems` of `logId`). */
+const MAX_LOG_IDS = 500;
 
 export interface ReportDialogEntry {
   readonly log: MaintenanceLogResponse;
@@ -45,6 +56,7 @@ export class ReportDialog {
   private readonly transloco = inject(TranslocoService);
   private readonly document = inject(DOCUMENT);
   private readonly language = inject(LanguageService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly selected = signal<ReadonlySet<number>>(this.allIds());
   protected readonly creating = signal(false);
@@ -72,15 +84,21 @@ export class ReportDialog {
     const logIds = this.data.entries
       .map((entry) => entry.log.id)
       .filter((id) => this.selected().has(id));
-    if (!logIds.length) {
+    if (!logIds.length || this.creating()) {
       return;
     }
-    // Everything selected is the full report; no IDs keep the URL short and avoid the ID limit.
-    const selection = logIds.length === this.data.entries.length ? undefined : logIds;
+    // The IDs pin the report to the entries shown here. Only beyond the ID limit can everything selected
+    // just ask for the full report, which also contains entries recorded elsewhere in the meantime.
+    const selection =
+      logIds.length > MAX_LOG_IDS && logIds.length === this.data.entries.length
+        ? undefined
+        : logIds;
     this.creating.set(true);
     this.errorKey.set(null);
+    // Closing the dialog cancels the request, so nothing is downloaded after "Abbrechen".
     this.logsService
       .downloadMaintenanceReport(this.data.vehicleId, selection, 'response')
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           const fallback = this.transloco.translate(

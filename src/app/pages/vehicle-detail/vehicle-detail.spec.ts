@@ -126,6 +126,17 @@ describe('VehicleDetail', () => {
     expect(downloadButtons().every((button) => !button.disabled)).toBe(true);
   });
 
+  it('cancels the single download when the page is left', async () => {
+    await render([log(1, '2024-05-01')]);
+    await openHistoryTab();
+
+    downloadButtons()[0].click();
+    const request = httpMock.expectOne((req) => req.url === `${BASE}/maintenance-report`);
+    fixture.destroy();
+
+    expect(request.cancelled).toBe(true);
+  });
+
   it('shows an error when the single report cannot be created', async () => {
     await render([log(1, '2024-05-01')]);
     await openHistoryTab();

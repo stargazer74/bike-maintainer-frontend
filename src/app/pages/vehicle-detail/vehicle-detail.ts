@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   DOCUMENT,
   effect,
   inject,
@@ -10,7 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { filter, forkJoin, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -75,6 +76,7 @@ export class VehicleDetail {
   private readonly dialog = inject(MatDialog);
   private readonly transloco = inject(TranslocoService);
   private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly language = inject(LanguageService);
 
   protected readonly vehicleIcon = vehicleIcon;
@@ -151,25 +153,29 @@ export class VehicleDetail {
     }
     this.downloadingLogId.set(logId);
     this.reportErrorKey.set(null);
-    this.logsService.downloadMaintenanceReport(vehicleId, [logId], 'response').subscribe({
-      next: (response) => {
-        this.downloadingLogId.set(null);
-        const fallback = this.transloco.translate(
-          'report.fallbackFileName',
-          {},
-          this.language.lang(),
-        );
-        saveFile(response, fallback, this.document);
-      },
-      error: (error: unknown) => {
-        this.downloadingLogId.set(null);
-        this.reportErrorKey.set(
-          error instanceof HttpErrorResponse && error.status === 400
-            ? 'report.errors.invalid'
-            : 'report.errors.unknown',
-        );
-      },
-    });
+    // Leaving the page cancels the download.
+    this.logsService
+      .downloadMaintenanceReport(vehicleId, [logId], 'response')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.downloadingLogId.set(null);
+          const fallback = this.transloco.translate(
+            'report.fallbackFileName',
+            {},
+            this.language.lang(),
+          );
+          saveFile(response, fallback, this.document);
+        },
+        error: (error: unknown) => {
+          this.downloadingLogId.set(null);
+          this.reportErrorKey.set(
+            error instanceof HttpErrorResponse && error.status === 400
+              ? 'report.errors.invalid'
+              : 'report.errors.unknown',
+          );
+        },
+      });
   }
 
   protected openEditVehicleDialog(vehicle: VehicleResponse): void {

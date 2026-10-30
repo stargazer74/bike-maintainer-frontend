@@ -141,17 +141,43 @@ describe('ReportDialog', () => {
     expect(close).toHaveBeenCalled();
   });
 
-  it('asks for the full report without IDs when everything is selected', async () => {
+  it('sends the IDs of the shown entries when everything is selected', () => {
     create();
-    mockDownload();
+
+    createButton().click();
+    const request = httpMock.expectOne((req) => req.url === REPORT_URL);
+    expect(request.request.params.getAll('logId')).toEqual(['3', '2', '1']);
+    request.flush(new Blob(['%PDF-']));
+  });
+
+  it('asks for the full report without IDs when there are more entries than the ID limit', () => {
+    create(Array.from({ length: 501 }, (_, index) => entry(index + 1, '2026-01-01', index, [])));
 
     createButton().click();
     const request = httpMock.expectOne((req) => req.url === REPORT_URL);
     expect(request.request.params.has('logId')).toBe(false);
     request.flush(new Blob(['%PDF-']));
-    await fixture.whenStable();
+  });
 
-    expect(close).toHaveBeenCalled();
+  it('sends only one request on a double click', () => {
+    create();
+
+    createButton().click();
+    (fixture.componentInstance as unknown as { create(): void }).create();
+
+    httpMock.expectOne((req) => req.url === REPORT_URL).flush(new Blob(['%PDF-']));
+  });
+
+  it('does not download anything when closed while the report is being created', () => {
+    create();
+    const click = mockDownload();
+
+    createButton().click();
+    const request = httpMock.expectOne((req) => req.url === REPORT_URL);
+    fixture.destroy();
+
+    expect(request.cancelled).toBe(true);
+    expect(click).not.toHaveBeenCalled();
   });
 
   it.each([
