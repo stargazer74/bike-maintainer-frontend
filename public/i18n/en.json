@@ -14,7 +14,6 @@
     "edit": "Edit",
     "delete": "Delete",
     "saveChanges": "Save changes",
-    "comingSoon": "Coming soon.",
     "moreCount": "+{{count}} more"
   },
   "shell": {
@@ -25,12 +24,6 @@
     "logout": "Log out",
     "switchProfile": "Switch person",
     "account": "Account"
-  },
-  "nav": {
-    "dashboard": "Dashboard",
-    "vehicles": "Vehicles",
-    "maintenancePlan": "Maintenance plan",
-    "history": "History"
   },
   "login": {
     "title": "Log in",
@@ -84,9 +77,6 @@
     "allUpToDate": "All up to date"
   },
   "vehicles": {
-    "title": "Vehicles",
-    "subtitle": "All recorded motorcycles and cars.",
-    "loadError": "Vehicles could not be loaded.",
     "empty": "No vehicles recorded yet."
   },
   "vehicle": {
@@ -193,14 +183,6 @@
     "everyMonths": "Every {{months}} months",
     "everyMonth": "Every month",
     "everyKmOrMonths": "Every {{km}} km or {{months}} months"
-  },
-  "maintenancePlan": {
-    "title": "Maintenance plan",
-    "subtitle": "Maintenance intervals by mileage and time."
-  },
-  "history": {
-    "title": "History",
-    "subtitle": "Recently logged maintenance."
   },
   "register": {
     "title": "Create account",

@@ -14,7 +14,6 @@
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "saveChanges": "Änderungen speichern",
-    "comingSoon": "Kommt bald.",
     "moreCount": "+{{count}} weitere"
   },
   "shell": {
@@ -25,12 +24,6 @@
     "logout": "Abmelden",
     "switchProfile": "Person wechseln",
     "account": "Konto"
-  },
-  "nav": {
-    "dashboard": "Dashboard",
-    "vehicles": "Fahrzeuge",
-    "maintenancePlan": "Wartungsplan",
-    "history": "Historie"
   },
   "login": {
     "title": "Anmelden",
@@ -84,9 +77,6 @@
     "allUpToDate": "Alles aktuell"
   },
   "vehicles": {
-    "title": "Fahrzeuge",
-    "subtitle": "Alle erfassten Motorräder und Autos.",
-    "loadError": "Fahrzeuge konnten nicht geladen werden.",
     "empty": "Noch keine Fahrzeuge erfasst."
   },
   "vehicle": {
@@ -193,14 +183,6 @@
     "everyMonths": "Alle {{months}} Monate",
     "everyMonth": "Jeden Monat",
     "everyKmOrMonths": "Alle {{km}} km oder {{months}} Monate"
-  },
-  "maintenancePlan": {
-    "title": "Wartungsplan",
-    "subtitle": "Wartungsintervalle nach Kilometerstand und Zeit."
-  },
-  "history": {
-    "title": "Historie",
-    "subtitle": "Protokollierte Wartungen der letzten Zeit."
   },
   "register": {
     "title": "Konto anlegen",
