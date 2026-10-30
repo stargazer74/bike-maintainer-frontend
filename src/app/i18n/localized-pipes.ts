@@ -1,4 +1,4 @@
-import { formatDate, formatNumber } from '@angular/common';
+import { formatCurrency, formatDate, formatNumber, getCurrencySymbol } from '@angular/common';
 import { inject, Pipe, PipeTransform } from '@angular/core';
 import { LanguageService } from './language';
 
@@ -28,5 +28,19 @@ export class LocalNumberPipe implements PipeTransform {
       return '';
     }
     return formatNumber(value, this.language.locale(), digitsInfo);
+  }
+}
+
+/** Currency amount in the style of the active language, e.g. `12,50 €` / `€12.50` (impure, see {@link LocalDatePipe}). */
+@Pipe({ name: 'localCurrency', pure: false })
+export class LocalCurrencyPipe implements PipeTransform {
+  private readonly language = inject(LanguageService);
+
+  transform(value: number | null | undefined, currency: string): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+    const locale = this.language.locale();
+    return formatCurrency(value, locale, getCurrencySymbol(currency, 'narrow', locale), currency);
   }
 }

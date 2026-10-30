@@ -327,5 +327,34 @@
       "currentRequired": "Bitte gib dein aktuelles Passwort ein.",
       "wrongCurrent": "Das aktuelle Passwort ist falsch."
     }
+  },
+  "materialUnit": {
+    "PIECE": "Stk.",
+    "LITER": "l",
+    "MILLILITER": "ml",
+    "KILOGRAM": "kg",
+    "GRAM": "g",
+    "METER": "m"
+  },
+  "materialForm": {
+    "title": "Material {{number}}",
+    "groupLabel": "Material {{number}}",
+    "add": "Material hinzufügen",
+    "remove": "Material entfernen",
+    "name": "Bezeichnung *",
+    "partNumber": "Teilenummer",
+    "quantity": "Menge *",
+    "unit": "Einheit",
+    "price": "Preis ({{currency}})",
+    "task": "Aufgabe",
+    "noTask": "— keine Aufgabe —",
+    "total": "Summe Material",
+    "errors": {
+      "nameRequired": "Bitte gib eine Bezeichnung ein.",
+      "quantityRequired": "Bitte gib eine Menge größer als 0 ein.",
+      "quantityDecimals": "Die Menge darf höchstens 3 Nachkommastellen haben.",
+      "priceNegative": "Der Preis darf nicht negativ sein.",
+      "priceDecimals": "Der Preis darf höchstens 2 Nachkommastellen haben."
+    }
   }
 }

@@ -327,5 +327,34 @@
       "currentRequired": "Please enter your current password.",
       "wrongCurrent": "The current password is wrong."
     }
+  },
+  "materialUnit": {
+    "PIECE": "pcs",
+    "LITER": "l",
+    "MILLILITER": "ml",
+    "KILOGRAM": "kg",
+    "GRAM": "g",
+    "METER": "m"
+  },
+  "materialForm": {
+    "title": "Material {{number}}",
+    "groupLabel": "Material {{number}}",
+    "add": "Add material",
+    "remove": "Remove material",
+    "name": "Name *",
+    "partNumber": "Part number",
+    "quantity": "Quantity *",
+    "unit": "Unit",
+    "price": "Price ({{currency}})",
+    "task": "Task",
+    "noTask": "— no task —",
+    "total": "Material total",
+    "errors": {
+      "nameRequired": "Please enter a name.",
+      "quantityRequired": "Please enter a quantity greater than 0.",
+      "quantityDecimals": "The quantity may have at most 3 decimal places.",
+      "priceNegative": "The price must not be negative.",
+      "priceDecimals": "The price may have at most 2 decimal places."
+    }
   }
 }

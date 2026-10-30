@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import {
+  Currency,
   MaintenanceLogResponse,
   MaintenanceTaskResponse,
   MaintenanceTaskStatus,
@@ -31,6 +32,8 @@ function log(id: number, performedAt: string): MaintenanceLogResponse {
     performedAt,
     mileageAtPerformed: 1000 * id,
     performedTaskIds: [],
+    materials: [],
+    currency: Currency.Eur,
     createdAt: '2026-01-01T00:00:00Z',
   };
 }

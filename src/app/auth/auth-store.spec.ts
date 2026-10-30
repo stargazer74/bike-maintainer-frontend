@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
-import { Language, UserResponse, UserRole } from '../api-client';
+import { Currency, Language, UserResponse, UserRole } from '../api-client';
 import { LanguageService } from '../i18n/language';
 import { translocoTesting } from '../i18n/testing';
 import { AuthStore } from './auth-store';
@@ -16,6 +16,7 @@ const USER: UserResponse = {
   email: 'admin@example.com',
   role: UserRole.User,
   language: Language.De,
+  currency: Currency.Eur,
   active: true,
   emailVerified: true,
   createdAt: '2026-10-09T12:00:00Z',

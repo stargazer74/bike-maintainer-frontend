@@ -3,7 +3,7 @@ import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { Language, UserResponse, UserRole } from '../../api-client';
+import { Currency, Language, UserResponse, UserRole } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
 import { Altcha } from '../../shared/altcha/altcha';
@@ -21,6 +21,7 @@ const USER: UserResponse = {
   email: 'admin@example.com',
   role: UserRole.Admin,
   language: Language.De,
+  currency: Currency.Eur,
   active: true,
   emailVerified: true,
   createdAt: '2026-10-09T12:00:00Z',

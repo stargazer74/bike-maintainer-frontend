@@ -1,0 +1,130 @@
+@for (draft of drafts(); track draft.key; let index = $index) {
+  <div
+    class="material"
+    role="group"
+    [attr.aria-label]="'materialForm.groupLabel' | transloco: { number: index + 1 }"
+  >
+    <div class="material__header">
+      <span class="material__title">{{
+        'materialForm.title' | transloco: { number: index + 1 }
+      }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="material__remove"
+        [attr.aria-label]="'materialForm.remove' | transloco"
+        (click)="remove(draft.key)"
+      >
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </div>
+
+    <div class="material__row">
+      <div class="field material__wide">
+        <label class="field__label" [for]="'material-name-' + draft.key">{{
+          'materialForm.name' | transloco
+        }}</label>
+        <input
+          class="field__input material__name"
+          maxlength="200"
+          [id]="'material-name-' + draft.key"
+          [ngModel]="draft.name"
+          (ngModelChange)="change(draft.key, { name: $event })"
+        />
+      </div>
+      <div class="field material__wide">
+        <label class="field__label" [for]="'material-part-number-' + draft.key">{{
+          'materialForm.partNumber' | transloco
+        }}</label>
+        <input
+          class="field__input material__part-number"
+          maxlength="100"
+          [id]="'material-part-number-' + draft.key"
+          [ngModel]="draft.partNumber"
+          (ngModelChange)="change(draft.key, { partNumber: $event })"
+        />
+      </div>
+    </div>
+
+    <div class="material__row">
+      <div class="field">
+        <label class="field__label" [for]="'material-quantity-' + draft.key">{{
+          'materialForm.quantity' | transloco
+        }}</label>
+        <input
+          class="field__input material__quantity"
+          type="number"
+          min="0"
+          step="any"
+          [id]="'material-quantity-' + draft.key"
+          [ngModel]="draft.quantity"
+          (ngModelChange)="change(draft.key, { quantity: toNumber($event) })"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" [for]="'material-unit-' + draft.key">{{
+          'materialForm.unit' | transloco
+        }}</label>
+        <select
+          class="field__input material__unit"
+          [id]="'material-unit-' + draft.key"
+          [ngModel]="draft.unit"
+          (ngModelChange)="change(draft.key, { unit: $event })"
+        >
+          @for (unit of units; track unit) {
+            <option [ngValue]="unit">{{ 'materialUnit.' + unit | transloco }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label" [for]="'material-price-' + draft.key">{{
+          'materialForm.price' | transloco: { currency: currency() }
+        }}</label>
+        <input
+          class="field__input material__price"
+          type="number"
+          min="0"
+          step="any"
+          [id]="'material-price-' + draft.key"
+          [ngModel]="draft.price"
+          (ngModelChange)="change(draft.key, { price: toNumber($event) })"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field__label" [for]="'material-task-' + draft.key">{{
+        'materialForm.task' | transloco
+      }}</label>
+      <select
+        class="field__input material__task"
+        [id]="'material-task-' + draft.key"
+        [ngModel]="selectedTask(draft)"
+        (ngModelChange)="change(draft.key, { taskId: $event })"
+      >
+        <option [ngValue]="null">{{ 'materialForm.noTask' | transloco }}</option>
+        @for (task of tasks(); track task.id) {
+          <option [ngValue]="task.id">{{ task.name }}</option>
+        }
+      </select>
+    </div>
+
+    @if (showErrors() && materialError(draft); as error) {
+      <p class="field__error material__error" role="alert">{{ error | transloco }}</p>
+    }
+  </div>
+}
+
+@if (drafts().length < maxMaterials) {
+  <button type="button" class="btn btn--ghost material__add" (click)="add()">
+    <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+    {{ 'materialForm.add' | transloco }}
+  </button>
+}
+
+@if (total() !== null) {
+  <p class="material__total">
+    {{ 'materialForm.total' | transloco }}:
+    <strong class="material__total-value">{{ total() | localCurrency: currency() }}</strong>
+  </p>
+}
