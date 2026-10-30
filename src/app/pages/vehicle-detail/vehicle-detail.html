@@ -526,6 +526,9 @@
             </mat-card-content>
           </mat-card>
         } @else {
+          @if (taskDeleteError(); as key) {
+            <p class="field__error tasks-manage__error" role="alert">{{ key | transloco }}</p>
+          }
           <div class="tasks-manage__list">
             @for (task of result.tasks; track task.id) {
               @let interval = describeTaskInterval(task, language.locale());

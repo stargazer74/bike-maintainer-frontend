@@ -172,7 +172,9 @@
     "submitNew": "Add task",
     "saveError": "The maintenance task could not be saved. Please try again.",
     "deleteTitle": "Delete maintenance task?",
-    "confirmDelete": "Really delete \"{{name}}\"?"
+    "confirmDelete": "Really delete \"{{name}}\"?",
+    "deletePerformed": "This task appears in the maintenance history and therefore cannot be deleted. Deactivate it instead (Edit → untick \"Active\").",
+    "deleteError": "The maintenance task could not be deleted. Please try again."
   },
   "taskStatus": {
     "done": "Done",

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import {
   MaintenanceLogResponse,
   MaintenanceTaskResponse,
@@ -178,6 +180,35 @@ describe('VehicleDetail', () => {
       'Der Bericht konnte nicht erstellt werden',
     );
     expect(downloadButtons()[0].disabled).toBe(false);
+  });
+
+  it('explains why an already performed task cannot be deleted', async () => {
+    const chainLube: MaintenanceTaskResponse = {
+      id: 9,
+      vehicleId: 7,
+      name: 'Kette schmieren',
+      oneTime: false,
+      active: true,
+      intervalKm: 1000,
+      status: MaintenanceTaskStatus.Ok,
+    };
+    await render([], [chainLube]);
+    vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
+      afterClosed: () => of(true),
+    } as ReturnType<MatDialog['open']>);
+    await openTab(3);
+
+    page()
+      .querySelector<HTMLButtonElement>('.tasks-manage__item-actions button:last-child')!
+      .click();
+    httpMock
+      .expectOne((req) => req.method === 'DELETE' && req.url === `${BASE}/maintenance-tasks/9`)
+      .flush(null, { status: 409, statusText: 'Conflict' });
+    await fixture.whenStable();
+
+    expect(page().querySelector('.tasks-manage__error')?.textContent).toContain(
+      'kann deshalb nicht gelöscht werden',
+    );
   });
 
   it('sends the performed tasks of a new log as a JSON list', async () => {
