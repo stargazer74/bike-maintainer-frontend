@@ -36,7 +36,6 @@
     "switchProfile": "Person wechseln",
     "account": "Konto",
     "currency": "Währung",
-    "currencyMenu": "Währung wählen",
     "currencyHint": "Gilt für neue Wartungseinträge"
   },
   "login": {
@@ -369,7 +368,7 @@
     "partNumber": "Teilenummer",
     "quantity": "Menge *",
     "unit": "Einheit",
-    "price": "Preis ({{currency}})",
+    "price": "Preis gesamt ({{currency}})",
     "task": "Aufgabe",
     "noTask": "— keine Aufgabe —",
     "total": "Summe Material",

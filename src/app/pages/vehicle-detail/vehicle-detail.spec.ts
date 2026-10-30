@@ -460,7 +460,26 @@ describe('VehicleDetail', () => {
     expect(details).toMatch(/Arbeitskosten\s*80,00\s*CHF/);
   });
 
-  it('shows no cost area for a log without costs', async () => {
+  it('shows the toggle and materials but no total for a log with only unpriced materials', async () => {
+    await render([
+      {
+        ...log(1, '2026-05-01'),
+        materials: [{ name: 'Kettenspray', quantity: 1, unit: MaterialUnit.Piece }],
+      },
+    ]);
+    await openHistoryTab();
+
+    const toggle = page().querySelector<HTMLButtonElement>('.log-card__costs-toggle')!;
+    expect(toggle).not.toBeNull();
+    expect(page().querySelector('.log-card__total')).toBeNull();
+
+    toggle.click();
+    await fixture.whenStable();
+
+    expect(page().querySelector('.log-card__costs-details')!.textContent).toContain('Kettenspray');
+  });
+
+  it('shows no cost area for a log with neither materials nor labor cost', async () => {
     await render([log(1, '2026-05-01')]);
     await openHistoryTab();
 

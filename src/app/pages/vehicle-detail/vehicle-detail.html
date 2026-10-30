@@ -258,7 +258,10 @@
                 @if (card.log.notes) {
                   <p class="log-card__notes">{{ card.log.notes }}</p>
                 }
-                @if (card.log.totalCost !== undefined && card.log.totalCost !== null) {
+                @if (
+                  card.log.materials.length ||
+                  (card.log.laborCost !== undefined && card.log.laborCost !== null)
+                ) {
                   <div class="log-card__costs">
                     <button
                       type="button"
@@ -271,9 +274,11 @@
                         expandedLogIds().has(card.log.id) ? 'expand_less' : 'expand_more'
                       }}</mat-icon>
                       <span>{{ 'logCosts.total' | transloco }}</span>
-                      <strong class="log-card__total">{{
-                        card.log.totalCost | localCurrency: card.log.currency
-                      }}</strong>
+                      @if (card.log.totalCost !== undefined && card.log.totalCost !== null) {
+                        <strong class="log-card__total">{{
+                          card.log.totalCost | localCurrency: card.log.currency
+                        }}</strong>
+                      }
                     </button>
                     @if (expandedLogIds().has(card.log.id)) {
                       <div class="log-card__costs-details" [id]="'log-costs-' + card.log.id">

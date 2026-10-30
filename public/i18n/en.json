@@ -36,7 +36,6 @@
     "switchProfile": "Switch person",
     "account": "Account",
     "currency": "Currency",
-    "currencyMenu": "Choose currency",
     "currencyHint": "Applies to new maintenance entries"
   },
   "login": {
@@ -369,7 +368,7 @@
     "partNumber": "Part number",
     "quantity": "Quantity *",
     "unit": "Unit",
-    "price": "Price ({{currency}})",
+    "price": "Total price ({{currency}})",
     "task": "Task",
     "noTask": "— no task —",
     "total": "Material total",
