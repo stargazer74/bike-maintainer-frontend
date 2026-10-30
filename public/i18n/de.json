@@ -140,6 +140,22 @@
     "deleteTitle": "Wartungseintrag löschen?",
     "confirmDelete": "Wartungseintrag vom {{date}} wirklich löschen?"
   },
+  "newTask": {
+    "title": "Weitere Arbeit {{number}}",
+    "groupLabel": "Weitere Arbeit {{number}}",
+    "add": "Weitere Arbeit hinzufügen",
+    "remove": "Arbeit entfernen",
+    "name": "Name *",
+    "namePlaceholder": "z. B. Bremsleitung getauscht",
+    "description": "Beschreibung",
+    "recurring": "Regelmäßig wiederholen",
+    "oneTimeHint": "Wird als einmalige Arbeit gespeichert und ist mit dieser Wartung erledigt.",
+    "errors": {
+      "nameRequired": "Bitte gib einen Namen ein.",
+      "intervalRequired": "Bitte gib ein Intervall in km oder Monaten an.",
+      "fix": "Bitte vervollständige die weiteren Arbeiten oder entferne sie."
+    }
+  },
   "taskForm": {
     "titleNew": "Neue Wartungsaufgabe",
     "titleEdit": "Wartungsaufgabe bearbeiten",

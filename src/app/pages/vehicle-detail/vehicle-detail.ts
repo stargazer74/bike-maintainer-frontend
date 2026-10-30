@@ -41,6 +41,8 @@ import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
 import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
+import { NewTaskEditor } from './new-task-editor/new-task-editor';
+import { draftError, NewTaskDraft, toNewTaskRequests } from './new-task-editor/new-task-draft';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { computeTaskStatus } from './maintenance-status';
@@ -61,6 +63,7 @@ import { resolveTaskIcon } from './task-icon';
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatTabsModule,
+    NewTaskEditor,
     TranslocoPipe,
   ],
   templateUrl: './vehicle-detail.html',
@@ -225,6 +228,9 @@ export class VehicleDetail {
   protected readonly logMileage = signal(0);
   protected readonly logNotes = signal('');
   protected readonly logTaskIds = signal<ReadonlySet<number>>(new Set());
+  /** Work that becomes new tasks when the log is saved. */
+  protected readonly logNewTasks = signal<readonly NewTaskDraft[]>([]);
+  protected readonly logShowNewTaskErrors = signal(false);
   protected readonly editingLogId = signal<number | null>(null);
   protected readonly savingLog = signal(false);
   /** Translation key of the error to show. */
@@ -263,6 +269,8 @@ export class VehicleDetail {
     this.logMileage.set(log.mileageAtPerformed ?? 0);
     this.logNotes.set(log.notes ?? '');
     this.logTaskIds.set(new Set(log.performedTaskIds ?? []));
+    this.logNewTasks.set([]);
+    this.logShowNewTaskErrors.set(false);
     this.logSubmitError.set(null);
     this.selectedTabIndex.set(2);
   }
@@ -275,11 +283,18 @@ export class VehicleDetail {
     if (this.savingLog() || vehicle.id === undefined || !this.logDate()) {
       return;
     }
+    const newTasks = this.logNewTasks();
+    if (newTasks.some((draft) => draftError(draft) !== null)) {
+      this.logShowNewTaskErrors.set(true);
+      this.logSubmitError.set('newTask.errors.fix');
+      return;
+    }
     const request: MaintenanceLogRequest = {
       performedAt: this.logDate(),
       mileageAtPerformed: this.logMileage(),
       notes: this.logNotes().trim() || undefined,
       performedTaskIds: [...this.logTaskIds()],
+      newTasks: newTasks.length ? toNewTaskRequests(newTasks) : undefined,
     };
     const logId = this.editingLogId();
     const request$ =
@@ -333,6 +348,8 @@ export class VehicleDetail {
     this.logMileage.set(this.data.value()?.vehicle.currentMileage ?? 0);
     this.logNotes.set('');
     this.logTaskIds.set(new Set());
+    this.logNewTasks.set([]);
+    this.logShowNewTaskErrors.set(false);
     this.logSubmitError.set(null);
   }
 
