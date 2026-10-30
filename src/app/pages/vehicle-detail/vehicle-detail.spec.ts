@@ -63,8 +63,26 @@ describe('VehicleDetail', () => {
   }
 
   async function openHistoryTab(): Promise<void> {
-    page().querySelectorAll<HTMLElement>('[role=tab]')[1].click();
+    await openTab(1);
+  }
+
+  async function openTab(index: number): Promise<void> {
+    page().querySelectorAll<HTMLElement>('[role=tab]')[index].click();
     await fixture.whenStable();
+  }
+
+  async function addNewTask(name: string): Promise<void> {
+    page().querySelector<HTMLButtonElement>('.new-task__add')!.click();
+    await fixture.whenStable();
+    const inputs = page().querySelectorAll<HTMLInputElement>('.new-task__name');
+    const input = inputs[inputs.length - 1];
+    input.value = name;
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+  }
+
+  function saveLogButton(): HTMLButtonElement {
+    return [...page().querySelectorAll<HTMLButtonElement>('.log-form__actions .btn--primary')][0];
   }
 
   function page(): HTMLElement {
@@ -185,5 +203,47 @@ describe('VehicleDetail', () => {
     // What actually goes over the wire: a Set would become {}.
     expect(JSON.parse(JSON.stringify(request.request.body)).performedTaskIds).toEqual([5]);
     request.flush(log(1, '2026-10-30'));
+  });
+
+  it('saves new work together with the maintenance log', async () => {
+    await render([]);
+    await openTab(2);
+    await addNewTask('Bremsleitung getauscht');
+
+    saveLogButton().click();
+    const request = httpMock.expectOne(
+      (req) => req.method === 'POST' && req.url === `${BASE}/maintenance-logs`,
+    );
+    expect(request.request.body.newTasks).toEqual([
+      {
+        name: 'Bremsleitung getauscht',
+        description: undefined,
+        intervalKm: undefined,
+        intervalMonths: undefined,
+      },
+    ]);
+    request.flush({ ...log(1, '2026-10-30'), performedTaskIds: [5] });
+    await tick();
+    httpMock.expectOne(BASE).flush(VEHICLE);
+    httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
+    httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
+    await fixture.whenStable();
+
+    expect(page().querySelectorAll('.new-task')).toHaveLength(0);
+  });
+
+  it('does not save while new work is incomplete', async () => {
+    await render([]);
+    await openTab(2);
+    await addNewTask('');
+
+    saveLogButton().click();
+    await fixture.whenStable();
+
+    httpMock.expectNone((req) => req.method === 'POST');
+    expect(page().textContent).toContain('Bitte vervollständige die weiteren Arbeiten');
+    expect(page().querySelector('.new-task__error')?.textContent).toContain(
+      'Bitte gib einen Namen ein.',
+    );
   });
 });

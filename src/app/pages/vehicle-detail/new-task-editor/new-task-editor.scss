@@ -1,0 +1,75 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.new-task {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px 12px;
+  border-radius: 8px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border);
+}
+
+.new-task__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.new-task__title {
+  color: var(--bm-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.new-task__remove {
+  color: var(--bm-text-muted);
+}
+
+.new-task__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    accent-color: var(--bm-orange);
+  }
+}
+
+.new-task__intervals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 6px;
+
+  .field {
+    flex: 1 1 180px;
+  }
+}
+
+.new-task__hint {
+  margin: 4px 0 0;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
+
+.new-task__error {
+  margin: 6px 0 0;
+}
+
+.new-task__add {
+  align-self: flex-start;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}

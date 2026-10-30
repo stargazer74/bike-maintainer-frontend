@@ -140,6 +140,22 @@
     "deleteTitle": "Delete maintenance entry?",
     "confirmDelete": "Really delete the maintenance entry from {{date}}?"
   },
+  "newTask": {
+    "title": "Additional work {{number}}",
+    "groupLabel": "Additional work {{number}}",
+    "add": "Add other work",
+    "remove": "Remove work",
+    "name": "Name *",
+    "namePlaceholder": "e.g. Replaced brake line",
+    "description": "Description",
+    "recurring": "Repeat regularly",
+    "oneTimeHint": "Saved as one-time work, done with this maintenance.",
+    "errors": {
+      "nameRequired": "Please enter a name.",
+      "intervalRequired": "Please enter an interval in km or months.",
+      "fix": "Please complete the additional work or remove it."
+    }
+  },
   "taskForm": {
     "titleNew": "New maintenance task",
     "titleEdit": "Edit maintenance task",

@@ -1,0 +1,101 @@
+@for (draft of drafts(); track draft.key; let index = $index) {
+  <div
+    class="new-task"
+    role="group"
+    [attr.aria-label]="'newTask.groupLabel' | transloco: { number: index + 1 }"
+  >
+    <div class="new-task__header">
+      <span class="new-task__title">{{ 'newTask.title' | transloco: { number: index + 1 } }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="new-task__remove"
+        [attr.aria-label]="'newTask.remove' | transloco"
+        (click)="remove(draft.key)"
+      >
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </div>
+
+    <div class="field">
+      <label class="field__label" [for]="'new-task-name-' + draft.key">{{
+        'newTask.name' | transloco
+      }}</label>
+      <input
+        class="field__input new-task__name"
+        maxlength="255"
+        [id]="'new-task-name-' + draft.key"
+        [placeholder]="'newTask.namePlaceholder' | transloco"
+        [ngModel]="draft.name"
+        (ngModelChange)="change(draft.key, { name: $event })"
+      />
+    </div>
+
+    <div class="field">
+      <label class="field__label" [for]="'new-task-description-' + draft.key">{{
+        'newTask.description' | transloco
+      }}</label>
+      <input
+        class="field__input new-task__description"
+        maxlength="1000"
+        [id]="'new-task-description-' + draft.key"
+        [ngModel]="draft.description"
+        (ngModelChange)="change(draft.key, { description: $event })"
+      />
+    </div>
+
+    <label class="new-task__toggle">
+      <input
+        type="checkbox"
+        class="new-task__recurring"
+        [checked]="draft.recurring"
+        (change)="change(draft.key, { recurring: !draft.recurring })"
+      />
+      {{ 'newTask.recurring' | transloco }}
+    </label>
+
+    @if (draft.recurring) {
+      <div class="new-task__intervals">
+        <div class="field">
+          <label class="field__label" [for]="'new-task-km-' + draft.key">{{
+            'taskForm.intervalKm' | transloco
+          }}</label>
+          <input
+            class="field__input new-task__interval-km"
+            type="number"
+            min="1"
+            [id]="'new-task-km-' + draft.key"
+            [ngModel]="draft.intervalKm"
+            (ngModelChange)="change(draft.key, { intervalKm: toNumber($event) })"
+          />
+        </div>
+        <div class="field">
+          <label class="field__label" [for]="'new-task-months-' + draft.key">{{
+            'taskForm.intervalMonths' | transloco
+          }}</label>
+          <input
+            class="field__input new-task__interval-months"
+            type="number"
+            min="1"
+            [id]="'new-task-months-' + draft.key"
+            [ngModel]="draft.intervalMonths"
+            (ngModelChange)="change(draft.key, { intervalMonths: toNumber($event) })"
+          />
+        </div>
+      </div>
+    } @else {
+      <p class="new-task__hint">{{ 'newTask.oneTimeHint' | transloco }}</p>
+    }
+
+    @if (showErrors() && draftError(draft); as error) {
+      <p class="field__error new-task__error" role="alert">{{ error | transloco }}</p>
+    }
+  </div>
+}
+
+@if (drafts().length < maxNewTasks) {
+  <button type="button" class="btn btn--ghost new-task__add" (click)="add()">
+    <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+    {{ 'newTask.add' | transloco }}
+  </button>
+}

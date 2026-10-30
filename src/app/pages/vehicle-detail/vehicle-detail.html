@@ -323,6 +323,12 @@
               }
             </div>
 
+            <app-new-task-editor
+              class="log-form__new-tasks"
+              [(drafts)]="logNewTasks"
+              [showErrors]="logShowNewTaskErrors()"
+            />
+
             <div class="field">
               <label class="field__label" for="log-notes">{{ 'logForm.notes' | transloco }}</label>
               <textarea
