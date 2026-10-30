@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 520px;
+}
+
+.report__intro,
+.report__count {
+  margin: 0 0 12px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.report__count {
+  margin: 12px 0 0;
+}
+
+.report__bulk {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.report__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.report__row + .report__row {
+  border-top: 1px solid var(--bm-border);
+}
+
+.report__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 2px;
+  cursor: pointer;
+}
+
+.report__checkbox {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  margin: 1px 0 0;
+  accent-color: var(--bm-orange);
+}
+
+.report__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.report__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.report__date {
+  color: var(--bm-text);
+  font-weight: 600;
+}
+
+.report__mileage {
+  color: var(--bm-orange-light);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+}
+
+.report__tasks {
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
+
+.report__error {
+  margin: 12px 0 0;
+}
+
+.report__create mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

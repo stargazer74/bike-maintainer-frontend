@@ -283,6 +283,22 @@
       "unknown": "The checklist could not be created, please try again later."
     }
   },
+  "report": {
+    "open": "Download report",
+    "noLogs": "No maintenance recorded yet – the report is available once maintenance has been recorded.",
+    "title": "Download maintenance report",
+    "intro": "Choose the maintenance entries for the report. All are already selected; the report lists them in chronological order.",
+    "selectAll": "All",
+    "selectNone": "None",
+    "create": "Create PDF",
+    "selected": "{{count}} selected",
+    "downloadEntry": "Download report for this maintenance",
+    "fallbackFileName": "maintenance-report.pdf",
+    "errors": {
+      "invalid": "The selection no longer matches the vehicle, please reload the page.",
+      "unknown": "The report could not be created, please try again later."
+    }
+  },
   "forgotPassword": {
     "title": "Forgot password",
     "subtitle": "Enter the email address of your account. We will send you a link to set a new password.",
