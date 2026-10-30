@@ -8,6 +8,17 @@
     "de": "Deutsch",
     "en": "English"
   },
+  "currency": {
+    "EUR": "Euro (€)",
+    "CHF": "Schweizer Franken",
+    "GBP": "Britisches Pfund (£)",
+    "USD": "US-Dollar ($)",
+    "SEK": "Schwedische Krone",
+    "NOK": "Norwegische Krone",
+    "DKK": "Dänische Krone",
+    "PLN": "Polnischer Złoty",
+    "CZK": "Tschechische Krone"
+  },
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",
@@ -23,7 +34,10 @@
     "userMenu": "Benutzermenü",
     "logout": "Abmelden",
     "switchProfile": "Person wechseln",
-    "account": "Konto"
+    "account": "Konto",
+    "currency": "Währung",
+    "currencyMenu": "Währung wählen",
+    "currencyHint": "Gilt für neue Wartungseinträge"
   },
   "login": {
     "title": "Anmelden",

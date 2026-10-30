@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { VehiclesService } from '../../api-client';
+import { Currency, VehiclesService } from '../../api-client';
 import { LOGIN_PATH, PROFILE_SELECT_PATH } from '../../auth/auth-guards';
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
@@ -42,6 +42,7 @@ const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
 })
 export class Shell {
   protected readonly languages = APP_LANGUAGES;
+  protected readonly currencies = Object.values(Currency);
   protected readonly language = inject(LanguageService);
   protected readonly authStore = inject(AuthStore);
   protected readonly config = inject(AppConfigStore);
@@ -84,6 +85,10 @@ export class Shell {
 
   protected onSelectLanguage(lang: AppLanguage): void {
     this.authStore.changeLanguage(lang);
+  }
+
+  protected onSelectCurrency(currency: Currency): void {
+    this.authStore.changeCurrency(currency);
   }
 
   /** Ends the session; in household mode this means switching to another profile. */
