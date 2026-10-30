@@ -279,7 +279,7 @@ export class VehicleDetail {
       performedAt: this.logDate(),
       mileageAtPerformed: this.logMileage(),
       notes: this.logNotes().trim() || undefined,
-      performedTaskIds: new Set(this.logTaskIds()),
+      performedTaskIds: [...this.logTaskIds()],
     };
     const logId = this.editingLogId();
     const request$ =

@@ -1,7 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { MaintenanceLogResponse, VehicleResponse, VehicleType } from '../../api-client';
+import {
+  MaintenanceLogResponse,
+  MaintenanceTaskResponse,
+  MaintenanceTaskStatus,
+  VehicleResponse,
+  VehicleType,
+} from '../../api-client';
 import { translocoTesting } from '../../i18n/testing';
 import '../../i18n/i18n.config';
 import { VehicleDetail } from './vehicle-detail';
@@ -37,7 +43,10 @@ describe('VehicleDetail', () => {
   let httpMock: HttpTestingController;
   const originalUrl = { create: URL.createObjectURL, revoke: URL.revokeObjectURL };
 
-  async function render(logs: MaintenanceLogResponse[]): Promise<void> {
+  async function render(
+    logs: MaintenanceLogResponse[],
+    tasks: MaintenanceTaskResponse[] = [],
+  ): Promise<void> {
     TestBed.configureTestingModule({
       imports: [translocoTesting()],
       providers: [provideHttpClientTesting(), provideRouter([])],
@@ -48,7 +57,7 @@ describe('VehicleDetail', () => {
     fixture.autoDetectChanges();
     await tick();
     httpMock.expectOne(BASE).flush(VEHICLE);
-    httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
+    httpMock.expectOne(`${BASE}/maintenance-tasks`).flush(tasks);
     httpMock.expectOne(`${BASE}/maintenance-logs`).flush(logs);
     await fixture.whenStable();
   }
@@ -151,5 +160,30 @@ describe('VehicleDetail', () => {
       'Der Bericht konnte nicht erstellt werden',
     );
     expect(downloadButtons()[0].disabled).toBe(false);
+  });
+
+  it('sends the performed tasks of a new log as a JSON list', async () => {
+    const oilChange: MaintenanceTaskResponse = {
+      id: 5,
+      vehicleId: 7,
+      name: 'Ölwechsel',
+      oneTime: false,
+      active: true,
+      intervalKm: 6000,
+      status: MaintenanceTaskStatus.Ok,
+    };
+    await render([], [oilChange]);
+    page().querySelectorAll<HTMLElement>('[role=tab]')[2].click();
+    await fixture.whenStable();
+    page().querySelector<HTMLInputElement>('.log-form__task-option input')!.click();
+    await fixture.whenStable();
+
+    page().querySelector<HTMLButtonElement>('.log-form__actions .btn--primary')!.click();
+    const request = httpMock.expectOne(
+      (req) => req.method === 'POST' && req.url === `${BASE}/maintenance-logs`,
+    );
+    // What actually goes over the wire: a Set would become {}.
+    expect(JSON.parse(JSON.stringify(request.request.body)).performedTaskIds).toEqual([5]);
+    request.flush(log(1, '2026-10-30'));
   });
 });
