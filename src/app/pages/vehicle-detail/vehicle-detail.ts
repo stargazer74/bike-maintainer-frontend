@@ -364,6 +364,8 @@ export class VehicleDetail {
   protected readonly savingTask = signal(false);
   /** Translation key of the error to show. */
   protected readonly taskSubmitError = signal<string | null>(null);
+  /** Translation key of the error of the last delete attempt, shown above the task list. */
+  protected readonly taskDeleteError = signal<string | null>(null);
 
   protected startEditTask(task: MaintenanceTaskResponse): void {
     this.editingTaskId.set(task.id ?? null);
@@ -422,6 +424,7 @@ export class VehicleDetail {
     }
     const vehicleId = vehicle.id;
     const taskId = task.id;
+    this.taskDeleteError.set(null);
     confirmAction(this.dialog, {
       title: 'taskForm.deleteTitle',
       message: 'taskForm.confirmDelete',
@@ -432,11 +435,21 @@ export class VehicleDetail {
         filter(Boolean),
         switchMap(() => this.tasksService.deleteMaintenanceTask(vehicleId, taskId)),
       )
-      .subscribe(() => {
-        if (this.editingTaskId() === taskId) {
-          this.resetTaskForm();
-        }
-        this.data.reload();
+      .subscribe({
+        next: () => {
+          if (this.editingTaskId() === taskId) {
+            this.resetTaskForm();
+          }
+          this.data.reload();
+        },
+        error: (error: unknown) => {
+          // 409: the task appears in the history and can only be deactivated.
+          this.taskDeleteError.set(
+            error instanceof HttpErrorResponse && error.status === 409
+              ? 'taskForm.deletePerformed'
+              : 'taskForm.deleteError',
+          );
+        },
       });
   }
 
