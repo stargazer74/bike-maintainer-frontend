@@ -89,8 +89,9 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
-      - name: Test
-        run: npx ng test --watch=false
+      # Fails below the coverage minimums in angular.json (coverageThresholds; generated api-client excluded).
+      - name: Test with coverage
+        run: npm run test:coverage
 
       - name: Build
         run: npm run build

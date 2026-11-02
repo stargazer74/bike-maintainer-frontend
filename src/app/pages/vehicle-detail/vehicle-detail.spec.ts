@@ -495,4 +495,238 @@ describe('VehicleDetail', () => {
     expect(text).toContain('123,40 CHF');
     expect(text).toContain('20,00 CHF');
   });
+
+  describe('vehicle header', () => {
+    it('saves an edited mileage and reloads the vehicle', async () => {
+      await render([]);
+
+      page().querySelector<HTMLButtonElement>('.vehicle-header__stat-edit-btn')!.click();
+      await fixture.whenStable();
+      const input = page().querySelector<HTMLInputElement>('.vehicle-header__stat-edit input')!;
+      expect(Number(input.value)).toBe(42664);
+      input.value = '43000';
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+      page()
+        .querySelector<HTMLButtonElement>(
+          '.vehicle-header__stat-edit button[aria-label="Speichern"]',
+        )!
+        .click();
+
+      const request = httpMock.expectOne((req) => req.method === 'PUT' && req.url === BASE);
+      expect(request.request.body).toEqual(
+        expect.objectContaining({ name: 'Kawasaki VN800', currentMileage: 43000 }),
+      );
+      request.flush({ ...VEHICLE, currentMileage: 43000 });
+      await tick();
+      httpMock.expectOne(BASE).flush({ ...VEHICLE, currentMileage: 43000 });
+      httpMock.match(() => true).forEach((pending) => pending.flush([]));
+      await fixture.whenStable();
+
+      expect(page().querySelector('.vehicle-header__stat-edit')).toBeNull();
+      expect(page().querySelector('.vehicle-header__stat-value')!.textContent).toContain('43.000');
+    });
+
+    it('discards an edited mileage on cancel', async () => {
+      await render([]);
+
+      page().querySelector<HTMLButtonElement>('.vehicle-header__stat-edit-btn')!.click();
+      await fixture.whenStable();
+      page()
+        .querySelector<HTMLButtonElement>(
+          '.vehicle-header__stat-edit button[aria-label="Abbrechen"]',
+        )!
+        .click();
+      await fixture.whenStable();
+
+      expect(page().querySelector('.vehicle-header__stat-edit')).toBeNull();
+    });
+
+    it('reloads only when the edit dialog returns a vehicle', async () => {
+      await render([]);
+      const open = vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open');
+      open.mockReturnValueOnce({ afterClosed: () => of(undefined) } as ReturnType<
+        MatDialog['open']
+      >);
+      const editButton = page().querySelector<HTMLButtonElement>(
+        '.vehicle-header__title-row button',
+      )!;
+
+      editButton.click();
+      await tick();
+      httpMock.expectNone(BASE);
+
+      open.mockReturnValueOnce({ afterClosed: () => of(VEHICLE) } as ReturnType<MatDialog['open']>);
+      editButton.click();
+      await tick();
+      httpMock.expectOne(BASE).flush(VEHICLE);
+      httpMock.match(() => true).forEach((pending) => pending.flush([]));
+      await fixture.whenStable();
+    });
+  });
+
+  it('deletes a log after confirmation', async () => {
+    await render([log(1, '2026-05-01')]);
+    vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
+      afterClosed: () => of(true),
+    } as ReturnType<MatDialog['open']>);
+    await openHistoryTab();
+
+    page().querySelector<HTMLButtonElement>('button[aria-label="Löschen"]')!.click();
+    httpMock
+      .expectOne((req) => req.method === 'DELETE' && req.url === `${BASE}/maintenance-logs/1`)
+      .flush(null);
+    await tick();
+    httpMock
+      .match(() => true)
+      .forEach((pending) => pending.flush(pending.request.url === BASE ? VEHICLE : []));
+    await fixture.whenStable();
+  });
+
+  describe('task management', () => {
+    const CHAIN: MaintenanceTaskResponse = {
+      id: 9,
+      vehicleId: 7,
+      name: 'Kette schmieren',
+      oneTime: false,
+      active: true,
+      intervalKm: 1000,
+      intervalMonths: 6,
+      firstDueKm: 500,
+      status: MaintenanceTaskStatus.Ok,
+    };
+
+    function taskSubmitButton(): HTMLButtonElement {
+      return [...page().querySelectorAll<HTMLButtonElement>('.btn--primary')].find((button) =>
+        button.closest('mat-card')?.querySelector('#task-name'),
+      )!;
+    }
+
+    async function typeTaskName(name: string): Promise<void> {
+      const input = page().querySelector<HTMLInputElement>('#task-name')!;
+      input.value = name;
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+    }
+
+    function flushReload(): void {
+      httpMock
+        .match(() => true)
+        .forEach((pending) => pending.flush(pending.request.url === BASE ? VEHICLE : []));
+    }
+
+    it('creates a task with the entered name', async () => {
+      await render([], []);
+      await openTab(3);
+      await typeTaskName('  Luftfilter  ');
+
+      taskSubmitButton().click();
+      const request = httpMock.expectOne(
+        (req) => req.method === 'POST' && req.url === `${BASE}/maintenance-tasks`,
+      );
+      expect(request.request.body).toEqual(
+        expect.objectContaining({ name: 'Luftfilter', oneTime: false, active: true }),
+      );
+      request.flush({ ...CHAIN, id: 10, name: 'Luftfilter' });
+      await tick();
+      flushReload();
+      await fixture.whenStable();
+
+      expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('');
+    });
+
+    it('edits an existing task and keeps the form on a save error', async () => {
+      await render([], [CHAIN]);
+      await openTab(3);
+
+      page().querySelector<HTMLButtonElement>('.tasks-manage__item-actions button')!.click();
+      await fixture.whenStable();
+      expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('Kette schmieren');
+      await typeTaskName('Kette reinigen');
+
+      taskSubmitButton().click();
+      const failed = httpMock.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-tasks/9`,
+      );
+      expect(failed.request.body).toEqual(
+        expect.objectContaining({
+          name: 'Kette reinigen',
+          intervalKm: 1000,
+          intervalMonths: 6,
+          firstDueKm: 500,
+        }),
+      );
+      failed.flush(null, { status: 500, statusText: 'Server Error' });
+      await fixture.whenStable();
+      expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('Kette reinigen');
+
+      taskSubmitButton().click();
+      httpMock
+        .expectOne((req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-tasks/9`)
+        .flush(CHAIN);
+      await tick();
+      flushReload();
+      await fixture.whenStable();
+      expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('');
+    });
+
+    it('cancels editing a task', async () => {
+      await render([], [CHAIN]);
+      await openTab(3);
+      page().querySelector<HTMLButtonElement>('.tasks-manage__item-actions button')!.click();
+      await fixture.whenStable();
+
+      page()
+        .querySelector('#task-name')!
+        .closest('mat-card')!
+        .querySelector<HTMLButtonElement>('.btn--ghost')!
+        .click();
+      await fixture.whenStable();
+
+      expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('');
+    });
+
+    it('deletes a task after confirmation and resets the form when it was being edited', async () => {
+      await render([], [CHAIN]);
+      vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
+        afterClosed: () => of(true),
+      } as ReturnType<MatDialog['open']>);
+      await openTab(3);
+      page().querySelector<HTMLButtonElement>('.tasks-manage__item-actions button')!.click();
+      await fixture.whenStable();
+
+      page()
+        .querySelector<HTMLButtonElement>('.tasks-manage__item-actions button:last-child')!
+        .click();
+      httpMock
+        .expectOne((req) => req.method === 'DELETE' && req.url === `${BASE}/maintenance-tasks/9`)
+        .flush(null);
+      await tick();
+      flushReload();
+      await fixture.whenStable();
+
+      expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('');
+    });
+
+    it('shows a general error when deleting a task fails otherwise', async () => {
+      await render([], [CHAIN]);
+      vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
+        afterClosed: () => of(true),
+      } as ReturnType<MatDialog['open']>);
+      await openTab(3);
+
+      page()
+        .querySelector<HTMLButtonElement>('.tasks-manage__item-actions button:last-child')!
+        .click();
+      httpMock
+        .expectOne((req) => req.method === 'DELETE' && req.url === `${BASE}/maintenance-tasks/9`)
+        .flush(null, { status: 500, statusText: 'Server Error' });
+      await fixture.whenStable();
+
+      expect(page().querySelector('.tasks-manage__error')).not.toBeNull();
+      expect(page().querySelector('.tasks-manage__error')!.textContent).not.toContain(
+        'kann deshalb nicht gelöscht werden',
+      );
+    });
+  });
 });

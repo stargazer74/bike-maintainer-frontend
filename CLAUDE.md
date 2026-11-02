@@ -24,6 +24,7 @@ npm start              # dev server at http://localhost:4200 (proxies /api to :8
 npm run build          # production build to dist/
 npm run watch          # dev build in watch mode
 npm test               # unit tests (Vitest via @angular/build:unit-test)
+npm run test:coverage  # single run with coverage; fails below the minimums in angular.json (CI runs this)
 npm run lint           # ESLint (angular-eslint: TS, templates, accessibility); CI fails on findings
 npm run format         # Prettier (.prettierrc); `npm run format:check` in CI. Markdown is not formatted.
 ```
