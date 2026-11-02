@@ -77,6 +77,9 @@ service signatures or model shapes.
   (`.field`, `.field__label`, `.field__input`, `.btn`, `.btn--primary`, `.btn--ghost`, `.field__error`)
   defined once in `src/styles/_forms.scss` and included app-wide via `@use` in `src/styles.scss`.
   Reuse those classes for any new form; don't reintroduce `mat-form-field` for app forms.
+- **Fonts are self-hosted, never from Google Fonts or a CDN:** Inter comes from `@fontsource/inter` (weights
+  400–700, split by unicode range), the icon font from `material-symbols` (outlined); both are listed under `styles`
+  in `angular.json`. New fonts or icon sets must be bundled the same way.
 - Colors/spacing use the CSS custom properties defined in `src/styles.scss` (`--bm-*`, `--status-*`)
   rather than hardcoded hex values, to stay consistent with the dark "Werkstatt" theme.
 - **Gotcha:** `mat-card` sets `display: flex; flex-direction: column` on itself at the same CSS
