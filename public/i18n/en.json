@@ -99,7 +99,11 @@
   },
   "vehicleType": {
     "MOTORCYCLE": "Motorcycle",
-    "CAR": "Car"
+    "CAR": "Car",
+    "BICYCLE": "Bicycle",
+    "E_BIKE": "E-bike",
+    "QUAD": "Quad",
+    "SCOOTER": "Scooter"
   },
   "vehicleForm": {
     "titleNew": "Add new vehicle",
