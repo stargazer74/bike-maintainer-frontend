@@ -40,6 +40,10 @@ export class VehicleFormDialog {
   protected readonly vehicleTypes: readonly { value: VehicleType; label: string }[] = [
     { value: VehicleType.Motorcycle, label: 'vehicleType.MOTORCYCLE' },
     { value: VehicleType.Car, label: 'vehicleType.CAR' },
+    { value: VehicleType.Bicycle, label: 'vehicleType.BICYCLE' },
+    { value: VehicleType.EBike, label: 'vehicleType.E_BIKE' },
+    { value: VehicleType.Quad, label: 'vehicleType.QUAD' },
+    { value: VehicleType.Scooter, label: 'vehicleType.SCOOTER' },
   ];
 
   protected readonly saving = signal(false);

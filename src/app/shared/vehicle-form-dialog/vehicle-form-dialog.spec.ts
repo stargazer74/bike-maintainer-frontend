@@ -89,6 +89,29 @@ describe('VehicleFormDialog', () => {
     expect(close).toHaveBeenCalledWith(expect.objectContaining({ id: 8 }));
   });
 
+  it('offers every vehicle type and saves the selected one', async () => {
+    await render(null);
+    const select = page().querySelector<HTMLSelectElement>('#av-type')!;
+    expect([...select.options].map((option) => option.textContent!.trim())).toEqual([
+      'Motorrad',
+      'Auto',
+      'Fahrrad',
+      'E-Bike',
+      'Quad',
+      'Roller',
+    ]);
+    select.value = VehicleType.EBike;
+    select.dispatchEvent(new Event('change'));
+    await type('av-name', 'Cube Stereo');
+    await type('av-mileage', '300');
+
+    await submit();
+    const request = httpMock.expectOne((req) => req.method === 'POST' && req.url === API);
+    expect(request.request.body).toEqual(expect.objectContaining({ type: VehicleType.EBike }));
+    request.flush({ ...VEHICLE, id: 9, type: VehicleType.EBike });
+    await fixture.whenStable();
+  });
+
   it('shows the validation errors and sends nothing while the form is invalid', async () => {
     await render(null);
     await type('av-year', '1800');

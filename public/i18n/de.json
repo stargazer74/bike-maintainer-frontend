@@ -99,7 +99,11 @@
   },
   "vehicleType": {
     "MOTORCYCLE": "Motorrad",
-    "CAR": "Auto"
+    "CAR": "Auto",
+    "BICYCLE": "Fahrrad",
+    "E_BIKE": "E-Bike",
+    "QUAD": "Quad",
+    "SCOOTER": "Roller"
   },
   "vehicleForm": {
     "titleNew": "Neues Fahrzeug anlegen",
