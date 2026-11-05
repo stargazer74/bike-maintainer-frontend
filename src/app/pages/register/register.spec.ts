@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { OperatingMode } from '../../api-client';
+import { AppConfigStore } from '../../config/app-config-store';
 import { LanguageService } from '../../i18n/language';
 import { translocoTesting } from '../../i18n/testing';
 import { Altcha } from '../../shared/altcha/altcha';
@@ -13,6 +15,7 @@ import { Register } from './register';
 class Target {}
 
 const REGISTER_URL = 'http://localhost/api/v1/auth/register';
+const CONFIG_URL = 'http://localhost/api/v1/config';
 const PASSWORD = 'correct-horse-battery';
 
 describe('Register', () => {
@@ -201,6 +204,25 @@ describe('Register', () => {
     expect(error(page)).toContain(message);
     // The backend used up the solution before failing, so it must not be sent again.
     expect(altcha().resets()).toBe(1);
+  });
+
+  it('links to the privacy policy of the website', async () => {
+    const loaded = TestBed.inject(AppConfigStore).load();
+    httpMock
+      .expectOne(CONFIG_URL)
+      .flush({ mode: OperatingMode.Portal, websiteUrl: 'https://www.example.com' });
+    await loaded;
+    const page = await open();
+
+    const link = page.querySelector<HTMLAnchorElement>('.register__privacy a');
+    expect(link?.getAttribute('href')).toBe('https://www.example.com/datenschutz/');
+    expect(link?.textContent).toContain('Datenschutzerklärung');
+  });
+
+  it('has no privacy hint without a website', async () => {
+    const page = await open();
+
+    expect(page.querySelector('.register__privacy')).toBeNull();
   });
 
   it('links to the login page', async () => {

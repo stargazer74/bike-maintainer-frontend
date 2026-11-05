@@ -63,6 +63,38 @@ describe('AppConfigStore', () => {
     });
   });
 
+  it('has no website before loading', () => {
+    expect(store.websiteUrl()).toBeNull();
+  });
+
+  it('load() takes the website address without trailing slash', async () => {
+    const loaded = store.load();
+    httpMock
+      .expectOne(CONFIG_URL)
+      .flush({ mode: OperatingMode.Portal, websiteUrl: 'https://www.example.com/' });
+    await loaded;
+
+    expect(store.websiteUrl()).toBe('https://www.example.com');
+  });
+
+  it('load() ignores a website address in household mode', async () => {
+    const loaded = store.load();
+    httpMock
+      .expectOne(CONFIG_URL)
+      .flush({ mode: OperatingMode.Household, websiteUrl: 'https://www.example.com' });
+    await loaded;
+
+    expect(store.websiteUrl()).toBeNull();
+  });
+
+  it('load() without website address leaves it empty', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(CONFIG_URL).flush({ mode: OperatingMode.Portal, websiteUrl: null });
+    await loaded;
+
+    expect(store.websiteUrl()).toBeNull();
+  });
+
   it('is not waiting while the first request is still open', () => {
     store.load();
 

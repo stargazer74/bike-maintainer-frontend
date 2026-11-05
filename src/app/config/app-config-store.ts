@@ -6,17 +6,20 @@ import { ConfigService, OperatingMode } from '../api-client';
 export const CONFIG_RETRY_DELAY_MS = 3000;
 
 /**
- * Operating mode of the backend: `portal` (accounts with login) or `household` (profile selection
- * without passwords, home network only).
+ * Public configuration of the backend: operating mode – `portal` (accounts with login) or `household` (profile
+ * selection without passwords, home network only) – and, in portal mode, the address of the public website.
  */
 @Injectable({ providedIn: 'root' })
 export class AppConfigStore {
   private readonly configService = inject(ConfigService);
   private readonly currentMode = signal<OperatingMode>(OperatingMode.Portal);
   private readonly waiting = signal(false);
+  private readonly website = signal<string | null>(null);
 
   readonly mode = this.currentMode.asReadonly();
   readonly isHousehold = computed(() => this.currentMode() === OperatingMode.Household);
+  /** Address of the public website without trailing slash, `null` if there is none (always in household mode). */
+  readonly websiteUrl = this.website.asReadonly();
   /** The backend did not answer yet; the app waits instead of starting in a mode it only guessed. */
   readonly waitingForServer = this.waiting.asReadonly();
 
@@ -35,6 +38,8 @@ export class AppConfigStore {
         }),
         tap((config) => {
           this.currentMode.set(config.mode);
+          const website = config.mode === OperatingMode.Portal ? config.websiteUrl : null;
+          this.website.set(website ? website.replace(/\/+$/, '') : null);
           this.waiting.set(false);
         }),
         map(() => undefined),

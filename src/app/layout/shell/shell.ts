@@ -16,6 +16,7 @@ import { Currency, VehiclesService } from '../../api-client';
 import { LOGIN_PATH, PROFILE_SELECT_PATH } from '../../auth/auth-guards';
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
+import { injectWebsiteLinks } from '../../config/website-links';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 
@@ -46,6 +47,8 @@ export class Shell {
   protected readonly language = inject(LanguageService);
   protected readonly authStore = inject(AuthStore);
   protected readonly config = inject(AppConfigStore);
+  /** Footer links to website, legal notice and privacy policy; none without a website. */
+  protected readonly websiteLinks = injectWebsiteLinks();
 
   /** Profiles (household) have a display name; accounts (portal) are shown by their email. */
   protected readonly userName = computed(() => {
