@@ -222,6 +222,34 @@
   font-size: 0.875rem;
 }
 
+.shell__footer {
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 24px 24px;
+}
+
+.shell__footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bm-border);
+  font-size: 0.8125rem;
+}
+
+.shell__footer-link {
+  color: var(--bm-text-muted);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--bm-orange-light);
+    text-decoration: underline;
+  }
+}
+
 @media (max-width: 768px) {
   .shell__main {
     padding: 16px;

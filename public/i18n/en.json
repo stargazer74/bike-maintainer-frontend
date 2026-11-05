@@ -247,7 +247,10 @@
       "emailRequired": "Please enter your email address.",
       "captchaRequired": "Please confirm that you are human first.",
       "invalid": "Please check your input."
-    }
+    },
+    "privacyBefore": "How we process your data is explained in the",
+    "privacyLink": "privacy policy",
+    "privacyAfter": "."
   },
   "verifyEmail": {
     "title": "Confirm email",
@@ -390,5 +393,11 @@
     "total": "Costs",
     "partNumber": "Part no. {{number}}",
     "labor": "Labor cost"
+  },
+  "footer": {
+    "label": "Legal and website",
+    "website": "Website",
+    "imprint": "Legal notice",
+    "privacy": "Privacy"
   }
 }

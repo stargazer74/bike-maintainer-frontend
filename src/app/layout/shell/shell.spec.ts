@@ -99,3 +99,63 @@ describe('Shell currency menu', () => {
     expect(checked.map((o) => o.dataset['currency'])).toEqual(['CHF']);
   });
 });
+
+describe('Shell footer', () => {
+  let httpMock: HttpTestingController;
+
+  afterEach(() => {
+    httpMock.verify();
+    TestBed.resetTestingModule();
+  });
+
+  async function render(config: object): Promise<HTMLElement> {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting(), provideRouter([])],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    const loaded = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne(CONFIG_URL).flush(config);
+    await loaded;
+
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    return fixture.nativeElement;
+  }
+
+  it('links to website, legal notice and privacy policy', async () => {
+    const element = await render({
+      mode: OperatingMode.Portal,
+      websiteUrl: 'https://www.example.com',
+    });
+
+    const links = Array.from(element.querySelectorAll<HTMLAnchorElement>('.shell__footer-link'));
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      'https://www.example.com/',
+      'https://www.example.com/impressum/',
+      'https://www.example.com/datenschutz/',
+    ]);
+    expect(links.map((link) => link.textContent?.trim())).toEqual([
+      'Website',
+      'Impressum',
+      'Datenschutz',
+    ]);
+  });
+
+  it('has no footer without a website', async () => {
+    const element = await render({ mode: OperatingMode.Portal });
+
+    expect(element.querySelector('.shell__footer')).toBeNull();
+  });
+
+  it('has no footer in household mode', async () => {
+    const element = await render({
+      mode: OperatingMode.Household,
+      websiteUrl: 'https://www.example.com',
+    });
+
+    expect(element.querySelector('.shell__footer')).toBeNull();
+  });
+});

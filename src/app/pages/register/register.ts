@@ -8,6 +8,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService, Language } from '../../api-client';
 import { accountErrorKey, isCaptchaInvalid } from '../../auth/account-errors';
 import { newPasswordErrorKey } from '../../auth/new-password';
+import { injectWebsiteLinks } from '../../config/website-links';
 import { LanguageService } from '../../i18n/language';
 import { Altcha, AltchaControl } from '../../shared/altcha/altcha';
 
@@ -48,6 +49,8 @@ export class Register {
   /** Honeypot: invisible to people, filled in by bots; sent unchanged. */
   protected readonly website = signal('');
   protected readonly submitting = signal(false);
+  /** Hint with a link to the privacy policy; none without a website. */
+  protected readonly websiteLinks = injectWebsiteLinks();
   protected readonly errorKey = signal<string | null>(null);
   /** Address the confirmation email went to; set once the registration was accepted. */
   protected readonly sentTo = signal<string | null>(null);

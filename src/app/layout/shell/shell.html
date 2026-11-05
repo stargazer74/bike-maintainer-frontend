@@ -132,5 +132,18 @@
       }
       <router-outlet />
     </main>
+    @if (websiteLinks(); as links) {
+      <footer class="shell__footer">
+        <nav class="shell__footer-links" [attr.aria-label]="'footer.label' | transloco">
+          <a class="shell__footer-link" [href]="links.home">{{ 'footer.website' | transloco }}</a>
+          <a class="shell__footer-link" [href]="links.imprint">{{
+            'footer.imprint' | transloco
+          }}</a>
+          <a class="shell__footer-link" [href]="links.privacy">{{
+            'footer.privacy' | transloco
+          }}</a>
+        </nav>
+      </footer>
+    }
   </div>
 </div>

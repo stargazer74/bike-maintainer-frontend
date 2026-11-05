@@ -247,7 +247,10 @@
       "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
       "captchaRequired": "Bitte bestätige zuerst, dass du ein Mensch bist.",
       "invalid": "Bitte prüfe deine Eingaben."
-    }
+    },
+    "privacyBefore": "Wie wir deine Daten verarbeiten, steht in der",
+    "privacyLink": "Datenschutzerklärung",
+    "privacyAfter": "."
   },
   "verifyEmail": {
     "title": "E-Mail bestätigen",
@@ -390,5 +393,11 @@
     "total": "Kosten",
     "partNumber": "Teilenr. {{number}}",
     "labor": "Arbeitskosten"
+  },
+  "footer": {
+    "label": "Rechtliches und Website",
+    "website": "Website",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz"
   }
 }

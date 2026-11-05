@@ -50,6 +50,17 @@
   justify-content: center;
 }
 
+.register__privacy {
+  margin: 12px 0 0;
+  color: var(--bm-text-dim);
+  font-size: 0.75rem;
+  text-align: center;
+
+  a {
+    color: var(--bm-orange-light);
+  }
+}
+
 .register__link {
   display: block;
   margin-top: 16px;
