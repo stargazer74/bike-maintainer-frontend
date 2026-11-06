@@ -22,6 +22,7 @@ RUN apk upgrade --no-cache
 ENV BACKEND_HOST=bike-maintainer-backend:8080 \
     NGINX_RESOLVER=127.0.0.11
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=build /app/dist/bike-maintainer-frontend/browser /usr/share/nginx/html
 
 EXPOSE 80
