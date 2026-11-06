@@ -18,6 +18,11 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    # No nginx version in the Server header and on error pages.
+    server_tokens off;
+
+    include /etc/nginx/snippets/security-headers.conf;
+
     gzip on;
     gzip_types text/plain text/css application/javascript application/json image/svg+xml;
 
@@ -40,6 +45,11 @@ server {
         # No uploads in the API; nginx must not cache API responses (the backend sets its own Cache-Control).
         client_max_body_size 1m;
         proxy_cache off;
+
+        # Spring Security sends these two as well; hide the backend's copies so the response carries each only once
+        # (the server-level security headers above also apply here).
+        proxy_hide_header X-Content-Type-Options;
+        proxy_hide_header X-Frame-Options;
     }
 
     # Angular router fallback — unknown paths resolve client-side.
@@ -50,5 +60,6 @@ server {
     location ~* \.(?:js|css|woff2?|svg|png|jpg|jpeg|ico)$ {
         expires 30d;
         add_header Cache-Control "public, immutable";
+        include /etc/nginx/snippets/security-headers.conf;
     }
 }
