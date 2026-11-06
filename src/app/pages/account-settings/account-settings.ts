@@ -9,6 +9,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '../../api-client';
 import { newPasswordErrorKey } from '../../auth/new-password';
 import { openDeleteAccountDialog } from './delete-account-dialog/delete-account-dialog';
+import { DeviceList } from './device-list/device-list';
 
 /** Translation key of the message for a failed password change. */
 function changeErrorKey(error: unknown): string {
@@ -29,7 +30,7 @@ function changeErrorKey(error: unknown): string {
  */
 @Component({
   selector: 'app-account-settings',
-  imports: [FormsModule, MatCardModule, MatProgressSpinnerModule, TranslocoPipe],
+  imports: [FormsModule, MatCardModule, MatProgressSpinnerModule, TranslocoPipe, DeviceList],
   templateUrl: './account-settings.html',
   styleUrl: './account-settings.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

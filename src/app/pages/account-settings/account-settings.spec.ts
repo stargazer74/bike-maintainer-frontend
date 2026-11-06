@@ -37,6 +37,8 @@ describe('AccountSettings', () => {
 
   async function open(): Promise<HTMLElement> {
     await harness.navigateByUrl('/konto');
+    // The device list (own spec) loads on its own; an empty list keeps this page's tests independent of it.
+    httpMock.expectOne('http://localhost/api/v1/auth/devices').flush([]);
     await harness.fixture.whenStable();
     return harness.routeNativeElement!;
   }

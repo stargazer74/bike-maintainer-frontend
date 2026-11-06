@@ -197,6 +197,11 @@ describe('App', () => {
       .click();
     await fixture.whenStable();
     document.querySelector<HTMLAnchorElement>('.shell__account')!.click();
+    // The account page loads its device list; answer it so the app becomes stable.
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      httpMock.expectOne('http://localhost/api/v1/auth/devices').flush([]);
+    });
     await fixture.whenStable();
 
     expect(router.url).toBe('/konto');

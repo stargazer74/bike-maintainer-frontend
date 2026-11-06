@@ -353,10 +353,20 @@
     "newPassword": "Neues Passwort",
     "newPasswordRepeat": "Neues Passwort wiederholen",
     "submit": "Passwort ändern",
-    "changed": "Dein Passwort wurde geändert. Auf anderen Geräten bist du jetzt abgemeldet.",
+    "changed": "Dein Passwort wurde geändert. Auf anderen Geräten bist du jetzt abgemeldet. Auch die Apps müssen sich neu anmelden.",
     "errors": {
       "currentRequired": "Bitte gib dein aktuelles Passwort ein.",
       "wrongCurrent": "Das aktuelle Passwort ist falsch."
+    },
+    "devices": {
+      "title": "Angemeldete Geräte",
+      "empty": "Keine Geräte angemeldet. Geräte erscheinen hier, wenn du dich in der Android-App mit „angemeldet bleiben“ anmeldest.",
+      "since": "angemeldet seit {{date}}",
+      "lastUsed": "zuletzt genutzt {{date}}",
+      "remove": "Abmelden",
+      "removeLabel": "{{name}} abmelden",
+      "removeTitle": "Gerät abmelden?",
+      "confirmRemove": "„{{name}}“ abmelden? Die App muss sich danach neu anmelden."
     },
     "delete": {
       "title": "Konto löschen",

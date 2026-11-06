@@ -353,10 +353,20 @@
     "newPassword": "New password",
     "newPasswordRepeat": "Repeat new password",
     "submit": "Change password",
-    "changed": "Your password has been changed. You are now logged out on other devices.",
+    "changed": "Your password has been changed. You are now logged out on other devices. The apps have to log in again, too.",
     "errors": {
       "currentRequired": "Please enter your current password.",
       "wrongCurrent": "The current password is wrong."
+    },
+    "devices": {
+      "title": "Logged-in devices",
+      "empty": "No devices logged in. Devices appear here when you log in to the Android app with “stay logged in”.",
+      "since": "logged in since {{date}}",
+      "lastUsed": "last used {{date}}",
+      "remove": "Log out",
+      "removeLabel": "Log out {{name}}",
+      "removeTitle": "Log out device?",
+      "confirmRemove": "Log out “{{name}}”? The app will have to log in again."
     },
     "delete": {
       "title": "Delete account",
