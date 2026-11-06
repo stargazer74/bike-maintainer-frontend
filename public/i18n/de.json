@@ -54,7 +54,8 @@
     },
     "createAccount": "Noch kein Konto? Konto anlegen",
     "forgotPassword": "Passwort vergessen?",
-    "passwordReset": "Dein Passwort wurde geändert. Du kannst dich jetzt mit dem neuen Passwort anmelden."
+    "passwordReset": "Dein Passwort wurde geändert. Du kannst dich jetzt mit dem neuen Passwort anmelden.",
+    "accountDeleted": "Dein Konto wurde gelöscht."
   },
   "profiles": {
     "title": "Wer bist du?",
@@ -356,6 +357,20 @@
     "errors": {
       "currentRequired": "Bitte gib dein aktuelles Passwort ein.",
       "wrongCurrent": "Das aktuelle Passwort ist falsch."
+    },
+    "delete": {
+      "title": "Konto löschen",
+      "text": "Löscht dein Konto mit allen Fahrzeugen, Wartungsaufgaben, Wartungen und Kosten. Das lässt sich nicht rückgängig machen.",
+      "open": "Konto löschen …",
+      "dialogTitle": "Konto endgültig löschen?",
+      "dialogText": "Dein Konto wird mit allen Fahrzeugen, Wartungsaufgaben, erledigten Wartungen und Kosten endgültig gelöscht. Das lässt sich nicht rückgängig machen. Bestätige mit deinem Passwort.",
+      "password": "Aktuelles Passwort",
+      "confirm": "Konto endgültig löschen",
+      "errors": {
+        "passwordRequired": "Bitte gib dein Passwort ein.",
+        "wrongPassword": "Das Passwort ist falsch.",
+        "lastAdmin": "Du bist der einzige aktive Admin und kannst dein Konto deshalb nicht löschen."
+      }
     }
   },
   "materialUnit": {

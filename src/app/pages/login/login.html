@@ -6,6 +6,9 @@
     @if (passwordReset() === 'true') {
       <p class="login__notice" role="status">{{ 'login.passwordReset' | transloco }}</p>
     }
+    @if (accountDeleted() === 'true') {
+      <p class="login__notice" role="status">{{ 'login.accountDeleted' | transloco }}</p>
+    }
 
     <form novalidate (ngSubmit)="onSubmit()">
       <div class="field">

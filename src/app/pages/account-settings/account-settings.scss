@@ -60,3 +60,9 @@
   color: var(--status-ok);
   font-size: 0.875rem;
 }
+
+.account__danger {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--status-overdue-border);
+}

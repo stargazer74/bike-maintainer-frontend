@@ -70,5 +70,19 @@
         {{ 'accountSettings.submit' | transloco }}
       </button>
     </form>
+
+    <section class="account__danger" aria-labelledby="account-delete-title">
+      <h2 id="account-delete-title" class="account__section-title">
+        {{ 'accountSettings.delete.title' | transloco }}
+      </h2>
+      <p class="account__text">{{ 'accountSettings.delete.text' | transloco }}</p>
+      <button
+        type="button"
+        class="btn btn--danger account__submit account__delete"
+        (click)="onDeleteAccount()"
+      >
+        {{ 'accountSettings.delete.open' | transloco }}
+      </button>
+    </section>
   </mat-card>
 </div>

@@ -113,6 +113,35 @@ describe('AuthStore', () => {
     expect(store.isLoggedIn()).toBe(false);
   });
 
+  it('deleteAccount() sends the password and clears the user', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    const done = firstValueFrom(store.deleteAccount('secret-password'));
+    const request = httpMock.expectOne(ME_URL);
+    expect(request.request.method).toBe('DELETE');
+    expect(request.request.body).toEqual({ password: 'secret-password' });
+    request.flush(null, { status: 204, statusText: 'No Content' });
+    await done;
+
+    expect(store.isLoggedIn()).toBe(false);
+  });
+
+  it('deleteAccount() keeps the user when the deletion fails', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    const done = firstValueFrom(store.deleteAccount('wrong'));
+    httpMock
+      .expectOne(ME_URL)
+      .flush({ code: 'WRONG_PASSWORD' }, { status: 403, statusText: 'Forbidden' });
+
+    await expect(done).rejects.toBeTruthy();
+    expect(store.currentUser()).toEqual(USER);
+  });
+
   it('logout() clears the user even if the session was already gone', async () => {
     const loaded = store.load();
     httpMock.expectOne(ME_URL).flush(USER);
