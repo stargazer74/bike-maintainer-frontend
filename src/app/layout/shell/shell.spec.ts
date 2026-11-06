@@ -159,3 +159,43 @@ describe('Shell footer', () => {
     expect(element.querySelector('.shell__footer')).toBeNull();
   });
 });
+
+describe('Shell user management link', () => {
+  async function userMenu(role: UserRole): Promise<HTMLElement> {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting(), provideRouter([])],
+    });
+    const httpMock = TestBed.inject(HttpTestingController);
+    const config = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne(CONFIG_URL).flush({ mode: OperatingMode.Portal });
+    await config;
+    const loaded = TestBed.inject(AuthStore).load();
+    httpMock.expectOne(ME_URL).flush({ ...USER, role });
+    await loaded;
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpMock.match(VEHICLES_URL).forEach((request) => request.flush([]));
+    await fixture.whenStable();
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLElement>('.shell__user-button')!
+      .click();
+    await fixture.whenStable();
+    return document.body;
+  }
+
+  afterEach(() => localStorage.clear());
+
+  it('is shown to admins', async () => {
+    const body = await userMenu(UserRole.Admin);
+
+    expect(body.querySelector('.shell__admin-users')?.textContent).toContain('Nutzerverwaltung');
+  });
+
+  it('is hidden from normal users', async () => {
+    const body = await userMenu(UserRole.User);
+
+    expect(body.querySelector('.shell__admin-users')).toBeNull();
+  });
+});

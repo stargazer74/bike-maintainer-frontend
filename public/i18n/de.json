@@ -36,7 +36,8 @@
     "switchProfile": "Person wechseln",
     "account": "Konto",
     "currency": "Währung",
-    "currencyHint": "Gilt für neue Wartungseinträge"
+    "currencyHint": "Gilt für neue Wartungseinträge",
+    "adminUsers": "Nutzerverwaltung"
   },
   "login": {
     "title": "Anmelden",
@@ -424,5 +425,37 @@
     "website": "Website",
     "imprint": "Impressum",
     "privacy": "Datenschutz"
+  },
+  "adminUsers": {
+    "title": "Nutzerverwaltung",
+    "subtitle": "Rollen und Sperren der Konten. Fahrzeuge und Wartungen anderer Nutzer siehst du auch als Admin nicht.",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "status": "Status",
+    "registered": "Registriert",
+    "actions": "Aktionen",
+    "you": "du",
+    "roles": {
+      "ADMIN": "Admin",
+      "USER": "Nutzer"
+    },
+    "active": "Aktiv",
+    "inactive": "Gesperrt",
+    "unverified": "E-Mail nicht bestätigt",
+    "makeAdmin": "Zum Admin machen",
+    "makeUser": "Zum Nutzer machen",
+    "deactivate": "Sperren",
+    "activate": "Entsperren",
+    "makeAdminTitle": "Zum Admin machen?",
+    "makeUserTitle": "Admin-Rechte entziehen?",
+    "deactivateTitle": "Konto sperren?",
+    "activateTitle": "Konto entsperren?",
+    "confirmMakeAdmin": "„{{email}}“ bekommt Admin-Rechte und muss sich dafür neu anmelden.",
+    "confirmMakeUser": "„{{email}}“ verliert die Admin-Rechte und wird sofort abgemeldet.",
+    "confirmDeactivate": "„{{email}}“ wird sofort überall abgemeldet und kann sich nicht mehr anmelden, auch nicht in der App.",
+    "confirmActivate": "„{{email}}“ kann sich wieder anmelden.",
+    "errors": {
+      "rule": "Das geht nicht: Der letzte aktive Admin kann nicht herabgestuft oder gesperrt werden, und du kannst dich nicht selbst sperren."
+    }
   }
 }

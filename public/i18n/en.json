@@ -36,7 +36,8 @@
     "switchProfile": "Switch person",
     "account": "Account",
     "currency": "Currency",
-    "currencyHint": "Applies to new maintenance entries"
+    "currencyHint": "Applies to new maintenance entries",
+    "adminUsers": "User management"
   },
   "login": {
     "title": "Log in",
@@ -424,5 +425,37 @@
     "website": "Website",
     "imprint": "Legal notice",
     "privacy": "Privacy"
+  },
+  "adminUsers": {
+    "title": "User management",
+    "subtitle": "Roles and locks of the accounts. Even as an admin you do not see other users' vehicles and maintenance.",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "registered": "Registered",
+    "actions": "Actions",
+    "you": "you",
+    "roles": {
+      "ADMIN": "Admin",
+      "USER": "User"
+    },
+    "active": "Active",
+    "inactive": "Locked",
+    "unverified": "Email not verified",
+    "makeAdmin": "Make admin",
+    "makeUser": "Make user",
+    "deactivate": "Lock",
+    "activate": "Unlock",
+    "makeAdminTitle": "Make admin?",
+    "makeUserTitle": "Revoke admin rights?",
+    "deactivateTitle": "Lock account?",
+    "activateTitle": "Unlock account?",
+    "confirmMakeAdmin": "“{{email}}” gets admin rights and has to log in again for them.",
+    "confirmMakeUser": "“{{email}}” loses the admin rights and is logged out at once.",
+    "confirmDeactivate": "“{{email}}” is logged out everywhere at once and can no longer log in, not even in the app.",
+    "confirmActivate": "“{{email}}” can log in again.",
+    "errors": {
+      "rule": "Not possible: the last active admin cannot be demoted or locked, and you cannot lock yourself."
+    }
   }
 }

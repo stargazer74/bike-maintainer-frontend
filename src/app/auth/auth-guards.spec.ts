@@ -5,7 +5,13 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { Language, OperatingMode, UserRole } from '../api-client';
 import { AppConfigStore } from '../config/app-config-store';
-import { authGuard, guestGuard, householdOnlyGuard, portalOnlyGuard } from './auth-guards';
+import {
+  adminGuard,
+  authGuard,
+  guestGuard,
+  householdOnlyGuard,
+  portalOnlyGuard,
+} from './auth-guards';
 import { AuthStore } from './auth-store';
 import { translocoTesting } from '../i18n/testing';
 
@@ -24,7 +30,14 @@ describe('auth guards', () => {
         provideRouter([
           { path: 'anmelden', component: Page, canMatch: [portalOnlyGuard, guestGuard] },
           { path: 'person-waehlen', component: Page, canMatch: [householdOnlyGuard, guestGuard] },
-          { path: '', canMatch: [authGuard], children: [{ path: '**', component: Page }] },
+          {
+            path: '',
+            canMatch: [authGuard],
+            children: [
+              { path: 'admin/nutzer', component: Page, canMatch: [portalOnlyGuard, adminGuard] },
+              { path: '**', component: Page },
+            ],
+          },
         ]),
       ],
     });
@@ -32,12 +45,12 @@ describe('auth guards', () => {
     router = TestBed.inject(Router);
   });
 
-  async function logIn(): Promise<void> {
+  async function logIn(role: UserRole = UserRole.User): Promise<void> {
     const loaded = TestBed.inject(AuthStore).load();
     TestBed.inject(HttpTestingController).expectOne('http://localhost/api/v1/auth/me').flush({
       id: 1,
       email: 'a@example.com',
-      role: UserRole.User,
+      role,
       language: Language.De,
       active: true,
       emailVerified: true,
@@ -105,6 +118,20 @@ describe('auth guards', () => {
 
       expect(router.url).toBe('/dashboard');
     });
+  });
+
+  it('lets admins open the user management', async () => {
+    await logIn(UserRole.Admin);
+    await harness.navigateByUrl('/admin/nutzer');
+
+    expect(router.url).toBe('/admin/nutzer');
+  });
+
+  it('sends normal users away from the user management to the dashboard', async () => {
+    await logIn();
+    await harness.navigateByUrl('/admin/nutzer');
+
+    expect(router.url).toBe('/dashboard');
   });
 
   it('has no profile selection in portal mode', async () => {

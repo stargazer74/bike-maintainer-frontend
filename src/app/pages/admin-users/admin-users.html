@@ -1,0 +1,86 @@
+<div class="admin-users">
+  <mat-card class="admin-users__card">
+    <h1 class="admin-users__title">{{ 'adminUsers.title' | transloco }}</h1>
+    <p class="admin-users__subtitle">{{ 'adminUsers.subtitle' | transloco }}</p>
+
+    @if (errorKey(); as key) {
+      <p class="field__error admin-users__error" role="alert">{{ key | transloco }}</p>
+    }
+
+    @if (users.error()) {
+      <p class="field__error admin-users__error" role="alert">
+        {{ 'account.errors.unknown' | transloco }}
+      </p>
+    } @else if (users.isLoading() && !users.value()) {
+      <mat-spinner diameter="32" />
+    } @else if (users.value(); as list) {
+      <div class="admin-users__scroll">
+        <table class="admin-users__table">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'adminUsers.email' | transloco }}</th>
+              <th scope="col">{{ 'adminUsers.role' | transloco }}</th>
+              <th scope="col">{{ 'adminUsers.status' | transloco }}</th>
+              <th scope="col">{{ 'adminUsers.registered' | transloco }}</th>
+              <th scope="col">
+                <span class="admin-users__sr">{{ 'adminUsers.actions' | transloco }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of list; track user.id) {
+              <tr class="admin-users__row">
+                <td class="admin-users__email">
+                  {{ user.email }}
+                  @if (user.id === ownId()) {
+                    <span class="admin-users__you">({{ 'adminUsers.you' | transloco }})</span>
+                  }
+                </td>
+                <td>{{ 'adminUsers.roles.' + user.role | transloco }}</td>
+                <td>
+                  <span
+                    class="admin-users__status"
+                    [class.admin-users__status--inactive]="!user.active"
+                  >
+                    {{ (user.active ? 'adminUsers.active' : 'adminUsers.inactive') | transloco }}
+                  </span>
+                  @if (!user.emailVerified) {
+                    <span class="admin-users__hint">{{ 'adminUsers.unverified' | transloco }}</span>
+                  }
+                </td>
+                <td>{{ user.createdAt | localDate }}</td>
+                <td class="admin-users__actions">
+                  <button
+                    type="button"
+                    class="btn btn--ghost admin-users__toggle-role"
+                    (click)="onToggleRole(user)"
+                  >
+                    {{
+                      (user.role === UserRole.Admin
+                        ? 'adminUsers.makeUser'
+                        : 'adminUsers.makeAdmin'
+                      ) | transloco
+                    }}
+                  </button>
+                  @if (user.id !== ownId()) {
+                    <button
+                      type="button"
+                      class="btn admin-users__toggle-active"
+                      [class.btn--danger]="user.active"
+                      [class.btn--ghost]="!user.active"
+                      (click)="onToggleActive(user)"
+                    >
+                      {{
+                        (user.active ? 'adminUsers.deactivate' : 'adminUsers.activate') | transloco
+                      }}
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </mat-card>
+</div>
