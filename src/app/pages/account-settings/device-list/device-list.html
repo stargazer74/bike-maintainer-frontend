@@ -1,0 +1,46 @@
+<section class="devices" aria-labelledby="account-devices-title">
+  <h2 id="account-devices-title" class="account__section-title">
+    {{ 'accountSettings.devices.title' | transloco }}
+  </h2>
+
+  @if (devices.error()) {
+    <p class="field__error devices__error" role="alert">
+      {{ 'account.errors.unknown' | transloco }}
+    </p>
+  } @else if (devices.value(); as list) {
+    @if (list.length === 0) {
+      <p class="devices__empty">{{ 'accountSettings.devices.empty' | transloco }}</p>
+    } @else {
+      <ul class="devices__list">
+        @for (device of list; track device.id) {
+          <li class="devices__item">
+            <div class="devices__info">
+              <span class="devices__name">{{ device.name }}</span>
+              <span class="devices__meta">
+                {{
+                  'accountSettings.devices.since'
+                    | transloco: { date: (device.createdAt | localDate) }
+                }}
+                ·
+                {{
+                  'accountSettings.devices.lastUsed'
+                    | transloco: { date: (device.lastUsedAt | localDate) }
+                }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="btn btn--ghost devices__remove"
+              [attr.aria-label]="
+                'accountSettings.devices.removeLabel' | transloco: { name: device.name }
+              "
+              (click)="onRemove(device)"
+            >
+              {{ 'accountSettings.devices.remove' | transloco }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>
