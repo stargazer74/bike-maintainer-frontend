@@ -51,6 +51,8 @@ export class Login {
   readonly returnUrl = input<string>();
   /** Set by the password reset page after the new password was saved (query parameter). */
   readonly passwordReset = input<string>();
+  /** Set by the account page after the account was deleted (query parameter). */
+  readonly accountDeleted = input<string>();
 
   private readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);

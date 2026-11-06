@@ -72,6 +72,17 @@ export class AuthStore {
     );
   }
 
+  /**
+   * Deletes the account of the logged-in user for good (portal mode); the password confirms it. The backend ends
+   * every session, so the local user is cleared as well.
+   */
+  deleteAccount(password: string): Observable<void> {
+    return this.authService.deleteCurrentUser({ password }).pipe(
+      map(() => undefined),
+      tap(() => this.clear()),
+    );
+  }
+
   clear(): void {
     this.user.set(null);
   }

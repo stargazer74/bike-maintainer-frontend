@@ -1,0 +1,47 @@
+<h2 mat-dialog-title class="delete-account__title">
+  <mat-icon fontSet="material-symbols-outlined">warning</mat-icon>
+  {{ 'accountSettings.delete.dialogTitle' | transloco }}
+</h2>
+
+<form novalidate (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <p class="delete-account__message">{{ 'accountSettings.delete.dialogText' | transloco }}</p>
+
+    <div class="field">
+      <label class="field__label" for="delete-account-password">
+        {{ 'accountSettings.delete.password' | transloco }}
+      </label>
+      <input
+        id="delete-account-password"
+        name="password"
+        type="password"
+        class="field__input"
+        autocomplete="current-password"
+        required
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+      />
+    </div>
+
+    @if (errorKey(); as key) {
+      <p class="field__error delete-account__error" role="alert">{{ key | transloco }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      type="button"
+      class="btn btn--ghost delete-account__cancel"
+      [disabled]="submitting()"
+      (click)="cancel()"
+    >
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button type="submit" class="btn btn--danger delete-account__confirm" [disabled]="submitting()">
+      @if (submitting()) {
+        <mat-spinner diameter="16" />
+      }
+      {{ 'accountSettings.delete.confirm' | transloco }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -196,6 +196,14 @@ describe('Login', () => {
     );
   });
 
+  it('confirms a deleted account', async () => {
+    const page = await open('/anmelden?accountDeleted=true');
+
+    expect(page.querySelector('.login__notice')?.textContent).toContain(
+      'Dein Konto wurde gelöscht.',
+    );
+  });
+
   it('shows no notice on a normal visit', async () => {
     const page = await open();
 

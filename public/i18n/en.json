@@ -54,7 +54,8 @@
     },
     "createAccount": "No account yet? Create one",
     "forgotPassword": "Forgot your password?",
-    "passwordReset": "Your password has been changed. You can now log in with your new password."
+    "passwordReset": "Your password has been changed. You can now log in with your new password.",
+    "accountDeleted": "Your account has been deleted."
   },
   "profiles": {
     "title": "Who are you?",
@@ -356,6 +357,20 @@
     "errors": {
       "currentRequired": "Please enter your current password.",
       "wrongCurrent": "The current password is wrong."
+    },
+    "delete": {
+      "title": "Delete account",
+      "text": "Deletes your account with all vehicles, maintenance tasks, maintenance records and costs. This cannot be undone.",
+      "open": "Delete account …",
+      "dialogTitle": "Delete account permanently?",
+      "dialogText": "Your account will be permanently deleted together with all vehicles, maintenance tasks, completed maintenance and costs. This cannot be undone. Confirm with your password.",
+      "password": "Current password",
+      "confirm": "Delete account permanently",
+      "errors": {
+        "passwordRequired": "Please enter your password.",
+        "wrongPassword": "The password is wrong.",
+        "lastAdmin": "You are the only active admin and therefore cannot delete your account."
+      }
     }
   },
   "materialUnit": {

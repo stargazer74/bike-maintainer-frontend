@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { translocoTesting } from '../../i18n/testing';
 import { AccountSettings } from './account-settings';
 
 const PASSWORD_URL = 'http://localhost/api/v1/auth/password';
 const CURRENT = 'correct-horse-battery';
 const NEW = 'brand-new-password';
+
+@Component({ template: '' })
+class LoginStub {}
 
 describe('AccountSettings', () => {
   let harness: RouterTestingHarness;
@@ -18,7 +23,10 @@ describe('AccountSettings', () => {
       imports: [translocoTesting()],
       providers: [
         provideHttpClientTesting(),
-        provideRouter([{ path: 'konto', component: AccountSettings }]),
+        provideRouter([
+          { path: 'konto', component: AccountSettings },
+          { path: 'anmelden', component: LoginStub },
+        ]),
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
@@ -116,5 +124,54 @@ describe('AccountSettings', () => {
 
     httpMock.expectNone(PASSWORD_URL);
     expect(error(page)).toContain(message);
+  });
+
+  describe('delete account', () => {
+    afterEach(() => TestBed.inject(MatDialog).closeAll());
+
+    async function openDialog(page: HTMLElement): Promise<HTMLElement> {
+      page.querySelector<HTMLButtonElement>('.account__delete')!.click();
+      const dialogRef = TestBed.inject(MatDialog).openDialogs[0];
+      dialogRef.componentRef!.changeDetectorRef.detectChanges();
+      // ngModel sets up its control asynchronously.
+      await new Promise((resolve) => setTimeout(resolve));
+      dialogRef.componentRef!.changeDetectorRef.detectChanges();
+      return document.querySelector<HTMLElement>('app-delete-account-dialog')!;
+    }
+
+    it('shows the section with its warning', async () => {
+      const page = await open();
+
+      expect(page.querySelector('.account__danger')?.textContent).toContain(
+        'Das lässt sich nicht rückgängig machen.',
+      );
+    });
+
+    it('goes to the login page with a notice after the account was deleted', async () => {
+      const page = await open();
+      const dialog = await openDialog(page);
+      const input = dialog.querySelector<HTMLInputElement>('#delete-account-password')!;
+      input.value = CURRENT;
+      input.dispatchEvent(new Event('input'));
+      dialog.querySelector<HTMLFormElement>('form')!.dispatchEvent(new Event('submit'));
+
+      httpMock
+        .expectOne('http://localhost/api/v1/auth/me')
+        .flush(null, { status: 204, statusText: 'No Content' });
+      // The dialog reports the result only after its closing animation.
+      await vi.waitFor(() =>
+        expect(TestBed.inject(Router).url).toBe('/anmelden?accountDeleted=true'),
+      );
+    });
+
+    it('stays on the page when the dialog is cancelled', async () => {
+      const page = await open();
+      const dialog = await openDialog(page);
+
+      dialog.querySelector<HTMLButtonElement>('.delete-account__cancel')!.click();
+      await settle();
+
+      expect(TestBed.inject(Router).url).toBe('/konto');
+    });
   });
 });

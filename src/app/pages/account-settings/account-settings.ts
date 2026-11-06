@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '../../api-client';
 import { newPasswordErrorKey } from '../../auth/new-password';
+import { openDeleteAccountDialog } from './delete-account-dialog/delete-account-dialog';
 
 /** Translation key of the message for a failed password change. */
 function changeErrorKey(error: unknown): string {
@@ -21,7 +24,9 @@ function changeErrorKey(error: unknown): string {
   return 'account.errors.unknown';
 }
 
-/** Account page (portal mode): change the password; the backend ends all other sessions. */
+/**
+ * Account page (portal mode): change the password (the backend ends all other sessions) and delete the account.
+ */
 @Component({
   selector: 'app-account-settings',
   imports: [FormsModule, MatCardModule, MatProgressSpinnerModule, TranslocoPipe],
@@ -31,6 +36,8 @@ function changeErrorKey(error: unknown): string {
 })
 export class AccountSettings {
   private readonly authService = inject(AuthService);
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
 
   protected readonly currentPassword = signal('');
   protected readonly newPassword = signal('');
@@ -65,6 +72,14 @@ export class AccountSettings {
         this.submitting.set(false);
         this.errorKey.set(changeErrorKey(error));
       },
+    });
+  }
+
+  protected onDeleteAccount(): void {
+    openDeleteAccountDialog(this.dialog).subscribe((deleted) => {
+      if (deleted) {
+        void this.router.navigate(['/anmelden'], { queryParams: { accountDeleted: true } });
+      }
     });
   }
 }

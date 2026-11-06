@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 460px;
+}
+
+.delete-account__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bm-text);
+
+  mat-icon {
+    color: var(--status-overdue);
+  }
+}
+
+.delete-account__message {
+  margin: 0 0 20px;
+  color: var(--bm-text-muted);
+}
+
+.delete-account__error {
+  margin: 0;
+}
+
+// `.field*`, `.btn`, `.btn--ghost` and `.btn--danger` are defined globally in src/styles/_forms.scss.
