@@ -1,0 +1,90 @@
+.admin-users {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+.admin-users__card {
+  width: 100%;
+  max-width: 960px;
+  padding: 28px;
+  background: var(--bm-surface);
+  border: 1px solid var(--bm-border);
+}
+
+.admin-users__title {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  color: var(--bm-text);
+}
+
+.admin-users__subtitle {
+  margin: 0 0 24px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.admin-users__error {
+  margin: 0 0 16px;
+}
+
+.admin-users__scroll {
+  overflow-x: auto;
+}
+
+.admin-users__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--bm-border);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    color: var(--bm-text-muted);
+    font-weight: 600;
+  }
+
+  td {
+    color: var(--bm-text);
+  }
+}
+
+.admin-users__email {
+  overflow-wrap: anywhere;
+}
+
+.admin-users__you,
+.admin-users__hint {
+  display: block;
+  color: var(--bm-text-dim);
+  font-size: 0.75rem;
+}
+
+.admin-users__status {
+  color: var(--status-ok);
+}
+
+.admin-users__status--inactive {
+  color: var(--status-overdue);
+}
+
+.admin-users__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-users__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}

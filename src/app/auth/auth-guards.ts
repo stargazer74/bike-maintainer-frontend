@@ -34,3 +34,7 @@ export const portalOnlyGuard: CanMatchFn = () => !inject(AppConfigStore).isHouse
 
 /** Routes that exist only in household mode, e.g. the profile selection. */
 export const householdOnlyGuard: CanMatchFn = () => inject(AppConfigStore).isHousehold();
+
+/** Pages for admins only (user management); everyone else goes to the dashboard. The backend checks the role, too. */
+export const adminGuard: CanMatchFn = () =>
+  inject(AuthStore).isAdmin() ? true : inject(Router).createUrlTree(['/dashboard']);

@@ -91,6 +91,12 @@
               <mat-icon fontSet="material-symbols-outlined">manage_accounts</mat-icon>
               <span>{{ 'shell.account' | transloco }}</span>
             </a>
+            @if (authStore.isAdmin()) {
+              <a mat-menu-item class="shell__admin-users" routerLink="/admin/nutzer">
+                <mat-icon fontSet="material-symbols-outlined">group</mat-icon>
+                <span>{{ 'shell.adminUsers' | transloco }}</span>
+              </a>
+            }
             <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
               <mat-icon fontSet="material-symbols-outlined">logout</mat-icon>
               <span>{{ 'shell.logout' | transloco }}</span>

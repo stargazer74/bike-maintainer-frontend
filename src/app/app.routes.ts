@@ -1,5 +1,11 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, householdOnlyGuard, portalOnlyGuard } from './auth/auth-guards';
+import {
+  adminGuard,
+  authGuard,
+  guestGuard,
+  householdOnlyGuard,
+  portalOnlyGuard,
+} from './auth/auth-guards';
 
 export const routes: Routes = [
   {
@@ -60,6 +66,12 @@ export const routes: Routes = [
         canMatch: [portalOnlyGuard],
         loadComponent: () =>
           import('./pages/account-settings/account-settings').then((m) => m.AccountSettings),
+      },
+      {
+        // Admins only; household mode has no accounts to manage.
+        path: 'admin/nutzer',
+        canMatch: [portalOnlyGuard, adminGuard],
+        loadComponent: () => import('./pages/admin-users/admin-users').then((m) => m.AdminUsers),
       },
       { path: '**', redirectTo: 'dashboard' },
     ],
