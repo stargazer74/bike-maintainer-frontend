@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 520px;
+}
+
+.worksheet__intro {
+  margin: 0 0 12px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.worksheet__loading {
+  margin: 16px auto;
+}
+
+.worksheet__templates {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.worksheet__legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.worksheet__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--bm-border);
+  border-radius: 8px;
+  cursor: pointer;
+
+  &--selected {
+    border-color: var(--bm-orange);
+  }
+}
+
+.worksheet__radio {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  flex: none;
+  accent-color: var(--bm-orange);
+}
+
+.worksheet__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.worksheet__name {
+  color: var(--bm-text);
+  font-weight: 600;
+}
+
+.worksheet__description {
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
+
+.worksheet__engine {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.worksheet__error {
+  margin: 12px 0 0;
+}
+
+.worksheet__create mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

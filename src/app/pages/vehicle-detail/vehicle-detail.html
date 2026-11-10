@@ -122,6 +122,14 @@
                 {{ 'checklist.open' | transloco }}
               </button>
             }
+            <button
+              type="button"
+              class="btn btn--ghost status-section__worksheet"
+              (click)="openWorksheetDialog(result.vehicle.id)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">assignment</mat-icon>
+              {{ 'worksheet.open' | transloco }}
+            </button>
             <!-- Disabled buttons get no hover events in every browser, so the hint sits on a wrapper. -->
             <span [attr.title]="logCards().length ? null : ('report.noLogs' | transloco)">
               <button

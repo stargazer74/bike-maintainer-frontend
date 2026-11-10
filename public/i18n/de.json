@@ -315,6 +315,39 @@
       "unknown": "Die Checkliste konnte nicht erstellt werden, bitte später erneut versuchen."
     }
   },
+  "worksheet": {
+    "open": "Arbeitsblatt drucken",
+    "title": "Arbeitsblatt drucken",
+    "intro": "Leeres Arbeitsblatt zum Ausfüllen in der Werkstatt, mit den Fahrzeugdaten im Kopf. Es wird nichts gespeichert.",
+    "template": "Vorlage",
+    "templates": {
+      "valveClearance": {
+        "name": "Ventilspiel",
+        "description": "Tabelle pro Zylinder: Soll, Ist, Shim alt und neu."
+      },
+      "brakes": {
+        "name": "Bremsen",
+        "description": "Beläge und Scheiben vorne und hinten, Bremsflüssigkeit."
+      },
+      "chain": {
+        "name": "Kette",
+        "description": "Durchhang, Verschleiß, Ritzel und Kettenrad."
+      },
+      "tires": {
+        "name": "Reifen",
+        "description": "Luftdruck, Profiltiefe, DOT und Zustand vorne und hinten."
+      }
+    },
+    "cylinders": "Zylinder",
+    "valvesPerCylinder": "Ventile pro Zylinder",
+    "create": "PDF erstellen",
+    "fallbackFileName": "arbeitsblatt.pdf",
+    "errors": {
+      "load": "Die Vorlagen konnten nicht geladen werden, bitte später erneut versuchen.",
+      "invalid": "Diese Vorlage passt nicht zum Fahrzeug, bitte lade die Seite neu.",
+      "unknown": "Das Arbeitsblatt konnte nicht erstellt werden, bitte später erneut versuchen."
+    }
+  },
   "report": {
     "open": "Bericht herunterladen",
     "noLogs": "Noch keine Wartungen erfasst – der Bericht steht bereit, sobald eine Wartung erfasst ist.",
