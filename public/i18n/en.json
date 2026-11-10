@@ -315,6 +315,39 @@
       "unknown": "The checklist could not be created, please try again later."
     }
   },
+  "worksheet": {
+    "open": "Print worksheet",
+    "title": "Print worksheet",
+    "intro": "Empty worksheet to fill in at the workshop, with the vehicle details at the top. Nothing is stored.",
+    "template": "Template",
+    "templates": {
+      "valveClearance": {
+        "name": "Valve clearance",
+        "description": "Table per cylinder: target, actual, old and new shim."
+      },
+      "brakes": {
+        "name": "Brakes",
+        "description": "Pads and discs front and rear, brake fluid."
+      },
+      "chain": {
+        "name": "Chain",
+        "description": "Slack, wear, front and rear sprocket."
+      },
+      "tires": {
+        "name": "Tyres",
+        "description": "Pressure, tread depth, DOT and condition front and rear."
+      }
+    },
+    "cylinders": "Cylinders",
+    "valvesPerCylinder": "Valves per cylinder",
+    "create": "Create PDF",
+    "fallbackFileName": "worksheet.pdf",
+    "errors": {
+      "load": "The templates could not be loaded, please try again later.",
+      "invalid": "This template does not fit the vehicle, please reload the page.",
+      "unknown": "The worksheet could not be created, please try again later."
+    }
+  },
   "report": {
     "open": "Download report",
     "noLogs": "No maintenance recorded yet – the report is available once maintenance has been recorded.",

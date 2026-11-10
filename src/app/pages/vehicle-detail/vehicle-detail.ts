@@ -42,6 +42,7 @@ import { LocalCurrencyPipe, LocalDatePipe, LocalNumberPipe } from '../../i18n/lo
 import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
+import { WorksheetDialog, WorksheetDialogData } from './worksheet-dialog/worksheet-dialog';
 import { CostTile } from './cost-tile/cost-tile';
 import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
 import { MaterialEditor } from './material-editor/material-editor';
@@ -173,6 +174,13 @@ export class VehicleDetail {
     this.dialog.open<ChecklistDialog, ChecklistDialogData>(ChecklistDialog, {
       autoFocus: 'first-tabbable',
       data: { vehicleId, tasks },
+    });
+  }
+
+  protected openWorksheetDialog(vehicleId: number): void {
+    this.dialog.open<WorksheetDialog, WorksheetDialogData>(WorksheetDialog, {
+      autoFocus: 'first-tabbable',
+      data: { vehicleId },
     });
   }
 

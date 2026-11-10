@@ -1,0 +1,96 @@
+<h2 mat-dialog-title>{{ 'worksheet.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  <p class="worksheet__intro">{{ 'worksheet.intro' | transloco }}</p>
+
+  @if (templates.isLoading()) {
+    <mat-spinner diameter="24" class="worksheet__loading" />
+  } @else if (templates.error()) {
+    <p class="field__error" role="alert">{{ 'worksheet.errors.load' | transloco }}</p>
+  } @else {
+    <fieldset class="worksheet__templates">
+      <legend class="worksheet__legend">{{ 'worksheet.template' | transloco }}</legend>
+      @for (option of templates.value() ?? []; track option.template) {
+        <label
+          class="worksheet__option"
+          [class.worksheet__option--selected]="selected() === option.template"
+        >
+          <input
+            type="radio"
+            name="worksheet-template"
+            class="worksheet__radio"
+            [value]="option.template"
+            [checked]="selected() === option.template"
+            (change)="select(option.template)"
+          />
+          <span class="worksheet__text">
+            <span class="worksheet__name">{{
+              'worksheet.templates.' + option.key + '.name' | transloco
+            }}</span>
+            <span class="worksheet__description">{{
+              'worksheet.templates.' + option.key + '.description' | transloco
+            }}</span>
+          </span>
+        </label>
+      }
+    </fieldset>
+
+    @if (needsEngineLayout()) {
+      <div class="worksheet__engine">
+        <div class="field">
+          <label class="field__label" for="ws-cylinders">{{
+            'worksheet.cylinders' | transloco
+          }}</label>
+          <select
+            id="ws-cylinders"
+            class="field__input"
+            [ngModel]="cylinders()"
+            (ngModelChange)="cylinders.set(+$event)"
+          >
+            @for (count of cylinderOptions; track count) {
+              <option [ngValue]="count">{{ count }}</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="ws-valves">{{
+            'worksheet.valvesPerCylinder' | transloco
+          }}</label>
+          <select
+            id="ws-valves"
+            class="field__input"
+            [ngModel]="valvesPerCylinder()"
+            (ngModelChange)="valvesPerCylinder.set(+$event)"
+          >
+            @for (count of valveOptions; track count) {
+              <option [ngValue]="count">{{ count }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    }
+  }
+
+  @if (errorKey(); as key) {
+    <p class="field__error worksheet__error" role="alert">{{ key | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn--ghost" mat-dialog-close>
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    type="button"
+    class="btn btn--primary worksheet__create"
+    [disabled]="creating() || !selected()"
+    (click)="create()"
+  >
+    @if (creating()) {
+      <mat-spinner diameter="16" />
+    } @else {
+      <mat-icon fontSet="material-symbols-outlined">picture_as_pdf</mat-icon>
+    }
+    {{ 'worksheet.create' | transloco }}
+  </button>
+</mat-dialog-actions>
