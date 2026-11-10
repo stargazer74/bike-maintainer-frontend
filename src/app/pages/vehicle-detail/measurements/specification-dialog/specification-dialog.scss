@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 640px;
+}
+
+.spec__intro {
+  margin: 0 0 16px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.spec__loading {
+  margin: 16px auto;
+}
+
+.spec__group {
+  margin: 0 0 12px;
+  padding: 10px 12px 0;
+  border: 1px solid var(--bm-border-strong);
+  border-radius: 8px;
+}
+
+.spec__legend {
+  padding: 0 6px;
+  color: var(--bm-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.spec__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+
+  > .field {
+    flex: 1 1 160px;
+  }
+}
+
+.spec__error {
+  margin-top: 8px;
+}

@@ -167,7 +167,8 @@
     "materials": "Material",
     "laborCost": "Arbeitskosten ({{currency}})",
     "total": "Gesamtkosten",
-    "costsInvalid": "Bitte korrigiere das Material und die Arbeitskosten."
+    "costsInvalid": "Bitte korrigiere das Material und die Arbeitskosten.",
+    "measurementsInvalid": "Bitte korrigiere die Messwerte."
   },
   "newTask": {
     "title": "Weitere Arbeit {{number}}",
@@ -489,6 +490,121 @@
     "confirmActivate": "„{{email}}“ kann sich wieder anmelden.",
     "errors": {
       "rule": "Das geht nicht: Der letzte aktive Admin kann nicht herabgestuft oder gesperrt werden, und du kannst dich nicht selbst sperren."
+    }
+  },
+  "measurements": {
+    "title": "Messwerte",
+    "remove": "Messwerte entfernen",
+    "templates": {
+      "valveClearance": "Ventilspiel",
+      "brakes": "Bremsen",
+      "chain": "Kette",
+      "tires": "Reifen"
+    },
+    "lastMeasurement": "Letzte Messung: {{date}}, {{mileage}} km",
+    "target": "Soll {{value}}",
+    "targetRange": "Soll {{min}}–{{max}}",
+    "targetMin": "min. {{value}}",
+    "targetMax": "max. {{value}}",
+    "previous": "zuletzt {{value}}",
+    "outOfRangeCount": "{{count}} außerhalb Soll",
+    "status": {
+      "ok": "ok",
+      "outOfRange": "außerhalb Soll"
+    },
+    "valve": {
+      "valve": "Ventil",
+      "measured": "Ist (mm)",
+      "shimOld": "Shim alt",
+      "shimNew": "Shim neu",
+      "suggestion": "Vorschlag",
+      "intake": "Zyl. {{cylinder}} Einlass{{index}}",
+      "exhaust": "Zyl. {{cylinder}} Auslass{{index}}",
+      "shim": "Shim {{value}} (unverändert)",
+      "shimChange": "Shim {{old}} → {{new}}"
+    },
+    "shim": {
+      "noChange": "Im Sollbereich, kein Tausch nötig",
+      "resulting": "Spiel danach {{value}}",
+      "noShimInRange": "Kein Rasterwert im Sollbereich – nächstliegender Wert",
+      "outsideSizes": "Außerhalb der erhältlichen Shim-Größen",
+      "takeOver": "Übernehmen",
+      "needsSpecification": "Für einen Shim-Vorschlag Sollbereich Einlass/Auslass und Shim-Schrittweite in den Sollwerten eintragen."
+    },
+    "brakes": {
+      "padFront": "Belag vorne",
+      "padRear": "Belag hinten",
+      "discFront": "Scheibe vorne",
+      "discRear": "Scheibe hinten",
+      "discConditionFront": "Zustand Scheibe vorne",
+      "discConditionRear": "Zustand Scheibe hinten",
+      "fluidCondition": "Bremsflüssigkeit",
+      "fluidPlaceholder": "Stand, Farbe, zuletzt gewechselt"
+    },
+    "chain": {
+      "slack": "Durchhang",
+      "wearLength": "Verschleißlänge",
+      "wearLinks": "Über Glieder",
+      "sprocketCondition": "Zustand Ritzel",
+      "rearSprocketCondition": "Zustand Kettenrad",
+      "cleaned": "Gereinigt",
+      "lubricated": "Geschmiert"
+    },
+    "tires": {
+      "pressureFront": "Luftdruck vorne",
+      "pressureRear": "Luftdruck hinten",
+      "treadFront": "Profil vorne",
+      "treadRear": "Profil hinten",
+      "dotFront": "DOT vorne",
+      "dotRear": "DOT hinten",
+      "dotPlaceholder": "z. B. 2324",
+      "conditionFront": "Zustand vorne",
+      "conditionRear": "Zustand hinten"
+    },
+    "errors": {
+      "range": "Der Wert liegt außerhalb des erlaubten Bereichs.",
+      "decimals3": "Höchstens drei Nachkommastellen.",
+      "decimals2": "Höchstens zwei Nachkommastellen.",
+      "links": "Ganze Zahl von 2 bis 200.",
+      "dot": "Vier Ziffern: Woche und Jahr, z. B. 2324.",
+      "load": "Vorlagen und Sollwerte konnten nicht geladen werden; neue Messwerte lassen sich gerade nicht hinzufügen."
+    }
+  },
+  "specification": {
+    "open": "Sollwerte",
+    "title": "Sollwerte des Fahrzeugs",
+    "intro": "Werte aus dem Werkstatthandbuch. Sie füllen die Arbeitsblätter vor, prüfen Messwerte und liefern den Shim-Vorschlag. Alle Felder sind optional.",
+    "engine": "Motor",
+    "adjustment": {
+      "SHIM": "Shim (Tassenstößel)",
+      "SCREW": "Einstellschraube"
+    },
+    "fields": {
+      "valveAdjustment": "Einstellart",
+      "intakeClearanceMin": "Einlass min.",
+      "intakeClearanceMax": "Einlass max.",
+      "exhaustClearanceMin": "Auslass min.",
+      "exhaustClearanceMax": "Auslass max.",
+      "shimStep": "Shim-Schrittweite",
+      "shimMin": "Kleinster Shim",
+      "shimMax": "Größter Shim",
+      "brakePadMinFront": "Belag vorne min.",
+      "brakePadMinRear": "Belag hinten min.",
+      "brakeDiscMinFront": "Scheibe vorne min.",
+      "brakeDiscMinRear": "Scheibe hinten min.",
+      "chainSlackMin": "Durchhang min.",
+      "chainSlackMax": "Durchhang max.",
+      "chainWearMaxLength": "Verschleißlänge max.",
+      "chainWearLinks": "Über Glieder",
+      "tirePressureFront": "Luftdruck vorne",
+      "tirePressureRear": "Luftdruck hinten",
+      "treadDepthMin": "Profiltiefe min."
+    },
+    "errors": {
+      "minAboveMax": "Der Mindestwert ist größer als der Höchstwert.",
+      "fix": "Bitte korrigiere die markierten Werte.",
+      "load": "Die Sollwerte konnten nicht geladen werden, bitte später erneut versuchen.",
+      "save": "Die Sollwerte konnten nicht gespeichert werden, bitte erneut versuchen."
     }
   }
 }

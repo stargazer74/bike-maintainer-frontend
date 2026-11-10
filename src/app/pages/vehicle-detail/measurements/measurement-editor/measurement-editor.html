@@ -1,0 +1,601 @@
+@let drafts = this.drafts();
+@let spec = specification();
+
+@if (drafts.valveClearance; as valves) {
+  <section
+    class="measure-set"
+    [attr.aria-label]="'measurements.templates.valveClearance' | transloco"
+  >
+    <div class="measure-set__header">
+      <span class="measure-set__title">{{
+        'measurements.templates.valveClearance' | transloco
+      }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="measure-set__remove"
+        [attr.aria-label]="'measurements.remove' | transloco"
+        (click)="remove('valveClearance')"
+      >
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </div>
+    @if (sources().valveClearance; as source) {
+      <p class="measure-set__source">
+        {{
+          'measurements.lastMeasurement'
+            | transloco
+              : {
+                  date: (source.performedAt | localDate),
+                  mileage: (source.mileageAtPerformed | localNumber),
+                }
+        }}
+      </p>
+    }
+
+    @if (valveLayout(); as layout) {
+      <div class="measure-set__row">
+        <div class="field">
+          <label class="field__label" for="measure-cylinders">{{
+            'worksheet.cylinders' | transloco
+          }}</label>
+          <select
+            id="measure-cylinders"
+            class="field__input"
+            [ngModel]="layout.cylinders"
+            (ngModelChange)="changeLayout(+$event, layout.valvesPerCylinder)"
+          >
+            @for (count of cylinderOptions; track count) {
+              <option [ngValue]="count">{{ count }}</option>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label class="field__label" for="measure-valves">{{
+            'worksheet.valvesPerCylinder' | transloco
+          }}</label>
+          <select
+            id="measure-valves"
+            class="field__input"
+            [ngModel]="layout.valvesPerCylinder"
+            (ngModelChange)="changeLayout(layout.cylinders, +$event)"
+          >
+            @for (count of valveOptions; track count) {
+              <option [ngValue]="count">{{ count }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (shimAdjusted() && !canSuggestShims()) {
+        <p class="measure-set__note">{{ 'measurements.shim.needsSpecification' | transloco }}</p>
+      }
+
+      <div class="valve-table__scroll">
+        <table class="valve-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'measurements.valve.valve' | transloco }}</th>
+              <th scope="col">{{ 'measurements.valve.measured' | transloco }}</th>
+              @if (shimAdjusted()) {
+                <th scope="col">{{ 'measurements.valve.shimOld' | transloco }}</th>
+                <th scope="col">{{ 'measurements.valve.shimNew' | transloco }}</th>
+                <th scope="col">{{ 'measurements.valve.suggestion' | transloco }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (
+              valve of valves;
+              track valve.cylinder + valve.valve + valve.index;
+              let i = $index
+            ) {
+              @let isIntake = valve.valve === intake;
+              @let showIndex =
+                isIntake ? layout.valvesPerCylinder >= 3 : layout.valvesPerCylinder === 4;
+              @let label =
+                (isIntake ? 'measurements.valve.intake' : 'measurements.valve.exhaust')
+                  | transloco
+                    : { cylinder: valve.cylinder, index: showIndex ? ' ' + valve.index : '' };
+              @let min = isIntake ? spec?.intakeClearanceMin : spec?.exhaustClearanceMin;
+              @let max = isIntake ? spec?.intakeClearanceMax : spec?.exhaustClearanceMax;
+              @let measuredError = lengthError(valve.measured, maxClearance);
+              @let oldError = lengthError(valve.shimOld, maxShim);
+              @let newError = lengthError(valve.shimNew, maxShim);
+              <tr>
+                <th scope="row" class="valve-table__label">
+                  {{ label }}
+                  @if (min !== undefined && max !== undefined) {
+                    <span class="valve-table__hint">{{
+                      'measurements.targetRange'
+                        | transloco
+                          : { min: (min | localNumber: '1.0-3'), max: (max | localNumber: '1.0-3') }
+                    }}</span>
+                  }
+                </th>
+                <td>
+                  <input
+                    class="field__input valve-table__input"
+                    type="number"
+                    min="0"
+                    step="0.001"
+                    [attr.aria-label]="('measurements.valve.measured' | transloco) + ' – ' + label"
+                    [class.field__input--invalid]="showErrors() && measuredError"
+                    [ngModel]="valve.measured"
+                    (ngModelChange)="changeValve(i, { measured: toNumber($event) })"
+                  />
+                  @let last = previousValve(valve);
+                  @if (last !== undefined) {
+                    <span class="valve-table__hint">{{
+                      'measurements.previous' | transloco: { value: (last | localNumber: '1.0-3') }
+                    }}</span>
+                  }
+                  @if (showErrors() && measuredError) {
+                    <p class="field__error" role="alert">{{ measuredError | transloco }}</p>
+                  }
+                </td>
+                @if (shimAdjusted()) {
+                  <td>
+                    <input
+                      class="field__input valve-table__input"
+                      type="number"
+                      min="0"
+                      step="0.001"
+                      [attr.aria-label]="('measurements.valve.shimOld' | transloco) + ' – ' + label"
+                      [class.field__input--invalid]="showErrors() && oldError"
+                      [ngModel]="valve.shimOld"
+                      (ngModelChange)="changeValve(i, { shimOld: toNumber($event) })"
+                    />
+                    @if (showErrors() && oldError) {
+                      <p class="field__error" role="alert">{{ oldError | transloco }}</p>
+                    }
+                  </td>
+                  <td>
+                    <input
+                      class="field__input valve-table__input"
+                      type="number"
+                      min="0"
+                      step="0.001"
+                      [attr.aria-label]="('measurements.valve.shimNew' | transloco) + ' – ' + label"
+                      [class.field__input--invalid]="showErrors() && newError"
+                      [ngModel]="valve.shimNew"
+                      (ngModelChange)="changeValve(i, { shimNew: toNumber($event) })"
+                    />
+                    @if (showErrors() && newError) {
+                      <p class="field__error" role="alert">{{ newError | transloco }}</p>
+                    }
+                  </td>
+                  <td class="valve-table__suggestion" aria-live="polite">
+                    @if (shimResult(i); as result) {
+                      @if (result.hint === noChangeNeeded) {
+                        <span class="measure-status measure-status--ok">{{
+                          'measurements.shim.noChange' | transloco
+                        }}</span>
+                      } @else if (result.suggestedShim !== undefined) {
+                        <span class="valve-table__suggested">
+                          {{ result.suggestedShim | localNumber: '1.3-3' }}
+                          @if (result.resultingClearance !== undefined) {
+                            <span class="valve-table__hint">{{
+                              'measurements.shim.resulting'
+                                | transloco
+                                  : { value: (result.resultingClearance | localNumber: '1.3-3') }
+                            }}</span>
+                          }
+                        </span>
+                        @if (result.hint === noShimInRange) {
+                          <span class="measure-status measure-status--warn">{{
+                            'measurements.shim.noShimInRange' | transloco
+                          }}</span>
+                        } @else if (result.hint === outsideAvailableSizes) {
+                          <span class="measure-status measure-status--warn">{{
+                            'measurements.shim.outsideSizes' | transloco
+                          }}</span>
+                        }
+                        <button
+                          type="button"
+                          class="btn btn--ghost valve-table__take"
+                          [disabled]="valve.shimNew === result.suggestedShim"
+                          (click)="takeOver(i, result.suggestedShim)"
+                        >
+                          {{ 'measurements.shim.takeOver' | transloco }}
+                        </button>
+                      }
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+}
+
+@if (drafts.brakes; as brakes) {
+  @let last = previousBrakes();
+  <section class="measure-set" [attr.aria-label]="'measurements.templates.brakes' | transloco">
+    <div class="measure-set__header">
+      <span class="measure-set__title">{{ 'measurements.templates.brakes' | transloco }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="measure-set__remove"
+        [attr.aria-label]="'measurements.remove' | transloco"
+        (click)="remove('brakes')"
+      >
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </div>
+    @if (sources().brakes; as source) {
+      <p class="measure-set__source">
+        {{
+          'measurements.lastMeasurement'
+            | transloco
+              : {
+                  date: (source.performedAt | localDate),
+                  mileage: (source.mileageAtPerformed | localNumber),
+                }
+        }}
+      </p>
+    }
+    <div class="measure-set__row">
+      <app-measure-field
+        fieldId="measure-pad-front"
+        label="measurements.brakes.padFront"
+        [value]="brakes.padFront"
+        (valueChange)="changeBrakes({ padFront: $event })"
+        [targetMin]="spec?.brakePadMinFront"
+        [previous]="last?.padFront"
+        [error]="lengthError(brakes.padFront, maxLength)"
+        [showError]="showErrors()"
+      />
+      <app-measure-field
+        fieldId="measure-pad-rear"
+        label="measurements.brakes.padRear"
+        [value]="brakes.padRear"
+        (valueChange)="changeBrakes({ padRear: $event })"
+        [targetMin]="spec?.brakePadMinRear"
+        [previous]="last?.padRear"
+        [error]="lengthError(brakes.padRear, maxLength)"
+        [showError]="showErrors()"
+      />
+    </div>
+    <div class="measure-set__row">
+      <app-measure-field
+        fieldId="measure-disc-front"
+        label="measurements.brakes.discFront"
+        [value]="brakes.discFront"
+        (valueChange)="changeBrakes({ discFront: $event })"
+        [targetMin]="spec?.brakeDiscMinFront"
+        [previous]="last?.discFront"
+        [error]="lengthError(brakes.discFront, maxLength)"
+        [showError]="showErrors()"
+      />
+      <app-measure-field
+        fieldId="measure-disc-rear"
+        label="measurements.brakes.discRear"
+        [value]="brakes.discRear"
+        (valueChange)="changeBrakes({ discRear: $event })"
+        [targetMin]="spec?.brakeDiscMinRear"
+        [previous]="last?.discRear"
+        [error]="lengthError(brakes.discRear, maxLength)"
+        [showError]="showErrors()"
+      />
+    </div>
+    <div class="measure-set__row">
+      <div class="field">
+        <label class="field__label" for="measure-disc-condition-front">{{
+          'measurements.brakes.discConditionFront' | transloco
+        }}</label>
+        <input
+          id="measure-disc-condition-front"
+          class="field__input"
+          maxlength="100"
+          [ngModel]="brakes.discConditionFront"
+          (ngModelChange)="changeBrakes({ discConditionFront: $event })"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="measure-disc-condition-rear">{{
+          'measurements.brakes.discConditionRear' | transloco
+        }}</label>
+        <input
+          id="measure-disc-condition-rear"
+          class="field__input"
+          maxlength="100"
+          [ngModel]="brakes.discConditionRear"
+          (ngModelChange)="changeBrakes({ discConditionRear: $event })"
+        />
+      </div>
+    </div>
+    <div class="field">
+      <label class="field__label" for="measure-fluid">{{
+        'measurements.brakes.fluidCondition' | transloco
+      }}</label>
+      <input
+        id="measure-fluid"
+        class="field__input"
+        maxlength="100"
+        [placeholder]="'measurements.brakes.fluidPlaceholder' | transloco"
+        [ngModel]="brakes.fluidCondition"
+        (ngModelChange)="changeBrakes({ fluidCondition: $event })"
+      />
+    </div>
+  </section>
+}
+
+@if (drafts.chain; as chain) {
+  @let last = previousChain();
+  <section class="measure-set" [attr.aria-label]="'measurements.templates.chain' | transloco">
+    <div class="measure-set__header">
+      <span class="measure-set__title">{{ 'measurements.templates.chain' | transloco }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="measure-set__remove"
+        [attr.aria-label]="'measurements.remove' | transloco"
+        (click)="remove('chain')"
+      >
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </div>
+    @if (sources().chain; as source) {
+      <p class="measure-set__source">
+        {{
+          'measurements.lastMeasurement'
+            | transloco
+              : {
+                  date: (source.performedAt | localDate),
+                  mileage: (source.mileageAtPerformed | localNumber),
+                }
+        }}
+      </p>
+    }
+    <div class="measure-set__row">
+      <app-measure-field
+        fieldId="measure-slack"
+        label="measurements.chain.slack"
+        [value]="chain.slack"
+        (valueChange)="changeChain({ slack: $event })"
+        [targetMin]="spec?.chainSlackMin"
+        [targetMax]="spec?.chainSlackMax"
+        [previous]="last?.slack"
+        [error]="lengthError(chain.slack, maxLength)"
+        [showError]="showErrors()"
+      />
+      <app-measure-field
+        fieldId="measure-wear-length"
+        label="measurements.chain.wearLength"
+        [value]="chain.wearLength"
+        (valueChange)="changeChain({ wearLength: $event })"
+        [targetMax]="spec?.chainWearMaxLength"
+        [previous]="last?.wearLength"
+        [error]="lengthError(chain.wearLength, maxLength)"
+        [showError]="showErrors()"
+      />
+      <div class="field">
+        <label class="field__label" for="measure-wear-links">{{
+          'measurements.chain.wearLinks' | transloco
+        }}</label>
+        <input
+          id="measure-wear-links"
+          class="field__input"
+          type="number"
+          min="2"
+          max="200"
+          step="1"
+          [class.field__input--invalid]="showErrors() && linksError(chain.wearLinks)"
+          [ngModel]="chain.wearLinks"
+          (ngModelChange)="changeChain({ wearLinks: toNumber($event) })"
+        />
+        @if (showErrors() && linksError(chain.wearLinks); as key) {
+          <p class="field__error" role="alert">{{ key | transloco }}</p>
+        }
+      </div>
+    </div>
+    <div class="measure-set__row">
+      <div class="field">
+        <label class="field__label" for="measure-sprocket">{{
+          'measurements.chain.sprocketCondition' | transloco
+        }}</label>
+        <input
+          id="measure-sprocket"
+          class="field__input"
+          maxlength="100"
+          [ngModel]="chain.sprocketCondition"
+          (ngModelChange)="changeChain({ sprocketCondition: $event })"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="measure-rear-sprocket">{{
+          'measurements.chain.rearSprocketCondition' | transloco
+        }}</label>
+        <input
+          id="measure-rear-sprocket"
+          class="field__input"
+          maxlength="100"
+          [ngModel]="chain.rearSprocketCondition"
+          (ngModelChange)="changeChain({ rearSprocketCondition: $event })"
+        />
+      </div>
+    </div>
+    <div class="measure-set__checks">
+      <label class="measure-set__check">
+        <input
+          type="checkbox"
+          [checked]="chain.cleaned"
+          (change)="changeChain({ cleaned: !chain.cleaned })"
+        />
+        {{ 'measurements.chain.cleaned' | transloco }}
+      </label>
+      <label class="measure-set__check">
+        <input
+          type="checkbox"
+          [checked]="chain.lubricated"
+          (change)="changeChain({ lubricated: !chain.lubricated })"
+        />
+        {{ 'measurements.chain.lubricated' | transloco }}
+      </label>
+    </div>
+  </section>
+}
+
+@if (drafts.tires; as tires) {
+  @let last = previousTires();
+  <section class="measure-set" [attr.aria-label]="'measurements.templates.tires' | transloco">
+    <div class="measure-set__header">
+      <span class="measure-set__title">{{ 'measurements.templates.tires' | transloco }}</span>
+      <button
+        mat-icon-button
+        type="button"
+        class="measure-set__remove"
+        [attr.aria-label]="'measurements.remove' | transloco"
+        (click)="remove('tires')"
+      >
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </div>
+    @if (sources().tires; as source) {
+      <p class="measure-set__source">
+        {{
+          'measurements.lastMeasurement'
+            | transloco
+              : {
+                  date: (source.performedAt | localDate),
+                  mileage: (source.mileageAtPerformed | localNumber),
+                }
+        }}
+      </p>
+    }
+    <div class="measure-set__row">
+      <app-measure-field
+        fieldId="measure-pressure-front"
+        label="measurements.tires.pressureFront"
+        unit="bar"
+        step="0.01"
+        [value]="tires.pressureFront"
+        (valueChange)="changeTires({ pressureFront: $event })"
+        [target]="spec?.tirePressureFront"
+        [previous]="last?.pressureFront"
+        [error]="pressureError(tires.pressureFront)"
+        [showError]="showErrors()"
+      />
+      <app-measure-field
+        fieldId="measure-pressure-rear"
+        label="measurements.tires.pressureRear"
+        unit="bar"
+        step="0.01"
+        [value]="tires.pressureRear"
+        (valueChange)="changeTires({ pressureRear: $event })"
+        [target]="spec?.tirePressureRear"
+        [previous]="last?.pressureRear"
+        [error]="pressureError(tires.pressureRear)"
+        [showError]="showErrors()"
+      />
+    </div>
+    <div class="measure-set__row">
+      <app-measure-field
+        fieldId="measure-tread-front"
+        label="measurements.tires.treadFront"
+        step="0.1"
+        [value]="tires.treadFront"
+        (valueChange)="changeTires({ treadFront: $event })"
+        [targetMin]="spec?.treadDepthMin"
+        [previous]="last?.treadFront"
+        [error]="lengthError(tires.treadFront, maxTread)"
+        [showError]="showErrors()"
+      />
+      <app-measure-field
+        fieldId="measure-tread-rear"
+        label="measurements.tires.treadRear"
+        step="0.1"
+        [value]="tires.treadRear"
+        (valueChange)="changeTires({ treadRear: $event })"
+        [targetMin]="spec?.treadDepthMin"
+        [previous]="last?.treadRear"
+        [error]="lengthError(tires.treadRear, maxTread)"
+        [showError]="showErrors()"
+      />
+    </div>
+    <div class="measure-set__row">
+      <div class="field">
+        <label class="field__label" for="measure-dot-front">{{
+          'measurements.tires.dotFront' | transloco
+        }}</label>
+        <input
+          id="measure-dot-front"
+          class="field__input"
+          inputmode="numeric"
+          maxlength="4"
+          [placeholder]="'measurements.tires.dotPlaceholder' | transloco"
+          [class.field__input--invalid]="showErrors() && dotError(tires.dotFront)"
+          [ngModel]="tires.dotFront"
+          (ngModelChange)="changeTires({ dotFront: $event })"
+        />
+        @if (showErrors() && dotError(tires.dotFront); as key) {
+          <p class="field__error" role="alert">{{ key | transloco }}</p>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="measure-dot-rear">{{
+          'measurements.tires.dotRear' | transloco
+        }}</label>
+        <input
+          id="measure-dot-rear"
+          class="field__input"
+          inputmode="numeric"
+          maxlength="4"
+          [placeholder]="'measurements.tires.dotPlaceholder' | transloco"
+          [class.field__input--invalid]="showErrors() && dotError(tires.dotRear)"
+          [ngModel]="tires.dotRear"
+          (ngModelChange)="changeTires({ dotRear: $event })"
+        />
+        @if (showErrors() && dotError(tires.dotRear); as key) {
+          <p class="field__error" role="alert">{{ key | transloco }}</p>
+        }
+      </div>
+    </div>
+    <div class="measure-set__row">
+      <div class="field">
+        <label class="field__label" for="measure-condition-front">{{
+          'measurements.tires.conditionFront' | transloco
+        }}</label>
+        <input
+          id="measure-condition-front"
+          class="field__input"
+          maxlength="100"
+          [ngModel]="tires.conditionFront"
+          (ngModelChange)="changeTires({ conditionFront: $event })"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="measure-condition-rear">{{
+          'measurements.tires.conditionRear' | transloco
+        }}</label>
+        <input
+          id="measure-condition-rear"
+          class="field__input"
+          maxlength="100"
+          [ngModel]="tires.conditionRear"
+          (ngModelChange)="changeTires({ conditionRear: $event })"
+        />
+      </div>
+    </div>
+  </section>
+}
+
+@if (addable().length) {
+  <div class="measure-add">
+    @for (option of addable(); track option.template) {
+      <button
+        type="button"
+        class="btn btn--ghost measure-add__button"
+        (click)="add(option.template)"
+      >
+        <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+        {{ 'measurements.templates.' + option.key | transloco }}
+      </button>
+    }
+  </div>
+}

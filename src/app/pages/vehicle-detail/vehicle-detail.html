@@ -122,6 +122,16 @@
                 {{ 'checklist.open' | transloco }}
               </button>
             }
+            @if (measurementContext.value()?.templates?.length) {
+              <button
+                type="button"
+                class="btn btn--ghost status-section__specification"
+                (click)="openSpecificationDialog(result.vehicle.id)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">tune</mat-icon>
+                {{ 'specification.open' | transloco }}
+              </button>
+            }
             <button
               type="button"
               class="btn btn--ghost status-section__worksheet"
@@ -266,6 +276,42 @@
                 @if (card.log.notes) {
                   <p class="log-card__notes">{{ card.log.notes }}</p>
                 }
+                @if (card.log.measurements; as measurements) {
+                  @if (
+                    measurements.valveClearance ||
+                    measurements.brakes ||
+                    measurements.chain ||
+                    measurements.tires
+                  ) {
+                    @let outside = outOfRangeCount(measurements);
+                    <div class="log-card__costs log-card__measurements">
+                      <button
+                        type="button"
+                        class="log-card__costs-toggle"
+                        [attr.aria-expanded]="expandedMeasurementIds().has(card.log.id)"
+                        [attr.aria-controls]="'log-measurements-' + card.log.id"
+                        (click)="toggleLogMeasurements(card.log.id)"
+                      >
+                        <mat-icon fontSet="material-symbols-outlined">{{
+                          expandedMeasurementIds().has(card.log.id) ? 'expand_less' : 'expand_more'
+                        }}</mat-icon>
+                        <span>{{ 'measurements.title' | transloco }}</span>
+                        @if (outside) {
+                          <span class="status-badge status-badge--overdue">{{
+                            'measurements.outOfRangeCount' | transloco: { count: outside }
+                          }}</span>
+                        }
+                      </button>
+                      @if (expandedMeasurementIds().has(card.log.id)) {
+                        <app-measurement-view
+                          class="log-card__costs-details"
+                          [id]="'log-measurements-' + card.log.id"
+                          [measurements]="measurements"
+                        />
+                      }
+                    </div>
+                  }
+                }
                 @if (
                   card.log.materials.length ||
                   (card.log.laborCost !== undefined && card.log.laborCost !== null)
@@ -398,6 +444,25 @@
               [(drafts)]="logNewTasks"
               [showErrors]="logShowNewTaskErrors()"
             />
+
+            <div class="field log-form__measurements">
+              <span class="field__label">{{ 'measurements.title' | transloco }}</span>
+              @if (measurementContext.error()) {
+                <p class="field__error" role="alert">
+                  {{ 'measurements.errors.load' | transloco }}
+                </p>
+              }
+              @let context = measurementContext.value();
+              <app-measurement-editor
+                [(drafts)]="logMeasurements"
+                [vehicleId]="vehicle.id"
+                [templates]="context?.templates ?? []"
+                [specification]="context?.specification"
+                [latest]="context?.latest"
+                [editingLogId]="editingLogId()"
+                [showErrors]="logShowMeasurementErrors()"
+              />
+            </div>
 
             <div class="field log-form__materials">
               <span class="field__label">{{ 'logForm.materials' | transloco }}</span>

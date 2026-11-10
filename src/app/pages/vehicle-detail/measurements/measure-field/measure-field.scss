@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.measure-field__hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 2px;
+  color: var(--bm-text-muted);
+  font-size: 0.75rem;
+}
+
+.measure-field__previous {
+  color: var(--bm-text-dim);
+}

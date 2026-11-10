@@ -1,0 +1,62 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.measure-view__title {
+  margin: 0 0 4px;
+  color: var(--bm-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.measure-view__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.measure-view__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
+
+.measure-view__value {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  color: var(--bm-text);
+}
+
+.measure-view__shim {
+  color: var(--bm-text-muted);
+}
+
+.measure-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: 0.6875rem;
+  font-weight: 600;
+
+  &--ok {
+    color: var(--status-ok);
+    background: var(--status-ok-bg);
+    border-color: var(--status-ok-border);
+  }
+
+  &--out {
+    color: var(--status-overdue);
+    background: var(--status-overdue-bg);
+    border-color: var(--status-overdue-border);
+  }
+}

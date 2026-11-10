@@ -588,6 +588,7 @@
   margin-bottom: 16px;
 }
 
+.log-form__measurements,
 .log-form__materials,
 .log-form__labor {
   margin-bottom: 16px;
@@ -701,4 +702,8 @@
   display: flex;
   gap: 4px;
   flex: 0 0 auto;
+}
+
+.log-card__measurements .status-badge {
+  margin-top: 0;
 }
