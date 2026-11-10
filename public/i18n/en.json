@@ -167,7 +167,8 @@
     "materials": "Material",
     "laborCost": "Labor cost ({{currency}})",
     "total": "Total cost",
-    "costsInvalid": "Please correct the material and the labor cost."
+    "costsInvalid": "Please correct the material and the labor cost.",
+    "measurementsInvalid": "Please correct the measurements."
   },
   "newTask": {
     "title": "Additional work {{number}}",
@@ -489,6 +490,121 @@
     "confirmActivate": "“{{email}}” can log in again.",
     "errors": {
       "rule": "Not possible: the last active admin cannot be demoted or locked, and you cannot lock yourself."
+    }
+  },
+  "measurements": {
+    "title": "Measurements",
+    "remove": "Remove measurements",
+    "templates": {
+      "valveClearance": "Valve clearance",
+      "brakes": "Brakes",
+      "chain": "Chain",
+      "tires": "Tyres"
+    },
+    "lastMeasurement": "Last measurement: {{date}}, {{mileage}} km",
+    "target": "Target {{value}}",
+    "targetRange": "Target {{min}}–{{max}}",
+    "targetMin": "min. {{value}}",
+    "targetMax": "max. {{value}}",
+    "previous": "last {{value}}",
+    "outOfRangeCount": "{{count}} out of range",
+    "status": {
+      "ok": "ok",
+      "outOfRange": "out of range"
+    },
+    "valve": {
+      "valve": "Valve",
+      "measured": "Measured (mm)",
+      "shimOld": "Old shim",
+      "shimNew": "New shim",
+      "suggestion": "Suggestion",
+      "intake": "Cyl. {{cylinder}} intake{{index}}",
+      "exhaust": "Cyl. {{cylinder}} exhaust{{index}}",
+      "shim": "Shim {{value}} (unchanged)",
+      "shimChange": "Shim {{old}} → {{new}}"
+    },
+    "shim": {
+      "noChange": "Within range, no change needed",
+      "resulting": "Clearance after {{value}}",
+      "noShimInRange": "No shim size within range – closest value",
+      "outsideSizes": "Outside the available shim sizes",
+      "takeOver": "Apply",
+      "needsSpecification": "For a shim suggestion, enter the intake/exhaust target ranges and the shim step in the target values."
+    },
+    "brakes": {
+      "padFront": "Pad front",
+      "padRear": "Pad rear",
+      "discFront": "Disc front",
+      "discRear": "Disc rear",
+      "discConditionFront": "Condition disc front",
+      "discConditionRear": "Condition disc rear",
+      "fluidCondition": "Brake fluid",
+      "fluidPlaceholder": "Level, colour, last changed"
+    },
+    "chain": {
+      "slack": "Slack",
+      "wearLength": "Wear length",
+      "wearLinks": "Over links",
+      "sprocketCondition": "Condition front sprocket",
+      "rearSprocketCondition": "Condition rear sprocket",
+      "cleaned": "Cleaned",
+      "lubricated": "Lubricated"
+    },
+    "tires": {
+      "pressureFront": "Pressure front",
+      "pressureRear": "Pressure rear",
+      "treadFront": "Tread front",
+      "treadRear": "Tread rear",
+      "dotFront": "DOT front",
+      "dotRear": "DOT rear",
+      "dotPlaceholder": "e.g. 2324",
+      "conditionFront": "Condition front",
+      "conditionRear": "Condition rear"
+    },
+    "errors": {
+      "range": "The value is outside the allowed range.",
+      "decimals3": "At most three decimal places.",
+      "decimals2": "At most two decimal places.",
+      "links": "Whole number from 2 to 200.",
+      "dot": "Four digits: week and year, e.g. 2324.",
+      "load": "Templates and target values could not be loaded; new measurements cannot be added right now."
+    }
+  },
+  "specification": {
+    "open": "Target values",
+    "title": "Target values of the vehicle",
+    "intro": "Values from the workshop manual. They prefill the worksheets, check measurements and feed the shim suggestion. All fields are optional.",
+    "engine": "Engine",
+    "adjustment": {
+      "SHIM": "Shim (bucket tappet)",
+      "SCREW": "Adjusting screw"
+    },
+    "fields": {
+      "valveAdjustment": "Adjustment",
+      "intakeClearanceMin": "Intake min.",
+      "intakeClearanceMax": "Intake max.",
+      "exhaustClearanceMin": "Exhaust min.",
+      "exhaustClearanceMax": "Exhaust max.",
+      "shimStep": "Shim step",
+      "shimMin": "Smallest shim",
+      "shimMax": "Largest shim",
+      "brakePadMinFront": "Pad front min.",
+      "brakePadMinRear": "Pad rear min.",
+      "brakeDiscMinFront": "Disc front min.",
+      "brakeDiscMinRear": "Disc rear min.",
+      "chainSlackMin": "Slack min.",
+      "chainSlackMax": "Slack max.",
+      "chainWearMaxLength": "Wear length max.",
+      "chainWearLinks": "Over links",
+      "tirePressureFront": "Pressure front",
+      "tirePressureRear": "Pressure rear",
+      "treadDepthMin": "Tread depth min."
+    },
+    "errors": {
+      "minAboveMax": "The minimum is greater than the maximum.",
+      "fix": "Please correct the marked values.",
+      "load": "The target values could not be loaded, please try again later.",
+      "save": "The target values could not be saved, please try again."
     }
   }
 }

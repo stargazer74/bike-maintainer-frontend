@@ -10,8 +10,12 @@ import {
   MaintenanceTaskResponse,
   MaintenanceTaskStatus,
   MaterialUnit,
+  LatestMeasurementsResponse,
   VehicleResponse,
+  VehicleSpecifications,
   VehicleType,
+  MeasurementStatus,
+  WorksheetTemplate,
 } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
@@ -19,6 +23,12 @@ import '../../i18n/i18n.config';
 import { VehicleDetail } from './vehicle-detail';
 
 const BASE = 'http://localhost/api/v1/vehicles/7';
+
+interface MeasurementContext {
+  templates?: WorksheetTemplate[];
+  specification?: VehicleSpecifications;
+  latest?: LatestMeasurementsResponse;
+}
 
 const VEHICLE: VehicleResponse = {
   id: 7,
@@ -55,6 +65,7 @@ describe('VehicleDetail', () => {
     logs: MaintenanceLogResponse[],
     tasks: MaintenanceTaskResponse[] = [],
     costSummary: CostSummaryEntry[] = [],
+    measurementContext: MeasurementContext = {},
   ): Promise<void> {
     TestBed.configureTestingModule({
       imports: [translocoTesting()],
@@ -69,7 +80,19 @@ describe('VehicleDetail', () => {
     httpMock.expectOne(`${BASE}/maintenance-tasks`).flush(tasks);
     httpMock.expectOne(`${BASE}/maintenance-logs`).flush(logs);
     httpMock.expectOne(`${BASE}/cost-summary`).flush(costSummary);
+    flushMeasurementContext(measurementContext);
     await fixture.whenStable();
+  }
+
+  /** Templates, target values and last measurements for the measurement entry. */
+  function flushMeasurementContext(context: MeasurementContext = {}): void {
+    httpMock
+      .expectOne(`${BASE}/worksheets`)
+      .flush((context.templates ?? []).map((template) => ({ template })));
+    httpMock.expectOne(`${BASE}/specifications`).flush(context.specification ?? {});
+    httpMock
+      .expectOne(`${BASE}/measurements/latest`)
+      .flush(context.latest ?? { measurements: {}, sources: {} });
   }
 
   async function openHistoryTab(): Promise<void> {
@@ -267,6 +290,7 @@ describe('VehicleDetail', () => {
     httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
     httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
     httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
+    flushMeasurementContext();
     await fixture.whenStable();
 
     expect(page().querySelectorAll('.new-task')).toHaveLength(0);
@@ -727,6 +751,144 @@ describe('VehicleDetail', () => {
       expect(page().querySelector('.tasks-manage__error')!.textContent).not.toContain(
         'kann deshalb nicht gelöscht werden',
       );
+    });
+  });
+  describe('measurements', () => {
+    const BRAKES_ONLY: MeasurementContext = { templates: [WorksheetTemplate.Brakes] };
+
+    function measuredLog(): MaintenanceLogResponse {
+      return {
+        ...log(1, '2026-05-01'),
+        measurements: {
+          brakes: {
+            padFront: 1.5,
+            padRear: 4,
+            padFrontStatus: MeasurementStatus.OutOfRange,
+            padRearStatus: MeasurementStatus.Ok,
+            discFrontStatus: MeasurementStatus.Unknown,
+            discRearStatus: MeasurementStatus.Unknown,
+          },
+        },
+      };
+    }
+
+    function addTemplate(name: string): Promise<void> {
+      [...page().querySelectorAll<HTMLButtonElement>('.measure-add__button')]
+        .find((button) => button.textContent!.includes(name))!
+        .click();
+      return fixture.whenStable();
+    }
+
+    it('sends no measurements with a new log when none were added', async () => {
+      await render([], [], [], BRAKES_ONLY);
+      await openTab(2);
+
+      saveLogButton().click();
+      const request = httpMock.expectOne((req) => req.method === 'POST');
+      expect(request.request.body.measurements).toBeUndefined();
+      request.flush(log(1, '2026-10-30'));
+    });
+
+    it('saves the measurements with a new log and reloads the last measurements', async () => {
+      await render([], [], [], BRAKES_ONLY);
+      await openTab(2);
+      await addTemplate('Bremsen');
+      const input = page().querySelector<HTMLInputElement>('#measure-pad-front')!;
+      input.value = '3.5';
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+
+      saveLogButton().click();
+      const request = httpMock.expectOne((req) => req.method === 'POST');
+      expect(JSON.parse(JSON.stringify(request.request.body.measurements))).toEqual({
+        brakes: { padFront: 3.5 },
+      });
+      request.flush(log(1, '2026-10-30'));
+      await tick();
+      httpMock.expectOne(BASE).flush(VEHICLE);
+      httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
+      httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
+      httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
+      flushMeasurementContext(BRAKES_ONLY);
+      await fixture.whenStable();
+
+      expect(page().querySelector('.measure-set')).toBeNull();
+    });
+
+    it('does not save invalid measurements', async () => {
+      await render([], [], [], BRAKES_ONLY);
+      await openTab(2);
+      await addTemplate('Bremsen');
+      const input = page().querySelector<HTMLInputElement>('#measure-pad-front')!;
+      input.value = '3.5555';
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+
+      saveLogButton().click();
+      await fixture.whenStable();
+
+      httpMock.expectNone((req) => req.method === 'POST');
+      expect(page().textContent).toContain('Bitte korrigiere die Messwerte.');
+      expect(page().textContent).toContain('Höchstens drei Nachkommastellen.');
+    });
+
+    it('deletes removed measurements when an edited log is saved', async () => {
+      await render([measuredLog()], [], [], BRAKES_ONLY);
+      await openHistoryTab();
+      page().querySelector<HTMLButtonElement>('.log-card__actions button:nth-child(2)')!.click();
+      await fixture.whenStable();
+
+      expect(page().querySelector<HTMLInputElement>('#measure-pad-front')!.value).toBe('1.5');
+      page().querySelector<HTMLButtonElement>('.measure-set__remove')!.click();
+      await fixture.whenStable();
+      saveLogButton().click();
+
+      const request = httpMock.expectOne((req) => req.method === 'PUT');
+      expect(JSON.parse(JSON.stringify(request.request.body.measurements))).toEqual({});
+      request.flush(log(1, '2026-05-01'));
+    });
+
+    it('shows the measurements of a log with the values outside the target', async () => {
+      await render([measuredLog()]);
+      await openHistoryTab();
+
+      const toggle = page().querySelector<HTMLButtonElement>(
+        '.log-card__measurements .log-card__costs-toggle',
+      )!;
+      expect(toggle.textContent).toContain('Messwerte');
+      expect(toggle.textContent).toContain('1 außerhalb Soll');
+      expect(page().querySelector('app-measurement-view')).toBeNull();
+
+      toggle.click();
+      await fixture.whenStable();
+
+      expect(page().querySelector('app-measurement-view')!.textContent).toContain('Belag vorne');
+    });
+
+    it('offers the target values only if the vehicle has templates', async () => {
+      await render([]);
+      expect(page().querySelector('.status-section__specification')).toBeNull();
+    });
+
+    it('reloads the page after the target values were saved', async () => {
+      await render([], [], [], BRAKES_ONLY);
+      const open = vi.spyOn(TestBed.inject(MatDialog), 'open').mockReturnValue({
+        afterClosed: () => of({ brakePadMinFront: 2 }),
+      } as never);
+
+      page().querySelector<HTMLButtonElement>('.status-section__specification')!.click();
+      await tick();
+
+      expect(open.mock.calls[0][1]!.data).toEqual({
+        vehicleId: 7,
+        templates: [WorksheetTemplate.Brakes],
+      });
+      httpMock.expectOne(BASE).flush(VEHICLE);
+      httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
+      httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
+      httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
+      flushMeasurementContext(BRAKES_ONLY);
+      await fixture.whenStable();
     });
   });
 });

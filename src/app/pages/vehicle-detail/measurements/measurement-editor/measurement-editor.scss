@@ -1,0 +1,149 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.measure-set {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px 12px;
+  border-radius: 8px;
+  background: var(--bm-surface-alt);
+  border: 1px solid var(--bm-border);
+}
+
+.measure-set__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.measure-set__title {
+  color: var(--bm-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.measure-set__remove {
+  color: var(--bm-text-muted);
+}
+
+.measure-set__source,
+.measure-set__note {
+  margin: 0 0 8px;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+}
+
+.measure-set__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+
+  > .field,
+  > app-measure-field {
+    flex: 1 1 160px;
+  }
+}
+
+.measure-set__checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.measure-set__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bm-text);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.valve-table__scroll {
+  overflow-x: auto;
+}
+
+.valve-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 6px 8px 6px 0;
+    vertical-align: top;
+    text-align: left;
+  }
+
+  thead th {
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+}
+
+.valve-table__label {
+  color: var(--bm-text);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.valve-table__input {
+  min-width: 84px;
+  max-width: 110px;
+}
+
+.valve-table__hint {
+  display: block;
+  margin-top: 2px;
+  color: var(--bm-text-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.valve-table__suggestion {
+  min-width: 140px;
+}
+
+.valve-table__suggested {
+  display: block;
+  color: var(--bm-text);
+  font-weight: 600;
+}
+
+.valve-table__take {
+  margin-top: 4px;
+  padding: 4px 10px;
+  font-size: 0.8125rem;
+}
+
+.measure-status {
+  display: block;
+  font-size: 0.75rem;
+
+  &--ok {
+    color: var(--status-ok);
+  }
+
+  &--warn {
+    color: var(--status-due);
+  }
+}
+
+.measure-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.measure-add__button {
+  padding: 8px 14px;
+}

@@ -9,11 +9,12 @@ import {
   inject,
   input,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { filter, forkJoin, switchMap } from 'rxjs';
+import { filter, forkJoin, map, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,9 +33,12 @@ import {
   MaintenanceTaskRequest,
   MaintenanceTaskResponse,
   MaintenanceTasksService,
+  MeasurementsService,
   VehicleRequest,
   VehicleResponse,
   VehiclesService,
+  VehicleSpecifications,
+  WorksheetsService,
 } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { LanguageService } from '../../i18n/language';
@@ -55,6 +59,20 @@ import {
   toMaterialRequests,
 } from './material-editor/material-draft';
 import { NewTaskEditor } from './new-task-editor/new-task-editor';
+import {
+  fromResponse,
+  hasMeasurements,
+  MeasurementDrafts,
+  measurementsError,
+  NO_MEASUREMENTS,
+  toMeasurementsRequest,
+} from './measurements/measurement-draft';
+import { MeasurementEditor } from './measurements/measurement-editor/measurement-editor';
+import { MeasurementView, outOfRangeCount } from './measurements/measurement-view/measurement-view';
+import {
+  SpecificationDialog,
+  SpecificationDialogData,
+} from './measurements/specification-dialog/specification-dialog';
 import { draftError, NewTaskDraft, toNewTaskRequests } from './new-task-editor/new-task-draft';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
@@ -79,6 +97,8 @@ import { resolveTaskIcon } from './task-icon';
     MatTabsModule,
     CostTile,
     MaterialEditor,
+    MeasurementEditor,
+    MeasurementView,
     NewTaskEditor,
     TranslocoPipe,
   ],
@@ -92,6 +112,8 @@ export class VehicleDetail {
   private readonly vehiclesService = inject(VehiclesService);
   private readonly tasksService = inject(MaintenanceTasksService);
   private readonly logsService = inject(MaintenanceLogsService);
+  private readonly measurementsService = inject(MeasurementsService);
+  private readonly worksheetsService = inject(WorksheetsService);
   private readonly dialog = inject(MatDialog);
   private readonly transloco = inject(TranslocoService);
   private readonly authStore = inject(AuthStore);
@@ -114,6 +136,24 @@ export class VehicleDetail {
         costSummary: this.logsService.getCostSummary(params.id),
       }),
   });
+
+  /**
+   * What the measurement entry needs: the templates of the vehicle type, the target values and the last
+   * measurements. Loaded separately, so the page still works if it fails.
+   */
+  protected readonly measurementContext = rxResource({
+    params: () => ({ id: Number(this.id()) }),
+    stream: ({ params }) =>
+      forkJoin({
+        templates: this.worksheetsService
+          .listWorksheetTemplates(params.id)
+          .pipe(map((templates) => templates.map(({ template }) => template))),
+        specification: this.measurementsService.getVehicleSpecifications(params.id),
+        latest: this.measurementsService.getLatestMeasurements(params.id),
+      }),
+  });
+
+  protected readonly outOfRangeCount = outOfRangeCount;
 
   protected readonly taskCards = computed(() => {
     const result = this.data.value();
@@ -150,18 +190,35 @@ export class VehicleDetail {
 
   /** Logs whose cost details are expanded in the history. */
   protected readonly expandedLogIds = signal<ReadonlySet<number>>(new Set());
+  /** Logs whose measurements are expanded in the history. */
+  protected readonly expandedMeasurementIds = signal<ReadonlySet<number>>(new Set());
 
   protected toggleLogCosts(logId: number | undefined): void {
-    if (logId === undefined) {
+    toggle(this.expandedLogIds, logId);
+  }
+
+  protected toggleLogMeasurements(logId: number | undefined): void {
+    toggle(this.expandedMeasurementIds, logId);
+  }
+
+  protected openSpecificationDialog(vehicleId: number): void {
+    const templates = this.measurementContext.value()?.templates;
+    if (!templates) {
       return;
     }
-    this.expandedLogIds.update((ids) => {
-      const next = new Set(ids);
-      if (!next.delete(logId)) {
-        next.add(logId);
-      }
-      return next;
-    });
+    this.dialog
+      .open<SpecificationDialog, SpecificationDialogData, VehicleSpecifications>(
+        SpecificationDialog,
+        { autoFocus: 'first-tabbable', data: { vehicleId, templates } },
+      )
+      .afterClosed()
+      .subscribe((saved) => {
+        if (saved) {
+          // The history shows measured values checked against the new target values.
+          this.measurementContext.reload();
+          this.data.reload();
+        }
+      });
   }
 
   protected readonly selectedTabIndex = signal(0);
@@ -275,6 +332,8 @@ export class VehicleDetail {
   protected readonly logMaterials = signal<readonly MaterialDraft[]>([]);
   protected readonly logLaborCost = signal<number | null>(null);
   protected readonly logShowCostErrors = signal(false);
+  protected readonly logMeasurements = signal<MeasurementDrafts>(NO_MEASUREMENTS);
+  protected readonly logShowMeasurementErrors = signal(false);
   protected readonly editingLogId = signal<number | null>(null);
   /** Currency of the log being edited; a new log uses the one of the user. */
   private readonly editingCurrency = signal<Currency | null>(null);
@@ -349,6 +408,8 @@ export class VehicleDetail {
     );
     this.logLaborCost.set(log.laborCost ?? null);
     this.logShowCostErrors.set(false);
+    this.logMeasurements.set(fromResponse(log.measurements));
+    this.logShowMeasurementErrors.set(false);
     this.editingCurrency.set(log.currency);
     this.logSubmitError.set(null);
     this.selectedTabIndex.set(2);
@@ -376,7 +437,14 @@ export class VehicleDetail {
       this.logSubmitError.set('logForm.costsInvalid');
       return;
     }
+    if (measurementsError(this.logMeasurements()) !== null) {
+      this.logShowMeasurementErrors.set(true);
+      this.logSubmitError.set('logForm.measurementsInvalid');
+      return;
+    }
     const materials = this.logMaterials();
+    const logId = this.editingLogId();
+    const measurements = this.logMeasurements();
     const request: MaintenanceLogRequest = {
       performedAt: this.logDate(),
       mileageAtPerformed: this.logMileage(),
@@ -385,8 +453,12 @@ export class VehicleDetail {
       newTasks: newTasks.length ? toNewTaskRequests(newTasks) : undefined,
       materials: materials.length ? toMaterialRequests(materials) : undefined,
       laborCost: this.logLaborCost() ?? undefined,
+      // When editing, always send the measurements, so removed templates are deleted.
+      measurements:
+        logId !== null || hasMeasurements(measurements)
+          ? toMeasurementsRequest(measurements)
+          : undefined,
     };
-    const logId = this.editingLogId();
     const request$ =
       logId === null
         ? this.logsService.createMaintenanceLog(vehicle.id, request)
@@ -399,6 +471,7 @@ export class VehicleDetail {
         this.savingLog.set(false);
         this.resetLogForm();
         this.data.reload();
+        this.measurementContext.reload();
       },
       error: () => {
         this.savingLog.set(false);
@@ -429,6 +502,7 @@ export class VehicleDetail {
           this.resetLogForm();
         }
         this.data.reload();
+        this.measurementContext.reload();
       });
   }
 
@@ -443,6 +517,8 @@ export class VehicleDetail {
     this.logMaterials.set([]);
     this.logLaborCost.set(null);
     this.logShowCostErrors.set(false);
+    this.logMeasurements.set(NO_MEASUREMENTS);
+    this.logShowMeasurementErrors.set(false);
     this.editingCurrency.set(null);
     this.logSubmitError.set(null);
   }
@@ -558,6 +634,20 @@ export class VehicleDetail {
     this.taskFormActive.set(true);
     this.taskSubmitError.set(null);
   }
+}
+
+/** Adds the id to the set, or removes it if it is already there. */
+function toggle(ids: WritableSignal<ReadonlySet<number>>, id: number | undefined): void {
+  if (id === undefined) {
+    return;
+  }
+  ids.update((current) => {
+    const next = new Set(current);
+    if (!next.delete(id)) {
+      next.add(id);
+    }
+    return next;
+  });
 }
 
 function todayIso(): string {

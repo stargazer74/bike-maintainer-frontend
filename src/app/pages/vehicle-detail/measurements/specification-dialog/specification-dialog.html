@@ -1,0 +1,144 @@
+<h2 mat-dialog-title>{{ 'specification.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  <p class="spec__intro">{{ 'specification.intro' | transloco }}</p>
+
+  @if (stored.isLoading()) {
+    <mat-spinner diameter="24" class="spec__loading" />
+  } @else if (stored.error()) {
+    <p class="field__error" role="alert">{{ 'specification.errors.load' | transloco }}</p>
+  } @else {
+    @let draft = this.draft();
+    @if (hasValves) {
+      <fieldset class="spec__group">
+        <legend class="spec__legend">{{ 'specification.engine' | transloco }}</legend>
+        <div class="spec__row">
+          <div class="field">
+            <label class="field__label" for="spec-cylinders">{{
+              'worksheet.cylinders' | transloco
+            }}</label>
+            <select
+              id="spec-cylinders"
+              class="field__input"
+              [ngModel]="draft.cylinders"
+              (ngModelChange)="changeNumber('cylinders', $event)"
+            >
+              <option [ngValue]="null">–</option>
+              @for (count of cylinderOptions; track count) {
+                <option [ngValue]="count">{{ count }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="spec-valves">{{
+              'worksheet.valvesPerCylinder' | transloco
+            }}</label>
+            <select
+              id="spec-valves"
+              class="field__input"
+              [ngModel]="draft.valvesPerCylinder"
+              (ngModelChange)="changeNumber('valvesPerCylinder', $event)"
+            >
+              <option [ngValue]="null">–</option>
+              @for (count of valveOptions; track count) {
+                <option [ngValue]="count">{{ count }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="spec-adjustment">{{
+              'specification.fields.valveAdjustment' | transloco
+            }}</label>
+            <select
+              id="spec-adjustment"
+              class="field__input"
+              [ngModel]="draft.valveAdjustment"
+              (ngModelChange)="change({ valveAdjustment: $event })"
+            >
+              <option [ngValue]="null">–</option>
+              @for (adjustment of adjustments; track adjustment) {
+                <option [ngValue]="adjustment">
+                  {{ 'specification.adjustment.' + adjustment | transloco }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+      </fieldset>
+    }
+
+    @for (group of groups; track group.template) {
+      <fieldset class="spec__group">
+        <legend class="spec__legend">{{ group.title | transloco }}</legend>
+        <div class="spec__row">
+          @for (field of group.fields; track field.key) {
+            @let error = fieldError(field, draft);
+            <div class="field">
+              <label class="field__label" [for]="'spec-' + field.key"
+                >{{ field.label | transloco }} ({{ field.unit }})</label
+              >
+              <input
+                class="field__input"
+                type="number"
+                [min]="field.min"
+                [max]="field.max"
+                [step]="field.decimals === 2 ? '0.01' : '0.001'"
+                [id]="'spec-' + field.key"
+                [class.field__input--invalid]="showErrors() && error"
+                [ngModel]="draft[field.key]"
+                (ngModelChange)="changeField(field, $event)"
+              />
+              @if (showErrors() && error) {
+                <p class="field__error" role="alert">{{ error | transloco }}</p>
+              }
+            </div>
+          }
+          @if (group.template === chainTemplate) {
+            <div class="field">
+              <label class="field__label" for="spec-chainWearLinks">{{
+                'specification.fields.chainWearLinks' | transloco
+              }}</label>
+              <input
+                id="spec-chainWearLinks"
+                class="field__input"
+                type="number"
+                min="2"
+                max="200"
+                step="1"
+                [class.field__input--invalid]="showErrors() && wearLinksError()"
+                [ngModel]="draft.chainWearLinks"
+                (ngModelChange)="changeNumber('chainWearLinks', $event)"
+              />
+              @if (showErrors() && wearLinksError(); as key) {
+                <p class="field__error" role="alert">{{ key | transloco }}</p>
+              }
+            </div>
+          }
+        </div>
+      </fieldset>
+    }
+  }
+
+  @if (errorKey(); as key) {
+    <p class="field__error spec__error" role="alert">{{ key | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn--ghost" mat-dialog-close>
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    type="button"
+    class="btn btn--primary spec__save"
+    [disabled]="saving() || stored.isLoading() || !!stored.error()"
+    (click)="save()"
+  >
+    @if (saving()) {
+      <mat-spinner diameter="16" />
+    } @else {
+      <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
+    }
+    {{ 'common.save' | transloco }}
+  </button>
+</mat-dialog-actions>

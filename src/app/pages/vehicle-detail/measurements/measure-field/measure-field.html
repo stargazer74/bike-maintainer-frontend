@@ -1,0 +1,47 @@
+<div class="field">
+  <label class="field__label" [for]="fieldId()">{{ label() | transloco }} ({{ unit() }})</label>
+  <input
+    class="field__input"
+    type="number"
+    min="0"
+    [step]="step()"
+    [id]="fieldId()"
+    [class.field__input--invalid]="showError() && error()"
+    [ngModel]="value()"
+    (ngModelChange)="emit($event)"
+  />
+  @let min = targetMin();
+  @let max = targetMax();
+  @let single = target();
+  @let last = previous();
+  @if (min !== undefined || max !== undefined || single !== undefined || last !== undefined) {
+    <span class="measure-field__hint">
+      @if (single !== undefined) {
+        <span>{{
+          'measurements.target' | transloco: { value: (single | localNumber: '1.0-3') }
+        }}</span>
+      } @else if (min !== undefined && max !== undefined) {
+        <span>{{
+          'measurements.targetRange'
+            | transloco: { min: (min | localNumber: '1.0-3'), max: (max | localNumber: '1.0-3') }
+        }}</span>
+      } @else if (min !== undefined) {
+        <span>{{
+          'measurements.targetMin' | transloco: { value: (min | localNumber: '1.0-3') }
+        }}</span>
+      } @else if (max !== undefined) {
+        <span>{{
+          'measurements.targetMax' | transloco: { value: (max | localNumber: '1.0-3') }
+        }}</span>
+      }
+      @if (last !== undefined) {
+        <span class="measure-field__previous">{{
+          'measurements.previous' | transloco: { value: (last | localNumber: '1.0-3') }
+        }}</span>
+      }
+    </span>
+  }
+  @if (showError() && error(); as key) {
+    <p class="field__error" role="alert">{{ key | transloco }}</p>
+  }
+</div>

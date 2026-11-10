@@ -1,0 +1,92 @@
+<ng-template #statusBadge let-status>
+  @if (status === outOfRange) {
+    <span class="measure-badge measure-badge--out">{{
+      'measurements.status.outOfRange' | transloco
+    }}</span>
+  } @else if (status === ok) {
+    <span class="measure-badge measure-badge--ok">{{ 'measurements.status.ok' | transloco }}</span>
+  }
+</ng-template>
+
+@if (valves().length) {
+  <div class="measure-view__set">
+    <h4 class="measure-view__title">{{ 'measurements.templates.valveClearance' | transloco }}</h4>
+    <ul class="measure-view__list">
+      @for (row of valves(); track row.valve.cylinder + row.valve.valve + row.valve.index) {
+        <li class="measure-view__row">
+          <span class="measure-view__label">{{
+            row.labelKey | transloco: { cylinder: row.valve.cylinder, index: row.index }
+          }}</span>
+          <span class="measure-view__value">
+            @if (row.valve.measured !== undefined) {
+              {{ row.valve.measured | localNumber: '1.2-3' }} mm
+            }
+            @if (row.valve.shimNew !== undefined) {
+              <span class="measure-view__shim">
+                {{
+                  'measurements.valve.shimChange'
+                    | transloco
+                      : {
+                          old: (row.valve.shimOld | localNumber: '1.3-3') || '–',
+                          new: (row.valve.shimNew | localNumber: '1.3-3'),
+                        }
+                }}
+              </span>
+            } @else if (row.valve.shimOld !== undefined) {
+              <span class="measure-view__shim">{{
+                'measurements.valve.shim'
+                  | transloco: { value: (row.valve.shimOld | localNumber: '1.3-3') }
+              }}</span>
+            }
+            <ng-container
+              [ngTemplateOutlet]="statusBadge"
+              [ngTemplateOutletContext]="{ $implicit: row.valve.measuredStatus }"
+            />
+          </span>
+        </li>
+      }
+    </ul>
+  </div>
+}
+
+@for (
+  set of [
+    { key: 'brakes', rows: brakes() },
+    { key: 'chain', rows: chain()?.rows ?? null },
+    { key: 'tires', rows: tires() },
+  ];
+  track set.key
+) {
+  @if (set.rows) {
+    <div class="measure-view__set">
+      <h4 class="measure-view__title">{{ 'measurements.templates.' + set.key | transloco }}</h4>
+      <ul class="measure-view__list">
+        @for (row of set.rows; track row.label) {
+          <li class="measure-view__row">
+            <span class="measure-view__label">{{ row.label | transloco }}</span>
+            <span class="measure-view__value">
+              @if (isNumber(row.value)) {
+                {{ row.value | localNumber: row.digits ?? '1.0-3' }}
+                {{ row.unit }}
+              } @else {
+                {{ row.value }}
+              }
+              <ng-container
+                [ngTemplateOutlet]="statusBadge"
+                [ngTemplateOutletContext]="{ $implicit: row.status }"
+              />
+            </span>
+          </li>
+        }
+        @if (set.key === 'chain') {
+          @if (chain()?.cleaned) {
+            <li class="measure-view__row">{{ 'measurements.chain.cleaned' | transloco }}</li>
+          }
+          @if (chain()?.lubricated) {
+            <li class="measure-view__row">{{ 'measurements.chain.lubricated' | transloco }}</li>
+          }
+        }
+      </ul>
+    </div>
+  }
+}
