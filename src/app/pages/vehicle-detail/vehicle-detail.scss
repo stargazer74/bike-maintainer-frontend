@@ -752,8 +752,13 @@
 
 .tasks-manage__item-actions {
   display: flex;
+  align-items: center;
   gap: 4px;
   flex: 0 0 auto;
+}
+
+.tasks-manage__activate {
+  padding: 6px 12px;
 }
 
 .log-card__measurements .status-badge {

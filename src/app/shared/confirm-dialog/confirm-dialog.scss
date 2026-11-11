@@ -15,9 +15,17 @@
   }
 }
 
+.confirm-dialog__title--info mat-icon {
+  color: var(--bm-orange);
+}
+
 .confirm-dialog__message {
   margin: 0;
   color: var(--bm-text-muted);
+}
+
+.confirm-dialog__hint {
+  margin-top: 12px;
 }
 
 // `.btn`, `.btn--ghost` and `.btn--danger` are defined globally in src/styles/_forms.scss.

@@ -2,7 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom, of } from 'rxjs';
 import { translocoTesting } from '../../i18n/testing';
-import { confirmAction, ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
+import {
+  confirmAction,
+  ConfirmDialog,
+  ConfirmDialogData,
+  InfoDialogData,
+  showInfo,
+} from './confirm-dialog';
 
 const DATA: ConfirmDialogData = {
   title: 'profiles.deleteTitle',
@@ -55,6 +61,56 @@ describe('ConfirmDialog', () => {
     element.querySelector<HTMLButtonElement>('.confirm-dialog__cancel')!.click();
 
     expect(await result).toBe(false);
+  });
+
+  describe('info variant (frontend#96)', () => {
+    async function openInfo(data: InfoDialogData) {
+      const ref = TestBed.inject(MatDialog).open(ConfirmDialog, {
+        data: { ...data, variant: 'info' },
+      });
+      TestBed.inject(MatDialog).openDialogs[0].componentRef!.changeDetectorRef.detectChanges();
+      return { ref, element: document.querySelector<HTMLElement>('app-confirm-dialog')! };
+    }
+
+    it('only explains, with a single "Got it"', async () => {
+      const { ref, element } = await openInfo({
+        title: 'profiles.hasVehiclesTitle',
+        message: 'profiles.hasVehiclesOne',
+        params: { name: 'Anna' },
+      });
+      const result = firstValueFrom(ref.afterClosed());
+
+      expect(element.textContent).toContain('„Anna“ hat noch ein Fahrzeug');
+      expect(element.querySelectorAll('button')).toHaveLength(1);
+      element.querySelector<HTMLButtonElement>('.confirm-dialog__cancel')!.click();
+      expect(await result).toBe(false);
+    });
+
+    it('offers the way out and closes with true when it is chosen', async () => {
+      const { ref, element } = await openInfo({
+        title: 'taskForm.inUseTitle',
+        message: 'taskForm.inUseMany',
+        hint: 'taskForm.inUseHintDeactivate',
+        params: { name: 'Ölwechsel', count: 7 },
+        action: 'taskForm.deactivate',
+      });
+      const result = firstValueFrom(ref.afterClosed());
+
+      expect(element.textContent).toContain('in 7 Wartungseinträgen');
+      expect(element.querySelector('.confirm-dialog__hint')?.textContent).toContain('deaktivieren');
+      element.querySelector<HTMLButtonElement>('.confirm-dialog__action')!.click();
+      expect(await result).toBe(true);
+    });
+
+    it('showInfo() emits true only for the action', async () => {
+      const dialog = TestBed.inject(MatDialog);
+      const open = vi
+        .spyOn(dialog, 'open')
+        .mockReturnValue({ afterClosed: () => of(undefined) } as ReturnType<MatDialog['open']>);
+
+      expect(await firstValueFrom(showInfo(dialog, { title: 't', message: 'm' }))).toBe(false);
+      expect(open.mock.calls[0][1]?.data).toMatchObject({ variant: 'info' });
+    });
   });
 
   describe('confirmAction()', () => {
