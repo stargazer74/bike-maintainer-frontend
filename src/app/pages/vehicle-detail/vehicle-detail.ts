@@ -370,6 +370,42 @@ export class VehicleDetail {
   protected readonly logMeasurements = signal<MeasurementDrafts>(NO_MEASUREMENTS);
   protected readonly logShowMeasurementErrors = signal(false);
   protected readonly editingLogId = signal<number | null>(null);
+  /** The tasks the edited log contained when editing started (backend#127: inactive ones stay visible). */
+  private readonly editingLogTaskIds = signal<ReadonlySet<number>>(new Set());
+  /**
+   * Tasks to tick in the log form: the active ones, plus inactive ones the edited log contains, so they can be
+   * unticked. Further work of the edited log is listed separately (`logFurtherWork`).
+   */
+  protected readonly logTaskOptions = computed(() => {
+    const editingId = this.editingLogId();
+    const contained = this.editingLogTaskIds();
+    return (this.data.value()?.tasks ?? [])
+      .filter((task) => task.active !== false || contained.has(task.id))
+      .filter((task) => editingId === null || task.createdByLogId !== editingId)
+      .map((task) => ({
+        task,
+        icon: resolveTaskIcon(task.name),
+        inactive: task.active === false,
+      }));
+  });
+  /**
+   * Further work the edited log created (backend#127). Removing it from the log deletes the task on save, unless
+   * another log contains it.
+   */
+  protected readonly logFurtherWork = computed(() => {
+    const editingId = this.editingLogId();
+    if (editingId === null) {
+      return [];
+    }
+    const ids = this.logTaskIds();
+    return (this.data.value()?.tasks ?? [])
+      .filter((task) => task.createdByLogId === editingId)
+      .map((task) => ({
+        task,
+        icon: resolveTaskIcon(task.name),
+        removed: !ids.has(task.id),
+      }));
+  });
   /** Currency of the log being edited; a new log uses the one of the user. */
   private readonly editingCurrency = signal<Currency | null>(null);
   protected readonly logCurrency = computed(
@@ -428,6 +464,7 @@ export class VehicleDetail {
     this.logMileage.set(log.mileageAtPerformed ?? 0);
     this.logNotes.set(log.notes ?? '');
     this.logTaskIds.set(new Set(log.performedTaskIds ?? []));
+    this.editingLogTaskIds.set(new Set(log.performedTaskIds ?? []));
     this.logNewTasks.set([]);
     this.logShowNewTaskErrors.set(false);
     this.logMaterials.set(
@@ -522,10 +559,11 @@ export class VehicleDetail {
     const vehicleId = vehicle.id;
     const logId = log.id;
     const date = formatIsoDate(log.performedAt, this.language.locale());
+    const work = this.furtherWorkDeletedWith(logId);
     confirmAction(this.dialog, {
       title: 'logForm.deleteTitle',
-      message: 'logForm.confirmDelete',
-      params: { date },
+      message: work.length ? 'logForm.confirmDeleteWithWork' : 'logForm.confirmDelete',
+      params: { date, work: work.join(', ') },
       confirm: 'common.delete',
     })
       .pipe(
@@ -541,8 +579,26 @@ export class VehicleDetail {
       });
   }
 
+  /** Names of the further work that is deleted together with the log: created by it and in no other log. */
+  private furtherWorkDeletedWith(logId: number): string[] {
+    const result = this.data.value();
+    if (!result) {
+      return [];
+    }
+    const unnamed = this.transloco.translate('task.unnamed', {}, this.language.lang());
+    const inOtherLogs = new Set(
+      result.logs
+        .filter((other) => other.id !== logId)
+        .flatMap((other) => other.performedTaskIds ?? []),
+    );
+    return result.tasks
+      .filter((task) => task.createdByLogId === logId && !inOtherLogs.has(task.id))
+      .map((task) => task.name ?? unnamed);
+  }
+
   private resetLogForm(): void {
     this.editingLogId.set(null);
+    this.editingLogTaskIds.set(new Set());
     this.logDate.set(todayIso());
     this.logMileage.set(this.data.value()?.vehicle.currentMileage ?? 0);
     this.logNotes.set('');

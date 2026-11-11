@@ -661,6 +661,96 @@ describe('VehicleDetail', () => {
     await fixture.whenStable();
   });
 
+  describe('further work of a log (backend#127)', () => {
+    const MIRROR: MaintenanceTaskResponse = {
+      id: 20,
+      vehicleId: 7,
+      name: 'Spiegel ersetzt',
+      oneTime: true,
+      active: true,
+      createdByLogId: 1,
+      status: MaintenanceTaskStatus.Done,
+    };
+    const SHARED: MaintenanceTaskResponse = { ...MIRROR, id: 21, name: 'Lenker gerichtet' };
+    const RETIRED: MaintenanceTaskResponse = {
+      id: 22,
+      vehicleId: 7,
+      name: 'Vergaser synchronisieren',
+      oneTime: false,
+      active: false,
+      intervalKm: 6000,
+      status: MaintenanceTaskStatus.Ok,
+    };
+
+    function editFirstLog(): void {
+      page().querySelector<HTMLButtonElement>('.log-card__actions button:nth-child(2)')!.click();
+    }
+
+    it('shows deactivated tasks of an edited log and lets its further work be removed', async () => {
+      await render([{ ...log(1, '2026-05-01'), performedTaskIds: [20, 22] }], [MIRROR, RETIRED]);
+      await openHistoryTab();
+      editFirstLog();
+      await fixture.whenStable();
+
+      const options = [...page().querySelectorAll('.log-form__task-option')];
+      expect(options.map((option) => option.textContent)).toEqual([
+        expect.stringContaining('Vergaser synchronisieren'),
+      ]);
+      expect(options[0].querySelector('.log-form__task-badge')?.textContent).toContain(
+        'deaktiviert',
+      );
+      expect(page().querySelector('.log-form__further-name')?.textContent).toContain(
+        'Spiegel ersetzt',
+      );
+
+      page().querySelector<HTMLButtonElement>('.log-form__further-toggle')!.click();
+      await fixture.whenStable();
+      expect(page().querySelector('.log-form__further-hint')?.textContent).toContain(
+        'wird beim Speichern gelöscht',
+      );
+      expect(page().querySelector('.log-form__further-toggle')?.getAttribute('aria-label')).toBe(
+        'Spiegel ersetzt behalten',
+      );
+
+      saveLogButton().click();
+      const request = httpMock.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-logs/1`,
+      );
+      expect(request.request.body.performedTaskIds).toEqual([22]);
+      request.flush(log(1, '2026-05-01'));
+    });
+
+    it('offers no further work and no deactivated task for a new log', async () => {
+      await render([{ ...log(1, '2026-05-01'), performedTaskIds: [20, 22] }], [MIRROR, RETIRED]);
+      await openTab(2);
+
+      expect(page().querySelector('.log-form__further-work')).toBeNull();
+      expect(
+        [...page().querySelectorAll('.log-form__task-option')].map((option) => option.textContent),
+      ).toEqual([expect.stringContaining('Spiegel ersetzt')]);
+    });
+
+    it('names the further work that is deleted with a log', async () => {
+      const other = { ...log(2, '2026-06-01'), performedTaskIds: [21] };
+      await render(
+        [{ ...log(1, '2026-05-01'), performedTaskIds: [20, 21] }, other],
+        [MIRROR, SHARED],
+      );
+      const open = vi
+        .spyOn(fixture.debugElement.injector.get(MatDialog), 'open')
+        .mockReturnValue({ afterClosed: () => of(false) } as ReturnType<MatDialog['open']>);
+      await openHistoryTab();
+
+      // Newest first: the log of 2026-05-01 is the second card.
+      page().querySelectorAll<HTMLButtonElement>('button[aria-label="Löschen"]')[1].click();
+
+      expect(open.mock.calls[0][1]?.data).toMatchObject({
+        message: 'logForm.confirmDeleteWithWork',
+        params: { work: 'Spiegel ersetzt' },
+      });
+    });
+  });
+
   describe('task management', () => {
     const CHAIN: MaintenanceTaskResponse = {
       id: 9,

@@ -558,7 +558,8 @@
   gap: 8px;
 }
 
-.log-form__task-option {
+.log-form__task-option,
+.log-form__further-item {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -568,7 +569,6 @@
   border: 1px solid var(--bm-border);
   color: #e2e8f0;
   font-size: 0.875rem;
-  cursor: pointer;
 
   input[type='checkbox'] {
     flex-shrink: 0;
@@ -582,6 +582,58 @@
     height: 20px;
     color: var(--bm-text-muted);
   }
+}
+
+.log-form__task-option {
+  cursor: pointer;
+}
+
+.log-form__task-name,
+.log-form__further-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.log-form__task-badge {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--status-none-bg);
+  border: 1px solid var(--status-none-border);
+  color: var(--status-none);
+  font-size: 0.75rem;
+}
+
+.log-form__further-work {
+  margin-bottom: 16px;
+}
+
+.log-form__further-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.log-form__further-item {
+  flex-wrap: wrap;
+}
+
+.log-form__further-item--removed .log-form__further-name {
+  text-decoration: line-through;
+  color: var(--bm-text-muted);
+}
+
+.log-form__further-hint {
+  color: var(--status-due);
+  font-size: 0.8125rem;
+}
+
+.log-form__further-toggle {
+  margin-left: auto;
+  padding: 6px 12px;
 }
 
 .log-form__new-tasks {

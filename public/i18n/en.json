@@ -172,7 +172,15 @@
     "laborCost": "Labor cost ({{currency}})",
     "total": "Total cost",
     "costsInvalid": "Please correct the material and the labor cost.",
-    "measurementsInvalid": "Please correct the measurements."
+    "measurementsInvalid": "Please correct the measurements.",
+    "inactive": "deactivated",
+    "furtherWork": "Further work of this entry",
+    "furtherWorkRemove": "Remove",
+    "furtherWorkRestore": "Keep",
+    "furtherWorkRemoveLabel": "Remove {{name}}",
+    "furtherWorkRestoreLabel": "Keep {{name}}",
+    "furtherWorkRemoved": "will be deleted on save",
+    "confirmDeleteWithWork": "Really delete the maintenance entry from {{date}}? This further work is deleted with it: {{work}}."
   },
   "newTask": {
     "title": "Additional work {{number}}",

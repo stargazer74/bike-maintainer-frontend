@@ -434,24 +434,69 @@
 
             <div class="field log-form__tasks">
               <span class="field__label">{{ 'logForm.tasks' | transloco }}</span>
-              @if (!taskCards().length) {
+              @if (!logTaskOptions().length) {
                 <p class="log-form__tasks-empty">{{ 'logForm.noActiveTasks' | transloco }}</p>
               } @else {
                 <div class="log-form__task-list">
-                  @for (card of taskCards(); track card.task.id) {
+                  @for (option of logTaskOptions(); track option.task.id) {
                     <label class="log-form__task-option">
                       <input
                         type="checkbox"
-                        [checked]="card.task.id !== undefined && logTaskIds().has(card.task.id)"
-                        (change)="toggleLogTask(card.task.id)"
+                        [checked]="option.task.id !== undefined && logTaskIds().has(option.task.id)"
+                        (change)="toggleLogTask(option.task.id)"
                       />
-                      <mat-icon fontSet="material-symbols-outlined">{{ card.icon }}</mat-icon>
-                      <span>{{ card.task.name }}</span>
+                      <mat-icon fontSet="material-symbols-outlined">{{ option.icon }}</mat-icon>
+                      <span class="log-form__task-name">{{ option.task.name }}</span>
+                      @if (option.inactive) {
+                        <span class="log-form__task-badge">{{
+                          'logForm.inactive' | transloco
+                        }}</span>
+                      }
                     </label>
                   }
                 </div>
               }
             </div>
+
+            @if (logFurtherWork().length) {
+              <div class="field log-form__further-work">
+                <span class="field__label">{{ 'logForm.furtherWork' | transloco }}</span>
+                <ul class="log-form__further-list">
+                  @for (item of logFurtherWork(); track item.task.id) {
+                    <li
+                      class="log-form__further-item"
+                      [class.log-form__further-item--removed]="item.removed"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+                      <span class="log-form__further-name">{{ item.task.name }}</span>
+                      @if (item.removed) {
+                        <span class="log-form__further-hint">{{
+                          'logForm.furtherWorkRemoved' | transloco
+                        }}</span>
+                      }
+                      <button
+                        type="button"
+                        class="btn btn--ghost log-form__further-toggle"
+                        [attr.aria-label]="
+                          (item.removed
+                            ? 'logForm.furtherWorkRestoreLabel'
+                            : 'logForm.furtherWorkRemoveLabel'
+                          ) | transloco: { name: item.task.name }
+                        "
+                        (click)="toggleLogTask(item.task.id)"
+                      >
+                        {{
+                          (item.removed
+                            ? 'logForm.furtherWorkRestore'
+                            : 'logForm.furtherWorkRemove'
+                          ) | transloco
+                        }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
 
             <app-new-task-editor
               class="log-form__new-tasks"
