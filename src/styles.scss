@@ -27,6 +27,13 @@ html {
       density: 0,
     )
   );
+  // Material 3 gives a dialog with actions no bottom padding in its content, which scrolls (overflow: auto): the
+  // focus ring of a last focusable element (e.g. "Choose file" in the import dialog) was cut off. 8px leaves room.
+  @include mat.dialog-overrides(
+    (
+      with-actions-content-padding: 20px 24px 8px,
+    )
+  );
 }
 
 body {

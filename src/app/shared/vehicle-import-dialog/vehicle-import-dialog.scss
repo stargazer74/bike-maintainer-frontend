@@ -11,6 +11,8 @@
 }
 
 .vehicle-import__choose {
+  // Keeps the hidden input inside the button, not somewhere in the scrolling dialog content.
+  position: relative;
   cursor: pointer;
 
   // The native input stays reachable by keyboard and screen readers, but invisible.
