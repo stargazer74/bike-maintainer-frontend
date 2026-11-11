@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 520px;
+}
+
+.vehicle-import__intro {
+  margin: 0 0 12px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.vehicle-import__choose {
+  cursor: pointer;
+
+  // The native input stays reachable by keyboard and screen readers, but invisible.
+  &:focus-within {
+    outline: 2px solid var(--bm-orange);
+    outline-offset: 2px;
+  }
+}
+
+.vehicle-import__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.vehicle-import__file-name {
+  margin: 8px 0 0;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.vehicle-import__preview {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 16px 0 0;
+  padding: 12px;
+  border: 1px solid var(--bm-border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+
+  dt {
+    color: var(--bm-text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.vehicle-import__name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.vehicle-import__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 12px 0 0;
+  color: var(--bm-text-muted);
+  font-size: 0.8125rem;
+
+  mat-icon {
+    flex: none;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.vehicle-import__error {
+  margin-top: 12px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.vehicle-import__details {
+  margin: 4px 0;
+  padding-left: 18px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}

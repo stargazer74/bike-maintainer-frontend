@@ -37,7 +37,8 @@
     "account": "Account",
     "currency": "Currency",
     "currencyHint": "Applies to new maintenance entries",
-    "adminUsers": "User management"
+    "adminUsers": "User management",
+    "importVehicle": "Import vehicle"
   },
   "login": {
     "title": "Log in",
@@ -150,7 +151,10 @@
     "tabRecord": "Record maintenance",
     "tabTasks": "Maintenance tasks",
     "noTasksCreated": "No maintenance tasks created yet.",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "exportVehicle": "Export vehicle",
+    "exportFallbackFileName": "vehicle.json",
+    "exportError": "Export failed, please try again later."
   },
   "logForm": {
     "titleNew": "Record new maintenance",
@@ -605,6 +609,24 @@
       "fix": "Please correct the marked values.",
       "load": "The target values could not be loaded, please try again later.",
       "save": "The target values could not be saved, please try again."
+    }
+  },
+  "vehicleImport": {
+    "title": "Import vehicle",
+    "intro": "Choose an export file (JSON) from Bike Maintainer. The import creates a new vehicle with its maintenance tasks, entries and target values; existing vehicles stay unchanged.",
+    "chooseFile": "Choose file",
+    "vehicle": "Vehicle",
+    "contents": "Contents",
+    "counts": "{{tasks}} tasks, {{logs}} entries",
+    "exportedAt": "Exported on",
+    "nameTaken": "A vehicle “{{name}}” exists already. The import creates a second one.",
+    "submit": "Import",
+    "errors": {
+      "notAnExport": "This is not an export file of Bike Maintainer.",
+      "unsupportedVersion": "This export file comes from a newer version and cannot be read here.",
+      "tooLarge": "The file is larger than 5 MB.",
+      "invalid": "The file contains errors, nothing was imported:",
+      "unknown": "Import failed, please try again later."
     }
   }
 }

@@ -37,7 +37,8 @@
     "account": "Konto",
     "currency": "Währung",
     "currencyHint": "Gilt für neue Wartungseinträge",
-    "adminUsers": "Nutzerverwaltung"
+    "adminUsers": "Nutzerverwaltung",
+    "importVehicle": "Fahrzeug importieren"
   },
   "login": {
     "title": "Anmelden",
@@ -150,7 +151,10 @@
     "tabRecord": "Wartung erfassen",
     "tabTasks": "Wartungsaufgaben",
     "noTasksCreated": "Noch keine Wartungsaufgaben angelegt.",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "exportVehicle": "Fahrzeug exportieren",
+    "exportFallbackFileName": "fahrzeug.json",
+    "exportError": "Export fehlgeschlagen, bitte später erneut versuchen."
   },
   "logForm": {
     "titleNew": "Neue Wartung erfassen",
@@ -605,6 +609,24 @@
       "fix": "Bitte korrigiere die markierten Werte.",
       "load": "Die Sollwerte konnten nicht geladen werden, bitte später erneut versuchen.",
       "save": "Die Sollwerte konnten nicht gespeichert werden, bitte erneut versuchen."
+    }
+  },
+  "vehicleImport": {
+    "title": "Fahrzeug importieren",
+    "intro": "Wähle eine Exportdatei (JSON) aus Bike Maintainer. Der Import legt ein neues Fahrzeug mit Wartungsaufgaben, Einträgen und Sollwerten an; bestehende Fahrzeuge bleiben unverändert.",
+    "chooseFile": "Datei wählen",
+    "vehicle": "Fahrzeug",
+    "contents": "Inhalt",
+    "counts": "{{tasks}} Aufgaben, {{logs}} Einträge",
+    "exportedAt": "Exportiert am",
+    "nameTaken": "Ein Fahrzeug „{{name}}“ gibt es schon. Der Import legt ein zweites an.",
+    "submit": "Importieren",
+    "errors": {
+      "notAnExport": "Das ist keine Exportdatei von Bike Maintainer.",
+      "unsupportedVersion": "Diese Exportdatei stammt aus einer neueren Version und kann hier nicht gelesen werden.",
+      "tooLarge": "Die Datei ist größer als 5 MB.",
+      "invalid": "Die Datei enthält Fehler, es wurde nichts importiert:",
+      "unknown": "Import fehlgeschlagen, bitte später erneut versuchen."
     }
   }
 }

@@ -12,13 +12,17 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Currency, VehiclesService } from '../../api-client';
+import { Currency, VehicleResponse, VehiclesService } from '../../api-client';
 import { LOGIN_PATH, PROFILE_SELECT_PATH } from '../../auth/auth-guards';
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
 import { injectWebsiteLinks } from '../../config/website-links';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
+import {
+  VehicleImportDialog,
+  VehicleImportDialogData,
+} from '../../shared/vehicle-import-dialog/vehicle-import-dialog';
 
 const VEHICLE_ROUTE_PATTERN = /^\/fahrzeuge\/(\d+)/;
 
@@ -110,6 +114,24 @@ export class Shell {
         }
         this.vehicles.reload();
         this.router.navigate(['/fahrzeuge', createdVehicle.id]);
+      });
+  }
+
+  /** Imports a vehicle from an export file and opens it, like a newly added one. */
+  protected onImportVehicleClick(): void {
+    const existingNames = (this.vehicles.value() ?? []).map((vehicle) => vehicle.name ?? '');
+    this.dialog
+      .open<VehicleImportDialog, VehicleImportDialogData, VehicleResponse>(VehicleImportDialog, {
+        autoFocus: 'first-tabbable',
+        data: { existingNames },
+      })
+      .afterClosed()
+      .subscribe((importedVehicle) => {
+        if (!importedVehicle) {
+          return;
+        }
+        this.vehicles.reload();
+        this.router.navigate(['/fahrzeuge', importedVehicle.id]);
       });
   }
 }

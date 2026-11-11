@@ -186,6 +186,60 @@ describe('VehicleDetail', () => {
     expect(downloadButtons().every((button) => !button.disabled)).toBe(true);
   });
 
+  it('exports the vehicle as a readable JSON file', async () => {
+    await render([]);
+    let saved: Blob | undefined;
+    Object.assign(URL, {
+      createObjectURL: vi.fn((blob: Blob) => {
+        saved = blob;
+        return 'blob:x';
+      }),
+      revokeObjectURL: vi.fn(),
+    });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      expect(this.download).toBe('vehicle-die-rote-2026-11-11.json');
+    });
+    const button = page().querySelector<HTMLButtonElement>('.vehicle-header__export')!;
+
+    button.click();
+    await tick();
+    expect(button.disabled).toBe(true);
+    httpMock.expectOne(`${BASE}/export`).flush(
+      { formatVersion: 1, vehicle: { name: 'Die Rote' } },
+      {
+        headers: {
+          'Content-Disposition': 'attachment; filename="vehicle-die-rote-2026-11-11.json"',
+        },
+      },
+    );
+    await fixture.whenStable();
+
+    expect(click).toHaveBeenCalled();
+    expect(saved!.type).toBe('application/json');
+    expect(JSON.parse(await saved!.text())).toEqual({
+      formatVersion: 1,
+      vehicle: { name: 'Die Rote' },
+    });
+    expect(button.disabled).toBe(false);
+  });
+
+  it('shows an error when the export fails', async () => {
+    await render([]);
+    const button = page().querySelector<HTMLButtonElement>('.vehicle-header__export')!;
+
+    button.click();
+    await tick();
+    httpMock.expectOne(`${BASE}/export`).flush(null, { status: 500, statusText: 'Error' });
+    await fixture.whenStable();
+
+    expect(page().querySelector('.vehicle-header [role=alert]')!.textContent).toContain(
+      'Export fehlgeschlagen',
+    );
+    expect(button.disabled).toBe(false);
+  });
+
   it('cancels the single download when the page is left', async () => {
     await render([log(1, '2024-05-01')]);
     await openHistoryTab();

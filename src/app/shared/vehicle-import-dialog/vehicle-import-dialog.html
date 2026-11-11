@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>{{ 'vehicleImport.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  <p class="vehicle-import__intro">{{ 'vehicleImport.intro' | transloco }}</p>
+
+  <label class="btn btn--ghost vehicle-import__choose">
+    <mat-icon fontSet="material-symbols-outlined">upload_file</mat-icon>
+    {{ 'vehicleImport.chooseFile' | transloco }}
+    <input
+      type="file"
+      class="vehicle-import__input"
+      accept="application/json,.json"
+      (change)="onFileSelected($event)"
+    />
+  </label>
+  @if (fileName(); as name) {
+    <p class="vehicle-import__file-name">{{ name }}</p>
+  }
+
+  @if (preview(); as p) {
+    <dl class="vehicle-import__preview">
+      <dt>{{ 'vehicleImport.vehicle' | transloco }}</dt>
+      <dd class="vehicle-import__name">
+        {{ p.name }}
+        @if (p.type) {
+          · {{ 'vehicleType.' + p.type | transloco }}
+        }
+      </dd>
+      <dt>{{ 'vehicleImport.contents' | transloco }}</dt>
+      <dd>
+        {{ 'vehicleImport.counts' | transloco: { tasks: p.taskCount, logs: p.logCount } }}
+      </dd>
+      @if (p.exportedAt) {
+        <dt>{{ 'vehicleImport.exportedAt' | transloco }}</dt>
+        <dd>{{ p.exportedAt | localDate }}</dd>
+      }
+    </dl>
+    @if (p.nameTaken) {
+      <p class="vehicle-import__hint" role="note">
+        <mat-icon fontSet="material-symbols-outlined">info</mat-icon>
+        {{ 'vehicleImport.nameTaken' | transloco: { name: p.name } }}
+      </p>
+    }
+  }
+
+  @if (errorKey(); as key) {
+    <div class="field__error vehicle-import__error" role="alert">
+      <p>{{ key | transloco }}</p>
+      @if (details().length) {
+        <ul class="vehicle-import__details">
+          @for (detail of details(); track $index) {
+            <li>{{ detail }}</li>
+          }
+        </ul>
+        @if (hiddenDetails() > 0) {
+          <p>{{ 'common.moreCount' | transloco: { count: hiddenDetails() } }}</p>
+        }
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn--ghost" mat-dialog-close>
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    type="button"
+    class="btn btn--primary vehicle-import__submit"
+    [disabled]="importing() || !preview()"
+    (click)="startImport()"
+  >
+    @if (importing()) {
+      <mat-spinner diameter="16" />
+    } @else {
+      <mat-icon fontSet="material-symbols-outlined">upload</mat-icon>
+    }
+    {{ 'vehicleImport.submit' | transloco }}
+  </button>
+</mat-dialog-actions>

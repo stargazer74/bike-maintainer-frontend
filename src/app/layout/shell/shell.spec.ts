@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { Currency, Language, OperatingMode, UserResponse, UserRole } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
@@ -197,5 +199,72 @@ describe('Shell user management link', () => {
     const body = await userMenu(UserRole.User);
 
     expect(body.querySelector('.shell__admin-users')).toBeNull();
+  });
+});
+
+describe('Shell vehicle import', () => {
+  let httpMock: HttpTestingController;
+  let fixture: ReturnType<typeof TestBed.createComponent<Shell>>;
+
+  async function render(): Promise<void> {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting(), provideRouter([])],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    const config = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne(CONFIG_URL).flush({ mode: OperatingMode.Portal });
+    await config;
+    const loaded = TestBed.inject(AuthStore).load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpMock.expectOne(VEHICLES_URL).flush([{ id: 3, name: 'Die Rote' }]);
+    await fixture.whenStable();
+  }
+
+  afterEach(() => {
+    httpMock.verify();
+    localStorage.clear();
+  });
+
+  async function chooseImport(): Promise<void> {
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLElement>('.shell__user-button')!
+      .click();
+    await fixture.whenStable();
+    document.querySelector<HTMLElement>('.shell__import-vehicle')!.click();
+  }
+
+  it('opens the imported vehicle and reloads the vehicle list', async () => {
+    await render();
+    const dialog = TestBed.inject(MatDialog);
+    const open = vi.spyOn(dialog, 'open').mockReturnValue({
+      afterClosed: () => of({ id: 9, name: 'Die Rote' }),
+    } as MatDialogRef<unknown>);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    await chooseImport();
+
+    expect(open.mock.calls[0][1]?.data).toEqual({ existingNames: ['Die Rote'] });
+    TestBed.tick();
+    httpMock.expectOne(VEHICLES_URL).flush([]);
+    await fixture.whenStable();
+    expect(navigate).toHaveBeenCalledWith(['/fahrzeuge', 9]);
+  });
+
+  it('stays where it is when the import is cancelled', async () => {
+    await render();
+    vi.spyOn(TestBed.inject(MatDialog), 'open').mockReturnValue({
+      afterClosed: () => of(undefined),
+    } as MatDialogRef<unknown>);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+
+    await chooseImport();
+
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
