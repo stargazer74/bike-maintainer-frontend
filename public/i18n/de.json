@@ -195,6 +195,7 @@
     "titleEdit": "Wartungsaufgabe bearbeiten",
     "name": "Name *",
     "namePlaceholder": "z. B. Ölwechsel",
+    "description": "Beschreibung",
     "intervalKm": "Intervall (km)",
     "intervalKmPlaceholder": "z. B. 10000",
     "intervalMonths": "Intervall (Monate)",

@@ -587,6 +587,19 @@
               />
             </div>
 
+            <div class="field">
+              <label class="field__label" for="task-description">{{
+                'taskForm.description' | transloco
+              }}</label>
+              <input
+                id="task-description"
+                class="field__input"
+                maxlength="1000"
+                [ngModel]="taskFormDescription()"
+                (ngModelChange)="taskFormDescription.set($event)"
+              />
+            </div>
+
             <div class="log-form__row">
               <div class="field">
                 <label class="field__label" for="task-interval-km">{{
