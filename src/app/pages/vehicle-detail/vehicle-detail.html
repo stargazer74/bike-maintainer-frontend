@@ -37,7 +37,21 @@
           >
             <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
           </button>
+          <button
+            mat-icon-button
+            type="button"
+            class="vehicle-header__export"
+            [attr.aria-label]="'vehicleDetail.exportVehicle' | transloco"
+            [title]="'vehicleDetail.exportVehicle' | transloco"
+            [disabled]="exporting()"
+            (click)="exportVehicle(vehicle.id!)"
+          >
+            <mat-icon fontSet="material-symbols-outlined">file_export</mat-icon>
+          </button>
         </div>
+        @if (exportErrorKey(); as key) {
+          <p class="field__error" role="alert">{{ key | transloco }}</p>
+        }
         @if (vehicleSubtitle(vehicle); as subtitle) {
           <p>{{ subtitle.key | transloco: subtitle.params }}</p>
         }

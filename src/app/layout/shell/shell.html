@@ -81,6 +81,15 @@
             <mat-icon fontSet="material-symbols-outlined">payments</mat-icon>
             <span>{{ 'shell.currency' | transloco }}</span>
           </button>
+          <button
+            mat-menu-item
+            type="button"
+            class="shell__import-vehicle"
+            (click)="onImportVehicleClick()"
+          >
+            <mat-icon fontSet="material-symbols-outlined">upload_file</mat-icon>
+            <span>{{ 'shell.importVehicle' | transloco }}</span>
+          </button>
           @if (config.isHousehold()) {
             <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
               <mat-icon fontSet="material-symbols-outlined">switch_account</mat-icon>

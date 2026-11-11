@@ -34,6 +34,7 @@ import {
   MaintenanceTaskResponse,
   MaintenanceTasksService,
   MeasurementsService,
+  VehicleExportService,
   VehicleRequest,
   VehicleResponse,
   VehiclesService,
@@ -114,6 +115,7 @@ export class VehicleDetail {
   private readonly logsService = inject(MaintenanceLogsService);
   private readonly measurementsService = inject(MeasurementsService);
   private readonly worksheetsService = inject(WorksheetsService);
+  private readonly vehicleExportService = inject(VehicleExportService);
   private readonly dialog = inject(MatDialog);
   private readonly transloco = inject(TranslocoService);
   private readonly authStore = inject(AuthStore);
@@ -275,6 +277,39 @@ export class VehicleDetail {
               ? 'report.errors.invalid'
               : 'report.errors.unknown',
           );
+        },
+      });
+  }
+
+  protected readonly exporting = signal(false);
+  protected readonly exportErrorKey = signal<string | null>(null);
+
+  /** Downloads the vehicle with everything recorded for it as a file that can be imported again (Epic #82). */
+  protected exportVehicle(vehicleId: number): void {
+    if (this.exporting()) {
+      return;
+    }
+    this.exporting.set(true);
+    this.exportErrorKey.set(null);
+    this.vehicleExportService
+      .exportVehicle(vehicleId, 'response')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.exporting.set(false);
+          const file = new Blob([JSON.stringify(response.body, null, 2)], {
+            type: 'application/json',
+          });
+          const fallback = this.transloco.translate(
+            'vehicleDetail.exportFallbackFileName',
+            {},
+            this.language.lang(),
+          );
+          saveFile(response.clone<Blob>({ body: file }), fallback, this.document);
+        },
+        error: () => {
+          this.exporting.set(false);
+          this.exportErrorKey.set('vehicleDetail.exportError');
         },
       });
   }
