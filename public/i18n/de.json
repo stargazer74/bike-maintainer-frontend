@@ -25,7 +25,8 @@
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "saveChanges": "Änderungen speichern",
-    "moreCount": "+{{count}} weitere"
+    "moreCount": "+{{count}} weitere",
+    "understood": "Verstanden"
   },
   "shell": {
     "toDashboard": "Zum Dashboard",
@@ -73,10 +74,14 @@
     "errors": {
       "nameRequired": "Bitte einen Namen eingeben.",
       "nameTaken": "Dieser Name ist schon vergeben.",
-      "hasVehicles": "Diese Person hat noch Fahrzeuge. Bitte zuerst die Fahrzeuge löschen.",
       "loadFailed": "Die Personen konnten nicht geladen werden.",
       "unknown": "Das hat nicht geklappt, bitte später erneut versuchen."
-    }
+    },
+    "hasVehiclesTitle": "Person hat noch Fahrzeuge",
+    "hasVehiclesOne": "„{{name}}“ hat noch ein Fahrzeug und kann deshalb nicht gelöscht werden.",
+    "hasVehiclesMany": "„{{name}}“ hat noch {{count}} Fahrzeuge und kann deshalb nicht gelöscht werden.",
+    "hasVehiclesNow": "„{{name}}“ hat inzwischen Fahrzeuge und kann deshalb nicht gelöscht werden.",
+    "hasVehiclesHint": "Die Fahrzeuge und ihre Wartungshistorie gehen beim Löschen nicht verloren: Eine Person lässt sich erst löschen, wenn sie keine Fahrzeuge mehr hat."
   },
   "task": {
     "unnamed": "Unbenannte Aufgabe",
@@ -216,8 +221,18 @@
     "saveError": "Wartungsaufgabe konnte nicht gespeichert werden. Bitte versuche es erneut.",
     "deleteTitle": "Wartungsaufgabe löschen?",
     "confirmDelete": "„{{name}}“ wirklich löschen?",
-    "deletePerformed": "Diese Aufgabe kommt in der Wartungshistorie vor und kann deshalb nicht gelöscht werden. Deaktiviere sie stattdessen (Bearbeiten → „Aktiv“ abwählen).",
-    "deleteError": "Wartungsaufgabe konnte nicht gelöscht werden. Bitte versuche es erneut."
+    "deleteError": "Wartungsaufgabe konnte nicht gelöscht werden. Bitte versuche es erneut.",
+    "inUseTitle": "Aufgabe wird verwendet",
+    "inUseOne": "„{{name}}“ kommt in einem Wartungseintrag vor und kann deshalb nicht gelöscht werden.",
+    "inUseMany": "„{{name}}“ kommt in {{count}} Wartungseinträgen vor und kann deshalb nicht gelöscht werden.",
+    "inUseNow": "„{{name}}“ kommt inzwischen in der Wartungshistorie vor und kann deshalb nicht gelöscht werden.",
+    "inUseHintDeactivate": "Du kannst die Aufgabe deaktivieren: Sie erscheint dann nicht mehr als fällig, die Historie bleibt erhalten, und du kannst sie jederzeit wieder aktivieren.",
+    "inUseHintInactive": "Die Aufgabe ist bereits deaktiviert und erscheint nicht als fällig; die Historie bleibt erhalten.",
+    "deactivate": "Deaktivieren",
+    "activate": "Aktivieren",
+    "activateLabel": "{{name}} aktivieren",
+    "activateError": "Wartungsaufgabe konnte nicht aktiviert werden. Bitte versuche es erneut.",
+    "deactivateError": "Wartungsaufgabe konnte nicht deaktiviert werden. Bitte versuche es erneut."
   },
   "taskStatus": {
     "done": "Erledigt",

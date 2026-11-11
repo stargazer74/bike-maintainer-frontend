@@ -793,6 +793,16 @@
                   }
                 </div>
                 <div class="tasks-manage__item-actions">
+                  @if (task.active === false) {
+                    <button
+                      type="button"
+                      class="btn btn--ghost tasks-manage__activate"
+                      [attr.aria-label]="'taskForm.activateLabel' | transloco: { name: task.name }"
+                      (click)="activateTask(vehicle, task)"
+                    >
+                      {{ 'taskForm.activate' | transloco }}
+                    </button>
+                  }
                   <button
                     mat-icon-button
                     type="button"

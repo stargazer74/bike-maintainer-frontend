@@ -25,7 +25,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "saveChanges": "Save changes",
-    "moreCount": "+{{count}} more"
+    "moreCount": "+{{count}} more",
+    "understood": "Got it"
   },
   "shell": {
     "toDashboard": "Go to dashboard",
@@ -73,10 +74,14 @@
     "errors": {
       "nameRequired": "Please enter a name.",
       "nameTaken": "This name is already taken.",
-      "hasVehicles": "This person still has vehicles. Please delete the vehicles first.",
       "loadFailed": "The profiles could not be loaded.",
       "unknown": "That did not work, please try again later."
-    }
+    },
+    "hasVehiclesTitle": "Person still has vehicles",
+    "hasVehiclesOne": "“{{name}}” still has a vehicle and therefore cannot be deleted.",
+    "hasVehiclesMany": "“{{name}}” still has {{count}} vehicles and therefore cannot be deleted.",
+    "hasVehiclesNow": "“{{name}}” now has vehicles and therefore cannot be deleted.",
+    "hasVehiclesHint": "Deleting must not lose vehicles and their maintenance history: a person can only be deleted once they have no vehicles left."
   },
   "task": {
     "unnamed": "Unnamed task",
@@ -216,8 +221,18 @@
     "saveError": "The maintenance task could not be saved. Please try again.",
     "deleteTitle": "Delete maintenance task?",
     "confirmDelete": "Really delete \"{{name}}\"?",
-    "deletePerformed": "This task appears in the maintenance history and therefore cannot be deleted. Deactivate it instead (Edit → untick \"Active\").",
-    "deleteError": "The maintenance task could not be deleted. Please try again."
+    "deleteError": "The maintenance task could not be deleted. Please try again.",
+    "inUseTitle": "Task is in use",
+    "inUseOne": "“{{name}}” appears in one maintenance entry and therefore cannot be deleted.",
+    "inUseMany": "“{{name}}” appears in {{count}} maintenance entries and therefore cannot be deleted.",
+    "inUseNow": "“{{name}}” now appears in the maintenance history and therefore cannot be deleted.",
+    "inUseHintDeactivate": "You can deactivate the task: it will no longer show up as due, the history stays, and you can activate it again at any time.",
+    "inUseHintInactive": "The task is already deactivated and does not show up as due; the history stays.",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "activateLabel": "Activate {{name}}",
+    "activateError": "The maintenance task could not be activated. Please try again.",
+    "deactivateError": "The maintenance task could not be deactivated. Please try again."
   },
   "taskStatus": {
     "done": "Done",

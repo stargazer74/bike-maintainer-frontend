@@ -12,7 +12,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { ProfileResponse, ProfilesService } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { isSafeReturnUrl } from '../../auth/return-url';
-import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
+import { confirmAction, showInfo } from '../../shared/confirm-dialog/confirm-dialog';
 
 /** Translation key of the message for a failed create/rename/delete. */
 function profileErrorKey(error: unknown, conflictKey: string): string {
@@ -110,20 +110,53 @@ export class ProfileSelect {
   }
 
   protected onDelete(profile: ProfileResponse): void {
+    this.errorKey.set(null);
+    // A person with vehicles is not deleted (frontend#96): explain that instead of asking first.
+    if (profile.vehicleCount > 0) {
+      this.explainHasVehicles(profile, profile.vehicleCount);
+      return;
+    }
     confirmAction(this.dialog, {
       title: 'profiles.deleteTitle',
       message: 'profiles.confirmDelete',
       params: { name: profile.displayName },
       confirm: 'common.delete',
     }).subscribe((confirmed) => {
-      if (confirmed) {
-        this.run(
-          this.profilesService.deleteProfile(profile.id),
-          'profiles.errors.hasVehicles',
-          () => this.profiles.reload(),
-        );
+      if (!confirmed) {
+        return;
       }
+      this.busy.set(true);
+      this.profilesService.deleteProfile(profile.id).subscribe({
+        next: () => {
+          this.busy.set(false);
+          this.profiles.reload();
+        },
+        error: (error: unknown) => {
+          this.busy.set(false);
+          // 409: a vehicle was added in the meantime.
+          if (error instanceof HttpErrorResponse && error.status === 409) {
+            this.explainHasVehicles(profile, null);
+            this.profiles.reload();
+          } else {
+            this.errorKey.set('profiles.errors.unknown');
+          }
+        },
+      });
     });
+  }
+
+  private explainHasVehicles(profile: ProfileResponse, count: number | null): void {
+    showInfo(this.dialog, {
+      title: 'profiles.hasVehiclesTitle',
+      message:
+        count === null
+          ? 'profiles.hasVehiclesNow'
+          : count === 1
+            ? 'profiles.hasVehiclesOne'
+            : 'profiles.hasVehiclesMany',
+      hint: 'profiles.hasVehiclesHint',
+      params: { name: profile.displayName, count },
+    }).subscribe();
   }
 
   /** Runs one request at a time; a 409 is reported with `conflictKey`, other errors generically. */

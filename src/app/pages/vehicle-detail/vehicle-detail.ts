@@ -44,7 +44,7 @@ import {
 import { AuthStore } from '../../auth/auth-store';
 import { LanguageService } from '../../i18n/language';
 import { LocalCurrencyPipe, LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
-import { confirmAction } from '../../shared/confirm-dialog/confirm-dialog';
+import { confirmAction, showInfo } from '../../shared/confirm-dialog/confirm-dialog';
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
 import { WorksheetDialog, WorksheetDialogData } from './worksheet-dialog/worksheet-dialog';
@@ -690,6 +690,14 @@ export class VehicleDetail {
     const vehicleId = vehicle.id;
     const taskId = task.id;
     this.taskDeleteError.set(null);
+    // What the history uses is not deleted (frontend#96): explain that instead of asking first.
+    const uses = (this.data.value()?.logs ?? []).filter((log) =>
+      (log.performedTaskIds ?? []).includes(taskId),
+    ).length;
+    if (uses > 0) {
+      this.explainTaskInUse(vehicleId, task, uses);
+      return;
+    }
     confirmAction(this.dialog, {
       title: 'taskForm.deleteTitle',
       message: 'taskForm.confirmDelete',
@@ -708,14 +716,68 @@ export class VehicleDetail {
           this.data.reload();
         },
         error: (error: unknown) => {
-          // 409: the task appears in the history and can only be deactivated.
-          this.taskDeleteError.set(
-            error instanceof HttpErrorResponse && error.status === 409
-              ? 'taskForm.deletePerformed'
-              : 'taskForm.deleteError',
-          );
+          // 409: a log performed it in the meantime.
+          if (error instanceof HttpErrorResponse && error.status === 409) {
+            this.explainTaskInUse(vehicleId, task, null);
+            this.data.reload();
+          } else {
+            this.taskDeleteError.set('taskForm.deleteError');
+          }
         },
       });
+  }
+
+  /** Re-activates a deactivated task; its due date follows from the last log as usual. */
+  protected activateTask(vehicle: VehicleResponse, task: MaintenanceTaskResponse): void {
+    if (vehicle.id !== undefined) {
+      this.setTaskActive(vehicle.id, task, true);
+    }
+  }
+
+  /** Why the task cannot be deleted; offers to deactivate it if it is still active. */
+  private explainTaskInUse(
+    vehicleId: number,
+    task: MaintenanceTaskResponse,
+    uses: number | null,
+  ): void {
+    const active = task.active !== false;
+    showInfo(this.dialog, {
+      title: 'taskForm.inUseTitle',
+      message:
+        uses === null
+          ? 'taskForm.inUseNow'
+          : uses === 1
+            ? 'taskForm.inUseOne'
+            : 'taskForm.inUseMany',
+      hint: active ? 'taskForm.inUseHintDeactivate' : 'taskForm.inUseHintInactive',
+      params: { name: task.name ?? '', count: uses },
+      action: active ? 'taskForm.deactivate' : undefined,
+    })
+      .pipe(filter(Boolean))
+      .subscribe(() => this.setTaskActive(vehicleId, task, false));
+  }
+
+  /** Switches a task on or off; everything else of the task stays as it is. */
+  private setTaskActive(vehicleId: number, task: MaintenanceTaskResponse, active: boolean): void {
+    if (task.id === undefined) {
+      return;
+    }
+    this.taskDeleteError.set(null);
+    const request: MaintenanceTaskRequest = {
+      name: task.name ?? '',
+      description: task.description,
+      intervalKm: task.intervalKm,
+      intervalMonths: task.intervalMonths,
+      firstDueKm: task.firstDueKm,
+      firstDueMonths: task.firstDueMonths,
+      oneTime: task.oneTime,
+      active,
+    };
+    this.tasksService.updateMaintenanceTask(vehicleId, task.id, request).subscribe({
+      next: () => this.data.reload(),
+      error: () =>
+        this.taskDeleteError.set(active ? 'taskForm.activateError' : 'taskForm.deactivateError'),
+    });
   }
 
   private resetTaskForm(): void {

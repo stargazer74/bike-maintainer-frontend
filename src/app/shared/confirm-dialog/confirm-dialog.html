@@ -1,22 +1,63 @@
-<h2 mat-dialog-title class="confirm-dialog__title">
-  <mat-icon fontSet="material-symbols-outlined">warning</mat-icon>
-  {{ data.title | transloco: data.params }}
-</h2>
+@if (data.variant === 'info') {
+  <h2 mat-dialog-title class="confirm-dialog__title confirm-dialog__title--info">
+    <mat-icon fontSet="material-symbols-outlined">info</mat-icon>
+    {{ data.title | transloco: data.params }}
+  </h2>
 
-<mat-dialog-content>
-  <p class="confirm-dialog__message">{{ data.message | transloco: data.params }}</p>
-</mat-dialog-content>
+  <mat-dialog-content>
+    <p class="confirm-dialog__message">{{ data.message | transloco: data.params }}</p>
+    @if (data.hint) {
+      <p class="confirm-dialog__message confirm-dialog__hint">
+        {{ data.hint | transloco: data.params }}
+      </p>
+    }
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button type="button" class="btn btn--ghost confirm-dialog__cancel" (click)="close(false)">
-    {{ 'common.cancel' | transloco }}
-  </button>
-  <button
-    type="button"
-    class="btn btn--danger confirm-dialog__confirm"
-    cdkFocusInitial
-    (click)="close(true)"
-  >
-    {{ data.confirm | transloco }}
-  </button>
-</mat-dialog-actions>
+  <mat-dialog-actions align="end">
+    @if (data.action) {
+      <button type="button" class="btn btn--ghost confirm-dialog__cancel" (click)="close(false)">
+        {{ 'common.understood' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="btn btn--primary confirm-dialog__action"
+        cdkFocusInitial
+        (click)="close(true)"
+      >
+        {{ data.action | transloco }}
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="btn btn--primary confirm-dialog__cancel"
+        cdkFocusInitial
+        (click)="close(false)"
+      >
+        {{ 'common.understood' | transloco }}
+      </button>
+    }
+  </mat-dialog-actions>
+} @else {
+  <h2 mat-dialog-title class="confirm-dialog__title">
+    <mat-icon fontSet="material-symbols-outlined">warning</mat-icon>
+    {{ data.title | transloco: data.params }}
+  </h2>
+
+  <mat-dialog-content>
+    <p class="confirm-dialog__message">{{ data.message | transloco: data.params }}</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn btn--ghost confirm-dialog__cancel" (click)="close(false)">
+      {{ 'common.cancel' | transloco }}
+    </button>
+    <button
+      type="button"
+      class="btn btn--danger confirm-dialog__confirm"
+      cdkFocusInitial
+      (click)="close(true)"
+    >
+      {{ data.confirm | transloco }}
+    </button>
+  </mat-dialog-actions>
+}

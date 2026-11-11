@@ -17,8 +17,8 @@ class Target {}
 const PROFILES_URL = 'http://localhost/api/v1/profiles';
 
 const PROFILES: ProfileResponse[] = [
-  { id: 1, displayName: 'Admin' },
-  { id: 2, displayName: 'Anna' },
+  { id: 1, displayName: 'Admin', vehicleCount: 0 },
+  { id: 2, displayName: 'Anna', vehicleCount: 0 },
 ];
 
 const ANNA: UserResponse = {
@@ -141,10 +141,12 @@ describe('ProfileSelect', () => {
     const request = httpMock.expectOne(PROFILES_URL);
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({ displayName: 'Ben' });
-    request.flush({ id: 3, displayName: 'Ben' });
+    request.flush({ id: 3, displayName: 'Ben', vehicleCount: 0 });
     TestBed.tick();
 
-    httpMock.expectOne(PROFILES_URL).flush([...PROFILES, { id: 3, displayName: 'Ben' }]);
+    httpMock
+      .expectOne(PROFILES_URL)
+      .flush([...PROFILES, { id: 3, displayName: 'Ben', vehicleCount: 0 }]);
     await settle();
     expect(page.textContent).toContain('Ben');
     expect(page.querySelector<HTMLInputElement>('#profile-new-name')!.value).toBe('');
@@ -182,10 +184,12 @@ describe('ProfileSelect', () => {
     const request = httpMock.expectOne(`${PROFILES_URL}/2`);
     expect(request.request.method).toBe('PUT');
     expect(request.request.body).toEqual({ displayName: 'Anna-Lena' });
-    request.flush({ id: 2, displayName: 'Anna-Lena' });
+    request.flush({ id: 2, displayName: 'Anna-Lena', vehicleCount: 0 });
     TestBed.tick();
 
-    httpMock.expectOne(PROFILES_URL).flush([PROFILES[0], { id: 2, displayName: 'Anna-Lena' }]);
+    httpMock
+      .expectOne(PROFILES_URL)
+      .flush([PROFILES[0], { id: 2, displayName: 'Anna-Lena', vehicleCount: 0 }]);
     await settle();
     expect(page.querySelector('.profile__name-input')).toBeNull();
     expect(page.textContent).toContain('Anna-Lena');
@@ -222,15 +226,33 @@ describe('ProfileSelect', () => {
     httpMock.expectNone(`${PROFILES_URL}/2`);
   });
 
-  it('explains that a profile with vehicles cannot be deleted', async () => {
+  it('explains instead of asking that a profile with vehicles cannot be deleted', async () => {
+    const page = await open('/person-waehlen', [PROFILES[0], { ...PROFILES[1], vehicleCount: 2 }]);
+    const open$ = answerConfirmation(false);
+    card(page, 'Anna').querySelector<HTMLButtonElement>('.profile__delete')!.click();
+
+    expect(open$).toHaveBeenCalledTimes(1);
+    expect(open$.mock.calls[0][1]?.data).toMatchObject({
+      variant: 'info',
+      message: 'profiles.hasVehiclesMany',
+      params: { name: 'Anna', count: 2 },
+    });
+    httpMock.expectNone(`${PROFILES_URL}/2`);
+  });
+
+  it('explains in the same popup when the backend still answers 409', async () => {
     const page = await open();
-    answerConfirmation(true);
+    const open$ = answerConfirmation(true);
     card(page, 'Anna').querySelector<HTMLButtonElement>('.profile__delete')!.click();
     httpMock.expectOne(`${PROFILES_URL}/2`).flush(null, { status: 409, statusText: 'Conflict' });
+    TestBed.tick();
+    httpMock.expectOne(PROFILES_URL).flush(PROFILES);
     await settle();
 
-    expect(errorText(page)).toBe(
-      'Diese Person hat noch Fahrzeuge. Bitte zuerst die Fahrzeuge löschen.',
-    );
+    expect(open$.mock.calls[1][1]?.data).toMatchObject({
+      variant: 'info',
+      message: 'profiles.hasVehiclesNow',
+    });
+    expect(errorText(page)).toBe('');
   });
 });

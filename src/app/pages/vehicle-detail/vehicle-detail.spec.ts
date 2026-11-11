@@ -267,33 +267,116 @@ describe('VehicleDetail', () => {
     expect(downloadButtons()[0].disabled).toBe(false);
   });
 
-  it('explains why an already performed task cannot be deleted', async () => {
-    const chainLube: MaintenanceTaskResponse = {
+  describe('tasks in use (frontend#96)', () => {
+    const CHAIN_LUBE: MaintenanceTaskResponse = {
       id: 9,
       vehicleId: 7,
       name: 'Kette schmieren',
+      description: 'Kettenspray',
       oneTime: false,
       active: true,
       intervalKm: 1000,
       status: MaintenanceTaskStatus.Ok,
     };
-    await render([], [chainLube]);
-    vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
-      afterClosed: () => of(true),
-    } as ReturnType<MatDialog['open']>);
-    await openTab(3);
 
-    page()
-      .querySelector<HTMLButtonElement>('.tasks-manage__item-actions button:last-child')!
-      .click();
-    httpMock
-      .expectOne((req) => req.method === 'DELETE' && req.url === `${BASE}/maintenance-tasks/9`)
-      .flush(null, { status: 409, statusText: 'Conflict' });
-    await fixture.whenStable();
+    function answerDialog(result: boolean) {
+      return vi
+        .spyOn(fixture.debugElement.injector.get(MatDialog), 'open')
+        .mockReturnValue({ afterClosed: () => of(result) } as ReturnType<MatDialog['open']>);
+    }
 
-    expect(page().querySelector('.tasks-manage__error')?.textContent).toContain(
-      'kann deshalb nicht gelöscht werden',
-    );
+    function deleteButton(): HTMLButtonElement {
+      return page().querySelector<HTMLButtonElement>(
+        '.tasks-manage__item-actions button:last-child',
+      )!;
+    }
+
+    it('explains instead of asking that a performed task cannot be deleted, and deactivates it', async () => {
+      await render(
+        [
+          { ...log(1, '2026-05-01'), performedTaskIds: [9] },
+          { ...log(2, '2026-06-01'), performedTaskIds: [9] },
+        ],
+        [CHAIN_LUBE],
+      );
+      const open = answerDialog(true);
+      await openTab(3);
+
+      deleteButton().click();
+
+      expect(open.mock.calls[0][1]?.data).toMatchObject({
+        variant: 'info',
+        message: 'taskForm.inUseMany',
+        hint: 'taskForm.inUseHintDeactivate',
+        params: { name: 'Kette schmieren', count: 2 },
+        action: 'taskForm.deactivate',
+      });
+      httpMock.expectNone((req) => req.method === 'DELETE');
+      const request = httpMock.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-tasks/9`,
+      );
+      expect(request.request.body).toMatchObject({
+        name: 'Kette schmieren',
+        description: 'Kettenspray',
+        intervalKm: 1000,
+        active: false,
+      });
+      request.flush({ ...CHAIN_LUBE, active: false });
+    });
+
+    it('offers no deactivation for a task that is already inactive', async () => {
+      await render(
+        [{ ...log(1, '2026-05-01'), performedTaskIds: [9] }],
+        [{ ...CHAIN_LUBE, active: false }],
+      );
+      const open = answerDialog(false);
+      await openTab(3);
+
+      deleteButton().click();
+
+      expect(open.mock.calls[0][1]?.data).toMatchObject({
+        message: 'taskForm.inUseOne',
+        hint: 'taskForm.inUseHintInactive',
+        action: undefined,
+      });
+    });
+
+    it('shows the same popup when the backend still answers 409', async () => {
+      await render([], [CHAIN_LUBE]);
+      const open = answerDialog(true);
+      await openTab(3);
+
+      deleteButton().click();
+      httpMock
+        .expectOne((req) => req.method === 'DELETE' && req.url === `${BASE}/maintenance-tasks/9`)
+        .flush(null, { status: 409, statusText: 'Conflict' });
+      await tick();
+      httpMock
+        .match(() => true)
+        .forEach((pending) => pending.flush(pending.request.url === BASE ? VEHICLE : []));
+      await fixture.whenStable();
+
+      expect(open.mock.calls[1][1]?.data).toMatchObject({
+        variant: 'info',
+        message: 'taskForm.inUseNow',
+      });
+      expect(page().querySelector('.tasks-manage__error')).toBeNull();
+    });
+
+    it('activates a deactivated task with one click on its card', async () => {
+      await render([], [{ ...CHAIN_LUBE, active: false }]);
+      await openTab(3);
+
+      const button = page().querySelector<HTMLButtonElement>('.tasks-manage__activate')!;
+      expect(button.getAttribute('aria-label')).toBe('Kette schmieren aktivieren');
+      button.click();
+
+      const request = httpMock.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-tasks/9`,
+      );
+      expect(request.request.body).toMatchObject({ name: 'Kette schmieren', active: true });
+      request.flush(CHAIN_LUBE);
+    });
   });
 
   it('sends the performed tasks of a new log as a JSON list', async () => {
