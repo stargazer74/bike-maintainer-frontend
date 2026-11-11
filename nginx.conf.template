@@ -50,6 +50,14 @@ server {
         # (the server-level security headers above also apply here).
         proxy_hide_header X-Content-Type-Options;
         proxy_hide_header X-Frame-Options;
+
+        # The one exception: a vehicle export file (Epic #82) may have up to 5 MB, the backend enforces the same
+        # limit. The proxy headers above are inherited; set and proxy_pass are not and must be repeated.
+        location = /api/v1/vehicles/import {
+            set $bm_backend http://${BACKEND_HOST};
+            proxy_pass $bm_backend;
+            client_max_body_size 5m;
+        }
     }
 
     # Angular router fallback — unknown paths resolve client-side.
