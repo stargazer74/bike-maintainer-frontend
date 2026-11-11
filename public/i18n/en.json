@@ -195,6 +195,7 @@
     "titleEdit": "Edit maintenance task",
     "name": "Name *",
     "namePlaceholder": "e.g. Oil change",
+    "description": "Description",
     "intervalKm": "Interval (km)",
     "intervalKmPlaceholder": "e.g. 10000",
     "intervalMonths": "Interval (months)",

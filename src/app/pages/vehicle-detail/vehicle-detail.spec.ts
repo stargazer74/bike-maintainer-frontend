@@ -748,6 +748,34 @@ describe('VehicleDetail', () => {
       expect(page().querySelector<HTMLInputElement>('#task-name')!.value).toBe('');
     });
 
+    it('keeps the description of an edited task and lets it be changed or cleared (#101)', async () => {
+      await render([], [{ ...CHAIN, description: 'Kettenspray' }]);
+      await openTab(3);
+      page().querySelector<HTMLButtonElement>('.tasks-manage__item-actions button')!.click();
+      await fixture.whenStable();
+      const description = page().querySelector<HTMLInputElement>('#task-description')!;
+      expect(description.value).toBe('Kettenspray');
+
+      taskSubmitButton().click();
+      const unchanged = httpMock.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-tasks/9`,
+      );
+      expect(unchanged.request.body.description).toBe('Kettenspray');
+      unchanged.flush(null, { status: 500, statusText: 'Server Error' });
+      await fixture.whenStable();
+
+      description.value = '  ';
+      description.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+      taskSubmitButton().click();
+      const cleared = httpMock.expectOne(
+        (req) => req.method === 'PUT' && req.url === `${BASE}/maintenance-tasks/9`,
+      );
+      expect(cleared.request.body.description).toBeUndefined();
+      cleared.flush(null, { status: 500, statusText: 'Server Error' });
+      await fixture.whenStable();
+    });
+
     it('cancels editing a task', async () => {
       await render([], [CHAIN]);
       await openTab(3);

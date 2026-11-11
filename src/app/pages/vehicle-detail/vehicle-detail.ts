@@ -559,6 +559,7 @@ export class VehicleDetail {
   }
 
   protected readonly taskFormName = signal('');
+  protected readonly taskFormDescription = signal('');
   protected readonly taskFormIntervalKm = signal<number | null>(null);
   protected readonly taskFormIntervalMonths = signal<number | null>(null);
   protected readonly taskFormFirstDueKm = signal<number | null>(null);
@@ -575,6 +576,7 @@ export class VehicleDetail {
   protected startEditTask(task: MaintenanceTaskResponse): void {
     this.editingTaskId.set(task.id ?? null);
     this.taskFormName.set(task.name ?? '');
+    this.taskFormDescription.set(task.description ?? '');
     this.taskFormIntervalKm.set(task.intervalKm ?? null);
     this.taskFormIntervalMonths.set(task.intervalMonths ?? null);
     this.taskFormFirstDueKm.set(task.firstDueKm ?? null);
@@ -595,6 +597,8 @@ export class VehicleDetail {
     }
     const request: MaintenanceTaskRequest = {
       name,
+      // Always sent: the backend takes every field, a missing description would be deleted (#101).
+      description: this.taskFormDescription().trim() || undefined,
       intervalKm: this.taskFormIntervalKm() ?? undefined,
       intervalMonths: this.taskFormIntervalMonths() ?? undefined,
       firstDueKm: this.taskFormFirstDueKm() ?? undefined,
@@ -661,6 +665,7 @@ export class VehicleDetail {
   private resetTaskForm(): void {
     this.editingTaskId.set(null);
     this.taskFormName.set('');
+    this.taskFormDescription.set('');
     this.taskFormIntervalKm.set(null);
     this.taskFormIntervalMonths.set(null);
     this.taskFormFirstDueKm.set(null);
