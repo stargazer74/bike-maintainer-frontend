@@ -172,7 +172,15 @@
     "laborCost": "Arbeitskosten ({{currency}})",
     "total": "Gesamtkosten",
     "costsInvalid": "Bitte korrigiere das Material und die Arbeitskosten.",
-    "measurementsInvalid": "Bitte korrigiere die Messwerte."
+    "measurementsInvalid": "Bitte korrigiere die Messwerte.",
+    "inactive": "deaktiviert",
+    "furtherWork": "Weitere Arbeiten dieses Eintrags",
+    "furtherWorkRemove": "Entfernen",
+    "furtherWorkRestore": "Behalten",
+    "furtherWorkRemoveLabel": "{{name}} entfernen",
+    "furtherWorkRestoreLabel": "{{name}} behalten",
+    "furtherWorkRemoved": "wird beim Speichern gelöscht",
+    "confirmDeleteWithWork": "Wartungseintrag vom {{date}} wirklich löschen? Diese weiteren Arbeiten werden mit gelöscht: {{work}}."
   },
   "newTask": {
     "title": "Weitere Arbeit {{number}}",
