@@ -15,6 +15,7 @@ describe('websiteLinks', () => {
       home: 'https://www.example.com/',
       imprint: 'https://www.example.com/impressum/',
       privacy: 'https://www.example.com/datenschutz/',
+      cancel: 'https://www.example.com/kuendigen/',
     });
   });
 
@@ -23,6 +24,7 @@ describe('websiteLinks', () => {
       home: 'https://www.example.com/en/',
       imprint: 'https://www.example.com/en/legal-notice/',
       privacy: 'https://www.example.com/en/privacy/',
+      cancel: 'https://www.example.com/en/cancel/',
     });
   });
 });

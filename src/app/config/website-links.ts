@@ -7,12 +7,19 @@ export interface WebsiteLinks {
   home: string;
   imprint: string;
   privacy: string;
+  /** Form "Verträge hier kündigen" (§ 312k BGB) of the subscription. */
+  cancel: string;
 }
 
 /** Paths of the website per language (Polylang: German without prefix, English under /en/). */
 const PATHS: Record<AppLanguage, WebsiteLinks> = {
-  de: { home: '/', imprint: '/impressum/', privacy: '/datenschutz/' },
-  en: { home: '/en/', imprint: '/en/legal-notice/', privacy: '/en/privacy/' },
+  de: { home: '/', imprint: '/impressum/', privacy: '/datenschutz/', cancel: '/kuendigen/' },
+  en: {
+    home: '/en/',
+    imprint: '/en/legal-notice/',
+    privacy: '/en/privacy/',
+    cancel: '/en/cancel/',
+  },
 };
 
 /** Links into the website at `baseUrl` (without trailing slash) in the given language. */
@@ -22,6 +29,7 @@ export function websiteLinks(baseUrl: string, lang: AppLanguage): WebsiteLinks {
     home: baseUrl + paths.home,
     imprint: baseUrl + paths.imprint,
     privacy: baseUrl + paths.privacy,
+    cancel: baseUrl + paths.cancel,
   };
 }
 
