@@ -28,6 +28,7 @@
     "@jsverse/transloco": "^8.4.0",
     "altcha": "^3.5.0",
     "material-symbols": "^0.48.3",
+    "qrcode-generator": "^2.0.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.9.1"
   },

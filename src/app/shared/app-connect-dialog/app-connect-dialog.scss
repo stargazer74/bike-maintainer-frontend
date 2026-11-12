@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 440px;
+}
+
+.app-connect__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bm-text);
+
+  mat-icon {
+    color: var(--bm-orange);
+  }
+}
+
+.app-connect__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-connect__text {
+  margin: 0;
+  color: var(--bm-text-muted);
+}
+
+.app-connect__qr {
+  width: min(240px, 100%);
+  aspect-ratio: 1;
+}
+
+// Scanners need dark modules on a light ground, whatever the theme – so these two colours are fixed on purpose.
+.app-connect__qr-background {
+  fill: white;
+}
+
+.app-connect__qr-modules {
+  fill: black;
+}
+
+.app-connect__address {
+  margin: 0;
+  font-family: monospace;
+  color: var(--bm-text);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.app-connect__loopback {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--status-overdue);
+
+  mat-icon {
+    flex: none;
+  }
+}
+
+// `.btn` and `.btn--primary` are defined globally in src/styles/_forms.scss.
