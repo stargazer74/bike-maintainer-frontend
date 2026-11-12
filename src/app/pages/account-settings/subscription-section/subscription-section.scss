@@ -67,3 +67,13 @@
 .subscription__manage {
   margin-top: 8px;
 }
+
+.subscription__cancel {
+  margin: 16px 0 0;
+  font-size: 0.875rem;
+}
+
+.subscription__cancel-link {
+  color: var(--bm-text);
+  text-decoration: underline;
+}

@@ -667,6 +667,7 @@
     "buy": "Jahresabo abschließen",
     "buyHint": "Bezahlt wird auf der Seite unseres Zahlungsanbieters Polar. Wir sehen keine Zahlungsdaten.",
     "manage": "Abo verwalten (Rechnungen, Kündigung)",
+    "cancel": "Verträge hier kündigen",
     "paidWaiting": "Danke! Dein Abo wird freigeschaltet …",
     "paidActive": "Danke! Dein Abo ist aktiv.",
     "errors": {

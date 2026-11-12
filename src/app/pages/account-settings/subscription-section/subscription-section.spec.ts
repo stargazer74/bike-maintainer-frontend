@@ -2,7 +2,15 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { AccessStatus, Currency, Language, UserResponse, UserRole } from '../../../api-client';
+import {
+  AccessStatus,
+  Currency,
+  Language,
+  OperatingMode,
+  UserResponse,
+  UserRole,
+} from '../../../api-client';
+import { AppConfigStore } from '../../../config/app-config-store';
 import { AuthStore } from '../../../auth/auth-store';
 import { LanguageService } from '../../../i18n/language';
 import { translocoTesting } from '../../../i18n/testing';
@@ -15,6 +23,7 @@ import {
 } from './subscription-section';
 
 const ME_URL = 'http://localhost/api/v1/auth/me';
+const CONFIG_URL = 'http://localhost/api/v1/config';
 const CHECKOUT_URL = 'http://localhost/api/v1/subscription/checkout';
 const PORTAL_URL = 'http://localhost/api/v1/subscription/customer-portal';
 
@@ -36,7 +45,11 @@ describe('SubscriptionSection', () => {
   let httpMock: HttpTestingController;
   let assign: ReturnType<typeof vi.fn>;
 
-  async function render(user: Partial<UserResponse>, url = '/konto'): Promise<HTMLElement> {
+  async function render(
+    user: Partial<UserResponse>,
+    url = '/konto',
+    config: object | null = null,
+  ): Promise<HTMLElement> {
     localStorage.clear();
     assign = vi.fn();
     TestBed.configureTestingModule({
@@ -49,6 +62,11 @@ describe('SubscriptionSection', () => {
     });
     httpMock = TestBed.inject(HttpTestingController);
     await TestBed.inject(LanguageService).use('de', false);
+    if (config) {
+      const configLoaded = TestBed.inject(AppConfigStore).load();
+      httpMock.expectOne(CONFIG_URL).flush(config);
+      await configLoaded;
+    }
     const loaded = TestBed.inject(AuthStore).load();
     httpMock.expectOne(ME_URL).flush({ ...USER, ...user });
     await loaded;
@@ -145,5 +163,48 @@ describe('SubscriptionSection', () => {
     await vi.advanceTimersByTimeAsync(PAID_POLL_INTERVAL_MS * PAID_POLLS);
     httpMock.expectNone(ME_URL);
     expect(TestBed.inject(Router).url).toBe('/konto');
+  });
+
+  describe('cancellation link (§ 312k BGB)', () => {
+    const portal = { mode: OperatingMode.Portal, websiteUrl: 'https://www.example.com/' };
+
+    it('links to the cancellation form of the website', async () => {
+      const element = await render(
+        { accessStatus: AccessStatus.Active, hasSubscription: true },
+        '/konto',
+        portal,
+      );
+
+      const link = element.querySelector<HTMLAnchorElement>('.subscription__cancel-link');
+      expect(link?.textContent?.trim()).toBe('Verträge hier kündigen');
+      expect(link?.getAttribute('href')).toBe('https://www.example.com/kuendigen/');
+    });
+
+    it('is also there during the trial', async () => {
+      const element = await render({}, '/konto', portal);
+
+      expect(element.querySelector('.subscription__cancel-link')).not.toBeNull();
+    });
+
+    it('is missing without a website', async () => {
+      const element = await render({}, '/konto', { mode: OperatingMode.Portal });
+
+      expect(element.querySelector('.subscription__cancel-link')).toBeNull();
+    });
+
+    it('is missing in household mode', async () => {
+      const element = await render({ accessStatus: AccessStatus.Full }, '/konto', {
+        mode: OperatingMode.Household,
+        websiteUrl: 'https://www.example.com',
+      });
+
+      expect(element.querySelector('.subscription__cancel-link')).toBeNull();
+    });
+
+    it('is missing for full access without a contract', async () => {
+      const element = await render({ accessStatus: AccessStatus.Full }, '/konto', portal);
+
+      expect(element.querySelector('.subscription__cancel-link')).toBeNull();
+    });
   });
 });

@@ -73,4 +73,9 @@
       {{ 'subscription.manage' | transloco }}
     </button>
   }
+  @if (cancelUrl(); as url) {
+    <p class="subscription__cancel">
+      <a class="subscription__cancel-link" [href]="url">{{ 'subscription.cancel' | transloco }}</a>
+    </p>
+  }
 </section>

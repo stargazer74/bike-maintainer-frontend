@@ -667,6 +667,7 @@
     "buy": "Get the yearly subscription",
     "buyHint": "Payment happens on the page of our payment provider Polar. We never see payment details.",
     "manage": "Manage subscription (invoices, cancellation)",
+    "cancel": "Cancel contracts here",
     "paidWaiting": "Thank you! Your subscription is being activated …",
     "paidActive": "Thank you! Your subscription is active.",
     "errors": {

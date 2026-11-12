@@ -17,6 +17,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Observable, switchMap, take, takeWhile, timer } from 'rxjs';
 import { AccessStatus, RedirectResponse, SubscriptionService } from '../../../api-client';
 import { AuthStore } from '../../../auth/auth-store';
+import { injectWebsiteLinks } from '../../../config/website-links';
 import { LocalDatePipe } from '../../../i18n/localized-pipes';
 
 /** Query parameter Polar returns with after a successful payment (`/konto?abo=danke`). */
@@ -65,6 +66,7 @@ export class SubscriptionSection implements OnInit {
   private readonly router = inject(Router);
   private readonly leaveApp = inject(LEAVE_APP);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly websiteLinks = injectWebsiteLinks();
 
   protected readonly AccessStatus = AccessStatus;
   protected readonly user = this.authStore.currentUser;
@@ -74,6 +76,14 @@ export class SubscriptionSection implements OnInit {
     () => this.status() === AccessStatus.Trial || this.status() === AccessStatus.Expired,
   );
   protected readonly canManage = computed(() => this.user()?.hasSubscription === true);
+  /**
+   * "Verträge hier kündigen" (§ 312k BGB): the cancellation form on the website, reachable without login. Only with a
+   * website (portal mode) and for accounts that can have a contract – admins have full access without one.
+   */
+  protected readonly cancelUrl = computed(() => {
+    const links = this.websiteLinks();
+    return links && this.status() !== AccessStatus.Full ? links.cancel : null;
+  });
   protected readonly busy = signal(false);
   protected readonly errorKey = signal<string | null>(null);
   /** Back from the payment: `waiting` until the subscription is active, then `active`. */
