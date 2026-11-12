@@ -19,9 +19,23 @@ function handlesOwn401(request: HttpRequest<unknown>): boolean {
   );
 }
 
+/** Code of the 403 the backend answers when a read-only account (trial and subscription over) tries to write. */
+export const SUBSCRIPTION_REQUIRED = 'SUBSCRIPTION_REQUIRED';
+
+function isSubscriptionRequired(error: HttpErrorResponse): boolean {
+  const body: unknown = error.error;
+  return (
+    error.status === 403 &&
+    typeof body === 'object' &&
+    body !== null &&
+    (body as { code?: unknown }).code === SUBSCRIPTION_REQUIRED
+  );
+}
+
 /**
  * A 401 on any other call means the session has expired: back to the login page (portal) or the profile
- * selection (household), then return here.
+ * selection (household), then return here. A 403 `SUBSCRIPTION_REQUIRED` means the trial or subscription ended
+ * while the app was open: the user is reloaded, so the read-only hint appears and writing actions disappear.
  */
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const store = inject(AuthStore);
@@ -32,6 +46,8 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && !handlesOwn401(request)) {
         store.clear();
         void router.navigateByUrl(entryUrlTree(router, config, router.url));
+      } else if (error instanceof HttpErrorResponse && isSubscriptionRequired(error)) {
+        store.reload().subscribe();
       }
       return throwError(() => error);
     }),

@@ -5,7 +5,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { Currency, Language, ProfileResponse, UserResponse, UserRole } from '../../api-client';
+import {
+  AccessStatus,
+  Currency,
+  Language,
+  ProfileResponse,
+  UserResponse,
+  UserRole,
+} from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
 import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
@@ -30,6 +37,8 @@ const ANNA: UserResponse = {
   active: true,
   emailVerified: false,
   createdAt: '2026-10-26T12:00:00Z',
+  accessStatus: AccessStatus.Full,
+  hasSubscription: false,
 };
 
 describe('ProfileSelect', () => {

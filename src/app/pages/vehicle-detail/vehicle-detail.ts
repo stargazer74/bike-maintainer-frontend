@@ -122,6 +122,8 @@ export class VehicleDetail {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly language = inject(LanguageService);
+  /** Trial and subscription over: everything stays visible, but nothing can be recorded or changed. */
+  protected readonly readOnly = this.authStore.isReadOnly;
 
   protected readonly vehicleIcon = vehicleIcon;
   protected readonly vehicleSubtitle = vehicleSubtitle;

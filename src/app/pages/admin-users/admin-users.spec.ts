@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http/testing';
 import { ComponentFixture } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { Currency, Language, UserResponse, UserRole } from '../../api-client';
+import { AccessStatus, Currency, Language, UserResponse, UserRole } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import '../../i18n/i18n.config';
 import { LanguageService } from '../../i18n/language';
@@ -25,6 +25,8 @@ function user(id: number, email: string, role: UserRole, active = true): UserRes
     language: Language.De,
     currency: Currency.Eur,
     createdAt: '2026-10-01T10:00:00Z',
+    accessStatus: AccessStatus.Trial,
+    hasSubscription: false,
   };
 }
 

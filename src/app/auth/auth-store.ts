@@ -11,6 +11,7 @@ import {
   tap,
 } from 'rxjs';
 import {
+  AccessStatus,
   AuthService,
   Currency,
   Language,
@@ -35,6 +36,11 @@ export class AuthStore {
   readonly currentUser = this.user.asReadonly();
   readonly isLoggedIn = computed(() => this.user() !== null);
   readonly isAdmin = computed(() => this.user()?.role === UserRole.Admin);
+  /**
+   * Portal mode: trial and subscription are over, the account can only read, export and delete. A missing status
+   * (household mode, older servers) never counts as read-only.
+   */
+  readonly isReadOnly = computed(() => this.user()?.accessStatus === AccessStatus.Expired);
 
   /**
    * Asks the backend who is logged in (runs once at app start). Any error — 401 or the backend being
@@ -51,6 +57,22 @@ export class AuthStore {
         switchMap((user) => from(this.applyLanguage(user))),
         map(() => undefined),
       ),
+    );
+  }
+
+  /**
+   * Asks the backend again for the logged-in user, e.g. after the payment or when it reported a read-only
+   * account. A failure keeps the current user; the next call that needs a login handles an expired session.
+   */
+  reload(): Observable<UserResponse | null> {
+    return this.authService.getCurrentUser().pipe(
+      map((user): UserResponse | null => user),
+      catchError(() => of(null)),
+      tap((user) => {
+        if (user) {
+          this.user.set(user);
+        }
+      }),
     );
   }
 

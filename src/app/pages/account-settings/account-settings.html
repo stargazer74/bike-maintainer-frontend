@@ -1,6 +1,9 @@
 <div class="account">
   <mat-card class="account__card">
     <h1 class="account__title">{{ 'accountSettings.title' | transloco }}</h1>
+
+    <app-subscription-section />
+
     <h2 class="account__section-title">{{ 'accountSettings.passwordTitle' | transloco }}</h2>
 
     <form novalidate (ngSubmit)="onSubmit()">

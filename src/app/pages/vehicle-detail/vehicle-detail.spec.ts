@@ -506,6 +506,27 @@ describe('VehicleDetail', () => {
     await fixture.whenStable();
   }
 
+  it('read-only account: hides editing and the forms, keeps reading and deleting', async () => {
+    await render([], [OIL_CHANGE]);
+    TestBed.inject(AuthStore).selectProfile(3).subscribe();
+    httpMock
+      .expectOne((req) => req.url.endsWith('/profiles/3/select'))
+      .flush({ id: 3, name: 'Chris', role: 'USER', language: 'de', accessStatus: 'EXPIRED' });
+    await fixture.whenStable();
+
+    expect(page().querySelector('[aria-label="Fahrzeugdaten bearbeiten"]')).toBeNull();
+    expect(page().querySelector('.vehicle-header__stat-edit-btn')).toBeNull();
+    expect(page().querySelector('.status-section__worksheet')).toBeNull();
+    expect(page().querySelector('.vehicle-header__export')).not.toBeNull();
+    await openTab(2);
+    expect(page().querySelector('.read-only-hint')).not.toBeNull();
+    expect(page().querySelector('#log-date')).toBeNull();
+    await openTab(3);
+    expect(page().querySelector('.read-only-hint')).not.toBeNull();
+    expect(page().querySelector('[aria-label="Löschen"]')).not.toBeNull();
+    expect(page().querySelector('.tasks-manage__item [aria-label="Bearbeiten"]')).toBeNull();
+  });
+
   it('uses the currency of the user for a new log', async () => {
     await render([], [OIL_CHANGE]);
     await signIn(Currency.Sek);

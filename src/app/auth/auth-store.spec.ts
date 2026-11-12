@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
-import { Currency, Language, UserResponse, UserRole } from '../api-client';
+import { AccessStatus, Currency, Language, UserResponse, UserRole } from '../api-client';
 import { LanguageService } from '../i18n/language';
 import { translocoTesting } from '../i18n/testing';
 import { AuthStore } from './auth-store';
@@ -20,6 +20,8 @@ const USER: UserResponse = {
   active: true,
   emailVerified: true,
   createdAt: '2026-10-09T12:00:00Z',
+  accessStatus: AccessStatus.Trial,
+  hasSubscription: false,
 };
 
 describe('AuthStore', () => {
@@ -86,6 +88,40 @@ describe('AuthStore', () => {
     await loaded;
 
     expect(store.isAdmin()).toBe(true);
+  });
+
+  it('isReadOnly() is true only for an expired trial or subscription', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush({ ...USER, accessStatus: AccessStatus.Expired });
+    await loaded;
+
+    expect(store.isReadOnly()).toBe(true);
+  });
+
+  it('isReadOnly() is false without a status (older servers)', async () => {
+    const { accessStatus: _status, ...withoutStatus } = USER;
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(withoutStatus);
+    await loaded;
+
+    expect(_status).toBe(AccessStatus.Trial);
+    expect(store.isReadOnly()).toBe(false);
+  });
+
+  it('reload() replaces the user and keeps it when the request fails', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+
+    const reloaded = firstValueFrom(store.reload());
+    httpMock.expectOne(ME_URL).flush({ ...USER, accessStatus: AccessStatus.Active });
+    expect((await reloaded)?.accessStatus).toBe(AccessStatus.Active);
+    expect(store.currentUser()?.accessStatus).toBe(AccessStatus.Active);
+
+    const failed = firstValueFrom(store.reload());
+    httpMock.expectOne(ME_URL).flush(null, { status: 503, statusText: 'Unavailable' });
+    expect(await failed).toBeNull();
+    expect(store.currentUser()?.accessStatus).toBe(AccessStatus.Active);
   });
 
   it('login() posts the credentials and stores the user', async () => {

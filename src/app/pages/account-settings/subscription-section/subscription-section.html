@@ -1,0 +1,76 @@
+<section class="subscription" aria-labelledby="subscription-title">
+  <h2 id="subscription-title" class="subscription__title">
+    {{ 'subscription.title' | transloco }}
+  </h2>
+
+  @if (paid() === 'waiting') {
+    <p class="subscription__notice" role="status">
+      <mat-spinner diameter="16" />
+      {{ 'subscription.paidWaiting' | transloco }}
+    </p>
+  } @else if (paid() === 'active') {
+    <p class="subscription__success" role="status">{{ 'subscription.paidActive' | transloco }}</p>
+  }
+
+  @switch (status()) {
+    @case (AccessStatus.Trial) {
+      <p class="subscription__status subscription__status--trial">
+        {{ 'subscription.trialUntil' | transloco: { date: (until() | localDate) } }}
+      </p>
+      <p class="subscription__text">{{ 'subscription.trialText' | transloco }}</p>
+    }
+    @case (AccessStatus.Active) {
+      <p class="subscription__status subscription__status--active">
+        @if (until()) {
+          {{ 'subscription.activeUntil' | transloco: { date: (until() | localDate) } }}
+        } @else {
+          {{ 'subscription.active' | transloco }}
+        }
+      </p>
+    }
+    @case (AccessStatus.Expired) {
+      <p class="subscription__status subscription__status--expired">
+        @if (until()) {
+          {{ 'subscription.expiredSince' | transloco: { date: (until() | localDate) } }}
+        } @else {
+          {{ 'subscription.expired' | transloco }}
+        }
+      </p>
+      <p class="subscription__text">{{ 'subscription.expiredText' | transloco }}</p>
+    }
+    @case (AccessStatus.Full) {
+      <p class="subscription__status subscription__status--active">
+        {{ 'subscription.full' | transloco }}
+      </p>
+    }
+  }
+
+  @if (errorKey(); as key) {
+    <p class="field__error subscription__error" role="alert">{{ key | transloco }}</p>
+  }
+
+  @if (canBuy()) {
+    <button
+      type="button"
+      class="btn btn--primary subscription__buy"
+      [disabled]="busy()"
+      (click)="onBuy()"
+    >
+      @if (busy()) {
+        <mat-spinner diameter="16" />
+      }
+      {{ 'subscription.buy' | transloco }}
+    </button>
+    <p class="subscription__hint">{{ 'subscription.buyHint' | transloco }}</p>
+  }
+  @if (canManage()) {
+    <button
+      type="button"
+      class="btn btn--ghost subscription__manage"
+      [disabled]="busy()"
+      (click)="onManage()"
+    >
+      {{ 'subscription.manage' | transloco }}
+    </button>
+  }
+</section>

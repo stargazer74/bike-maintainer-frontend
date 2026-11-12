@@ -433,7 +433,7 @@
     },
     "delete": {
       "title": "Delete account",
-      "text": "Deletes your account with all vehicles, maintenance tasks, maintenance records and costs. This cannot be undone.",
+      "text": "Deletes your account with all vehicles, maintenance tasks, maintenance records and costs. This cannot be undone. A running subscription is ended as well.",
       "open": "Delete account …",
       "dialogTitle": "Delete account permanently?",
       "dialogText": "Your account will be permanently deleted together with all vehicles, maintenance tasks, completed maintenance and costs. This cannot be undone. Confirm with your password.",
@@ -442,7 +442,8 @@
       "errors": {
         "passwordRequired": "Please enter your password.",
         "wrongPassword": "The password is wrong.",
-        "lastAdmin": "You are the only active admin and therefore cannot delete your account."
+        "lastAdmin": "You are the only active admin and therefore cannot delete your account.",
+        "providerUnavailable": "Your subscription could not be ended right now because the payment provider cannot be reached, so your account was not deleted. Please try again later."
       }
     }
   },
@@ -652,5 +653,30 @@
       "invalid": "The file contains errors, nothing was imported:",
       "unknown": "Import failed, please try again later."
     }
+  },
+  "subscription": {
+    "title": "Subscription",
+    "trialUntil": "Free trial until {{date}}",
+    "trialText": "Afterwards you can still view, export and delete your data, but no longer record or change anything.",
+    "active": "Subscription active",
+    "activeUntil": "Subscription active, paid until {{date}}",
+    "expired": "Trial or subscription expired",
+    "expiredSince": "Trial or subscription expired on {{date}}",
+    "expiredText": "Your data is kept. To record and change anything you need a subscription.",
+    "full": "Unlimited access",
+    "buy": "Get the yearly subscription",
+    "buyHint": "Payment happens on the page of our payment provider Polar. We never see payment details.",
+    "manage": "Manage subscription (invoices, cancellation)",
+    "paidWaiting": "Thank you! Your subscription is being activated …",
+    "paidActive": "Thank you! Your subscription is active.",
+    "errors": {
+      "alreadySubscribed": "You already have an active subscription.",
+      "providerUnavailable": "The payment provider cannot be reached right now. Please try again later."
+    }
+  },
+  "readOnly": {
+    "text": "Your trial or subscription has expired. Your data is kept, but recording and changing is no longer possible.",
+    "link": "Get a subscription",
+    "hint": "Only with a subscription"
   }
 }

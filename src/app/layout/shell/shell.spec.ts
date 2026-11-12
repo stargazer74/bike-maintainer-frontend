@@ -3,7 +3,14 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
-import { Currency, Language, OperatingMode, UserResponse, UserRole } from '../../api-client';
+import {
+  AccessStatus,
+  Currency,
+  Language,
+  OperatingMode,
+  UserResponse,
+  UserRole,
+} from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
 import { translocoTesting } from '../../i18n/testing';
@@ -22,6 +29,8 @@ const USER: UserResponse = {
   active: true,
   emailVerified: true,
   createdAt: '2026-10-09T12:00:00Z',
+  accessStatus: AccessStatus.Trial,
+  hasSubscription: false,
 };
 
 describe('Shell currency menu', () => {
@@ -266,5 +275,48 @@ describe('Shell vehicle import', () => {
     await chooseImport();
 
     expect(navigate).not.toHaveBeenCalled();
+  });
+});
+
+describe('Shell read-only account', () => {
+  let httpMock: HttpTestingController;
+
+  async function render(accessStatus: AccessStatus): Promise<HTMLElement> {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting(), provideRouter([])],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    const config = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne(CONFIG_URL).flush({ mode: OperatingMode.Portal });
+    await config;
+    const loaded = TestBed.inject(AuthStore).load();
+    httpMock.expectOne(ME_URL).flush({ ...USER, accessStatus });
+    await loaded;
+
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpMock.match(VEHICLES_URL).forEach((request) => request.flush([]));
+    await fixture.whenStable();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  afterEach(() => httpMock.verify());
+
+  it('explains the read-only account, links to the account page and disables adding', async () => {
+    const element = await render(AccessStatus.Expired);
+
+    const hint = element.querySelector('.shell__read-only');
+    expect(hint?.textContent).toContain('Daten bleiben erhalten');
+    expect(hint?.querySelector('a')?.getAttribute('href')).toBe('/konto');
+    expect(element.querySelector<HTMLButtonElement>('.shell__add-button')!.disabled).toBe(true);
+  });
+
+  it('shows nothing during the trial', async () => {
+    const element = await render(AccessStatus.Trial);
+
+    expect(element.querySelector('.shell__read-only')).toBeNull();
+    expect(element.querySelector<HTMLButtonElement>('.shell__add-button')!.disabled).toBe(false);
   });
 });

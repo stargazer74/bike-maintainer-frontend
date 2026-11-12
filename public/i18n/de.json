@@ -433,7 +433,7 @@
     },
     "delete": {
       "title": "Konto löschen",
-      "text": "Löscht dein Konto mit allen Fahrzeugen, Wartungsaufgaben, Wartungen und Kosten. Das lässt sich nicht rückgängig machen.",
+      "text": "Löscht dein Konto mit allen Fahrzeugen, Wartungsaufgaben, Wartungen und Kosten. Das lässt sich nicht rückgängig machen. Ein laufendes Abo wird dabei beendet.",
       "open": "Konto löschen …",
       "dialogTitle": "Konto endgültig löschen?",
       "dialogText": "Dein Konto wird mit allen Fahrzeugen, Wartungsaufgaben, erledigten Wartungen und Kosten endgültig gelöscht. Das lässt sich nicht rückgängig machen. Bestätige mit deinem Passwort.",
@@ -442,7 +442,8 @@
       "errors": {
         "passwordRequired": "Bitte gib dein Passwort ein.",
         "wrongPassword": "Das Passwort ist falsch.",
-        "lastAdmin": "Du bist der einzige aktive Admin und kannst dein Konto deshalb nicht löschen."
+        "lastAdmin": "Du bist der einzige aktive Admin und kannst dein Konto deshalb nicht löschen.",
+        "providerUnavailable": "Dein Abo konnte gerade nicht beendet werden, weil der Zahlungsanbieter nicht erreichbar ist. Dein Konto wurde deshalb nicht gelöscht. Bitte versuche es später noch einmal."
       }
     }
   },
@@ -652,5 +653,30 @@
       "invalid": "Die Datei enthält Fehler, es wurde nichts importiert:",
       "unknown": "Import fehlgeschlagen, bitte später erneut versuchen."
     }
+  },
+  "subscription": {
+    "title": "Abo",
+    "trialUntil": "Kostenlose Testphase bis {{date}}",
+    "trialText": "Danach kannst du deine Daten weiter ansehen, exportieren und löschen, aber nichts mehr erfassen oder ändern.",
+    "active": "Abo aktiv",
+    "activeUntil": "Abo aktiv, bezahlt bis {{date}}",
+    "expired": "Testphase bzw. Abo abgelaufen",
+    "expiredSince": "Testphase bzw. Abo abgelaufen am {{date}}",
+    "expiredText": "Deine Daten bleiben erhalten. Zum Erfassen und Ändern brauchst du ein Abo.",
+    "full": "Unbegrenzter Zugang",
+    "buy": "Jahresabo abschließen",
+    "buyHint": "Bezahlt wird auf der Seite unseres Zahlungsanbieters Polar. Wir sehen keine Zahlungsdaten.",
+    "manage": "Abo verwalten (Rechnungen, Kündigung)",
+    "paidWaiting": "Danke! Dein Abo wird freigeschaltet …",
+    "paidActive": "Danke! Dein Abo ist aktiv.",
+    "errors": {
+      "alreadySubscribed": "Du hast bereits ein aktives Abo.",
+      "providerUnavailable": "Der Zahlungsanbieter ist gerade nicht erreichbar. Bitte versuche es später noch einmal."
+    }
+  },
+  "readOnly": {
+    "text": "Deine Testphase bzw. dein Abo ist abgelaufen. Deine Daten bleiben erhalten, erfassen und ändern ist aber nicht mehr möglich.",
+    "link": "Abo abschließen",
+    "hint": "Nur mit Abo möglich"
   }
 }
