@@ -94,6 +94,15 @@
             <span>{{ 'shell.importVehicle' | transloco }}</span>
           </button>
           @if (config.isHousehold()) {
+            <button
+              mat-menu-item
+              type="button"
+              class="shell__connect-app"
+              (click)="onConnectAppClick()"
+            >
+              <mat-icon fontSet="material-symbols-outlined">qr_code_2</mat-icon>
+              <span>{{ 'shell.connectApp' | transloco }}</span>
+            </button>
             <button mat-menu-item type="button" class="shell__logout" (click)="onLogout()">
               <mat-icon fontSet="material-symbols-outlined">switch_account</mat-icon>
               <span>{{ 'shell.switchProfile' | transloco }}</span>

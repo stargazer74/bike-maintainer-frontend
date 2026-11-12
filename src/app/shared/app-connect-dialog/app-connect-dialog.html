@@ -1,0 +1,45 @@
+<h2 mat-dialog-title class="app-connect__title">
+  <mat-icon fontSet="material-symbols-outlined">qr_code_2</mat-icon>
+  {{ 'appConnect.title' | transloco }}
+</h2>
+
+<mat-dialog-content class="app-connect__content">
+  <p class="app-connect__text">{{ 'appConnect.text' | transloco }}</p>
+
+  <svg
+    class="app-connect__qr"
+    role="img"
+    shape-rendering="crispEdges"
+    [attr.viewBox]="viewBox"
+    [attr.aria-label]="'appConnect.qrLabel' | transloco: { address }"
+  >
+    <rect
+      class="app-connect__qr-background"
+      [attr.x]="-quietZone"
+      [attr.y]="-quietZone"
+      [attr.width]="frame"
+      [attr.height]="frame"
+    />
+    <path class="app-connect__qr-modules" [attr.d]="qr.path" />
+  </svg>
+
+  <p class="app-connect__address">{{ address }}</p>
+
+  @if (loopback) {
+    <p class="app-connect__loopback" role="alert">
+      <mat-icon fontSet="material-symbols-outlined">warning</mat-icon>
+      <span>{{ 'appConnect.loopback' | transloco }}</span>
+    </p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    type="button"
+    class="btn btn--primary app-connect__close"
+    mat-dialog-close
+    cdkFocusInitial
+  >
+    {{ 'common.close' | transloco }}
+  </button>
+</mat-dialog-actions>

@@ -26,7 +26,8 @@
     "delete": "Delete",
     "saveChanges": "Save changes",
     "moreCount": "+{{count}} more",
-    "understood": "Got it"
+    "understood": "Got it",
+    "close": "Close"
   },
   "shell": {
     "toDashboard": "Go to dashboard",
@@ -39,7 +40,8 @@
     "currency": "Currency",
     "currencyHint": "Applies to new maintenance entries",
     "adminUsers": "User management",
-    "importVehicle": "Import vehicle"
+    "importVehicle": "Import vehicle",
+    "connectApp": "Connect app"
   },
   "login": {
     "title": "Log in",
@@ -679,5 +681,11 @@
     "text": "Your trial or subscription has expired. Your data is kept, but recording and changing is no longer possible.",
     "link": "Get a subscription",
     "hint": "Only with a subscription"
+  },
+  "appConnect": {
+    "title": "Connect app",
+    "text": "Scan the code in the Bike Maintainer app under “Own server → Scan QR code”. Opened with the camera app, it leads to this web app.",
+    "qrLabel": "QR code with the address {{address}}",
+    "loopback": "This page is opened via “localhost” – the phone cannot reach the server that way. Open the page via its address in the home network, for example http://192.168.1.20:8080, and show the code there."
   }
 }

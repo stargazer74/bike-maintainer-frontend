@@ -26,7 +26,8 @@
     "delete": "Löschen",
     "saveChanges": "Änderungen speichern",
     "moreCount": "+{{count}} weitere",
-    "understood": "Verstanden"
+    "understood": "Verstanden",
+    "close": "Schließen"
   },
   "shell": {
     "toDashboard": "Zum Dashboard",
@@ -39,7 +40,8 @@
     "currency": "Währung",
     "currencyHint": "Gilt für neue Wartungseinträge",
     "adminUsers": "Nutzerverwaltung",
-    "importVehicle": "Fahrzeug importieren"
+    "importVehicle": "Fahrzeug importieren",
+    "connectApp": "App verbinden"
   },
   "login": {
     "title": "Anmelden",
@@ -679,5 +681,11 @@
     "text": "Deine Testphase bzw. dein Abo ist abgelaufen. Deine Daten bleiben erhalten, erfassen und ändern ist aber nicht mehr möglich.",
     "link": "Abo abschließen",
     "hint": "Nur mit Abo möglich"
+  },
+  "appConnect": {
+    "title": "App verbinden",
+    "text": "Scanne den Code in der Bike-Maintainer-App unter „Eigener Server → QR-Code scannen“. Mit der Kamera-App geöffnet, führt er zu dieser Web-App.",
+    "qrLabel": "QR-Code mit der Adresse {{address}}",
+    "loopback": "Diese Seite ist über „localhost“ geöffnet – das Handy erreicht den Server so nicht. Öffne die Seite über die Adresse im Heimnetz, zum Beispiel http://192.168.1.20:8080, und zeige den Code dort an."
   }
 }

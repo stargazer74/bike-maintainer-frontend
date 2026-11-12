@@ -320,3 +320,49 @@ describe('Shell read-only account', () => {
     expect(element.querySelector<HTMLButtonElement>('.shell__add-button')!.disabled).toBe(false);
   });
 });
+
+describe('Shell connect app', () => {
+  async function userMenu(mode: OperatingMode): Promise<void> {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting(), provideRouter([])],
+    });
+    const httpMock = TestBed.inject(HttpTestingController);
+    const config = TestBed.inject(AppConfigStore).load();
+    httpMock.expectOne(CONFIG_URL).flush({ mode });
+    await config;
+    const loaded = TestBed.inject(AuthStore).load();
+    httpMock.expectOne(ME_URL).flush(USER);
+    await loaded;
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpMock.match(VEHICLES_URL).forEach((request) => request.flush([]));
+    await fixture.whenStable();
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLElement>('.shell__user-button')!
+      .click();
+    await fixture.whenStable();
+  }
+
+  afterEach(() => localStorage.clear());
+
+  it('opens the QR code dialog with the address of this server (household)', async () => {
+    await userMenu(OperatingMode.Household);
+    const open = vi
+      .spyOn(TestBed.inject(MatDialog), 'open')
+      .mockReturnValue({} as MatDialogRef<unknown>);
+
+    const item = document.querySelector<HTMLElement>('.shell__connect-app')!;
+    expect(item.textContent).toContain('App verbinden');
+    item.click();
+
+    expect(open.mock.calls[0][1]?.data).toEqual({ address: window.location.origin });
+  });
+
+  it('is not offered in portal mode', async () => {
+    await userMenu(OperatingMode.Portal);
+
+    expect(document.querySelector('.shell__connect-app')).toBeNull();
+  });
+});

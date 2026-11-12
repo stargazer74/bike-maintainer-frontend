@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -18,6 +19,10 @@ import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
 import { injectWebsiteLinks } from '../../config/website-links';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
+import {
+  AppConnectDialog,
+  AppConnectDialogData,
+} from '../../shared/app-connect-dialog/app-connect-dialog';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import {
   VehicleImportDialog,
@@ -63,6 +68,7 @@ export class Shell {
   private readonly router = inject(Router);
   private readonly vehiclesService = inject(VehiclesService);
   private readonly dialog = inject(MatDialog);
+  private readonly document = inject(DOCUMENT);
 
   /** Only a different user reloads the vehicles, not a change of their settings (e.g. language). */
   private readonly userId = computed(() => this.authStore.currentUser()?.id);
@@ -115,6 +121,13 @@ export class Shell {
         this.vehicles.reload();
         this.router.navigate(['/fahrzeuge', createdVehicle.id]);
       });
+  }
+
+  /** Household mode: shows this server's address as QR code for the Android app (frontend#109). */
+  protected onConnectAppClick(): void {
+    this.dialog.open<AppConnectDialog, AppConnectDialogData>(AppConnectDialog, {
+      data: { address: this.document.location.origin },
+    });
   }
 
   /** Imports a vehicle from an export file and opens it, like a newly added one. */
