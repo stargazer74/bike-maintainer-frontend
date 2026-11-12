@@ -10,6 +10,7 @@ import { AuthService } from '../../api-client';
 import { newPasswordErrorKey } from '../../auth/new-password';
 import { openDeleteAccountDialog } from './delete-account-dialog/delete-account-dialog';
 import { DeviceList } from './device-list/device-list';
+import { SubscriptionSection } from './subscription-section/subscription-section';
 
 /** Translation key of the message for a failed password change. */
 function changeErrorKey(error: unknown): string {
@@ -26,11 +27,19 @@ function changeErrorKey(error: unknown): string {
 }
 
 /**
- * Account page (portal mode): change the password (the backend ends all other sessions) and delete the account.
+ * Account page (portal mode): trial and subscription, change the password (the backend ends all other sessions),
+ * devices and deleting the account.
  */
 @Component({
   selector: 'app-account-settings',
-  imports: [FormsModule, MatCardModule, MatProgressSpinnerModule, TranslocoPipe, DeviceList],
+  imports: [
+    FormsModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    TranslocoPipe,
+    DeviceList,
+    SubscriptionSection,
+  ],
   templateUrl: './account-settings.html',
   styleUrl: './account-settings.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

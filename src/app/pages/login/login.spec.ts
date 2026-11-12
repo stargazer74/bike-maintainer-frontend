@@ -3,7 +3,7 @@ import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { Currency, Language, UserResponse, UserRole } from '../../api-client';
+import { AccessStatus, Currency, Language, UserResponse, UserRole } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
 import { Altcha } from '../../shared/altcha/altcha';
@@ -25,6 +25,8 @@ const USER: UserResponse = {
   active: true,
   emailVerified: true,
   createdAt: '2026-10-09T12:00:00Z',
+  accessStatus: AccessStatus.Full,
+  hasSubscription: false,
 };
 
 describe('Login', () => {

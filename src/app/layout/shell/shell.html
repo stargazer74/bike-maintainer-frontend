@@ -55,6 +55,8 @@
           mat-stroked-button
           type="button"
           class="shell__add-button"
+          [disabled]="authStore.isReadOnly()"
+          [attr.title]="authStore.isReadOnly() ? ('readOnly.hint' | transloco) : null"
           (click)="onAddVehicleClick()"
         >
           <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
@@ -85,6 +87,7 @@
             mat-menu-item
             type="button"
             class="shell__import-vehicle"
+            [disabled]="authStore.isReadOnly()"
             (click)="onImportVehicleClick()"
           >
             <mat-icon fontSet="material-symbols-outlined">upload_file</mat-icon>
@@ -143,6 +146,13 @@
         <p class="shell__waiting" role="status">
           <mat-spinner diameter="16" />
           {{ 'app.waitingForServer' | transloco }}
+        </p>
+      }
+      @if (authStore.isReadOnly()) {
+        <p class="shell__read-only" role="status">
+          <mat-icon fontSet="material-symbols-outlined">lock</mat-icon>
+          <span>{{ 'readOnly.text' | transloco }}</span>
+          <a class="shell__read-only-link" routerLink="/konto">{{ 'readOnly.link' | transloco }}</a>
         </p>
       }
       <router-outlet />

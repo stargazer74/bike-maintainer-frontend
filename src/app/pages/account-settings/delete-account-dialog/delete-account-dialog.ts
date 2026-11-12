@@ -20,6 +20,10 @@ export function deleteErrorKey(error: unknown): string {
     if (error.status === 429) {
       return 'account.errors.tooManyAttempts';
     }
+    if (error.status === 503) {
+      // The running subscription could not be ended at the payment provider, so the account was kept.
+      return 'accountSettings.delete.errors.providerUnavailable';
+    }
   }
   return 'account.errors.unknown';
 }

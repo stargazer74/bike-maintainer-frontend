@@ -29,14 +29,16 @@
       <div class="vehicle-header__body">
         <div class="vehicle-header__title-row">
           <h1>{{ vehicle.name }}</h1>
-          <button
-            mat-icon-button
-            type="button"
-            [attr.aria-label]="'vehicleDetail.editVehicle' | transloco"
-            (click)="openEditVehicleDialog(vehicle)"
-          >
-            <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-          </button>
+          @if (!readOnly()) {
+            <button
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'vehicleDetail.editVehicle' | transloco"
+              (click)="openEditVehicleDialog(vehicle)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+            </button>
+          }
           <button
             mat-icon-button
             type="button"
@@ -93,14 +95,16 @@
           <div class="vehicle-header__stat-value">
             <span>{{ vehicle.currentMileage ?? 0 | localNumber }}</span>
             <span class="vehicle-header__stat-unit">km</span>
-            <button
-              class="vehicle-header__stat-edit-btn"
-              type="button"
-              [attr.aria-label]="'vehicleDetail.editMileage' | transloco"
-              (click)="startEditMileage(vehicle)"
-            >
-              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-            </button>
+            @if (!readOnly()) {
+              <button
+                class="vehicle-header__stat-edit-btn"
+                type="button"
+                [attr.aria-label]="'vehicleDetail.editMileage' | transloco"
+                (click)="startEditMileage(vehicle)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+              </button>
+            }
           </div>
         }
       </div>
@@ -136,7 +140,7 @@
                 {{ 'checklist.open' | transloco }}
               </button>
             }
-            @if (measurementContext.value()?.templates?.length) {
+            @if (!readOnly() && measurementContext.value()?.templates?.length) {
               <button
                 type="button"
                 class="btn btn--ghost status-section__specification"
@@ -146,14 +150,16 @@
                 {{ 'specification.open' | transloco }}
               </button>
             }
-            <button
-              type="button"
-              class="btn btn--ghost status-section__worksheet"
-              (click)="openWorksheetDialog(result.vehicle.id)"
-            >
-              <mat-icon fontSet="material-symbols-outlined">assignment</mat-icon>
-              {{ 'worksheet.open' | transloco }}
-            </button>
+            @if (!readOnly()) {
+              <button
+                type="button"
+                class="btn btn--ghost status-section__worksheet"
+                (click)="openWorksheetDialog(result.vehicle.id)"
+              >
+                <mat-icon fontSet="material-symbols-outlined">assignment</mat-icon>
+                {{ 'worksheet.open' | transloco }}
+              </button>
+            }
             <!-- Disabled buttons get no hover events in every browser, so the hint sits on a wrapper. -->
             <span [attr.title]="logCards().length ? null : ('report.noLogs' | transloco)">
               <button
@@ -261,14 +267,16 @@
                           <mat-icon fontSet="material-symbols-outlined">download</mat-icon>
                         }
                       </button>
-                      <button
-                        mat-icon-button
-                        type="button"
-                        [attr.aria-label]="'common.edit' | transloco"
-                        (click)="startEditLog(card.log)"
-                      >
-                        <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-                      </button>
+                      @if (!readOnly()) {
+                        <button
+                          mat-icon-button
+                          type="button"
+                          [attr.aria-label]="'common.edit' | transloco"
+                          (click)="startEditLog(card.log)"
+                        >
+                          <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+                        </button>
+                      }
                       <button
                         mat-icon-button
                         type="button"
@@ -399,211 +407,228 @@
         {{ 'vehicleDetail.tabRecord' | transloco }}
       </ng-template>
       <section class="log-form-section">
-        <mat-card class="log-form-card" appearance="outlined">
-          <mat-card-content>
-            <h3 class="tasks-manage__form-title">
-              {{ (editingLogId() === null ? 'logForm.titleNew' : 'logForm.titleEdit') | transloco }}
-            </h3>
+        @if (readOnly()) {
+          <mat-card class="stub-card read-only-hint" appearance="outlined">
+            <mat-card-content>
+              <mat-icon fontSet="material-symbols-outlined">lock</mat-icon>
+              <p>{{ 'readOnly.text' | transloco }}</p>
+            </mat-card-content>
+          </mat-card>
+        } @else {
+          <mat-card class="log-form-card" appearance="outlined">
+            <mat-card-content>
+              <h3 class="tasks-manage__form-title">
+                {{
+                  (editingLogId() === null ? 'logForm.titleNew' : 'logForm.titleEdit') | transloco
+                }}
+              </h3>
 
-            <div class="log-form__row">
-              <div class="field">
-                <label class="field__label" for="log-date">{{ 'logForm.date' | transloco }}</label>
-                <input
-                  id="log-date"
-                  class="field__input"
-                  type="date"
-                  [ngModel]="logDate()"
-                  (ngModelChange)="logDate.set($event)"
+              <div class="log-form__row">
+                <div class="field">
+                  <label class="field__label" for="log-date">{{
+                    'logForm.date' | transloco
+                  }}</label>
+                  <input
+                    id="log-date"
+                    class="field__input"
+                    type="date"
+                    [ngModel]="logDate()"
+                    (ngModelChange)="logDate.set($event)"
+                  />
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="log-mileage">{{
+                    'logForm.mileage' | transloco
+                  }}</label>
+                  <input
+                    id="log-mileage"
+                    class="field__input"
+                    type="number"
+                    min="0"
+                    [ngModel]="logMileage()"
+                    (ngModelChange)="logMileage.set($event)"
+                  />
+                </div>
+              </div>
+
+              <div class="field log-form__tasks">
+                <span class="field__label">{{ 'logForm.tasks' | transloco }}</span>
+                @if (!logTaskOptions().length) {
+                  <p class="log-form__tasks-empty">{{ 'logForm.noActiveTasks' | transloco }}</p>
+                } @else {
+                  <div class="log-form__task-list">
+                    @for (option of logTaskOptions(); track option.task.id) {
+                      <label class="log-form__task-option">
+                        <input
+                          type="checkbox"
+                          [checked]="
+                            option.task.id !== undefined && logTaskIds().has(option.task.id)
+                          "
+                          (change)="toggleLogTask(option.task.id)"
+                        />
+                        <mat-icon fontSet="material-symbols-outlined">{{ option.icon }}</mat-icon>
+                        <span class="log-form__task-name">{{ option.task.name }}</span>
+                        @if (option.inactive) {
+                          <span class="log-form__task-badge">{{
+                            'logForm.inactive' | transloco
+                          }}</span>
+                        }
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+
+              @if (logFurtherWork().length) {
+                <div class="field log-form__further-work">
+                  <span class="field__label">{{ 'logForm.furtherWork' | transloco }}</span>
+                  <ul class="log-form__further-list">
+                    @for (item of logFurtherWork(); track item.task.id) {
+                      <li
+                        class="log-form__further-item"
+                        [class.log-form__further-item--removed]="item.removed"
+                      >
+                        <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+                        <span class="log-form__further-name">{{ item.task.name }}</span>
+                        @if (item.removed) {
+                          <span class="log-form__further-hint">{{
+                            'logForm.furtherWorkRemoved' | transloco
+                          }}</span>
+                        }
+                        <button
+                          type="button"
+                          class="btn btn--ghost log-form__further-toggle"
+                          [attr.aria-label]="
+                            (item.removed
+                              ? 'logForm.furtherWorkRestoreLabel'
+                              : 'logForm.furtherWorkRemoveLabel'
+                            ) | transloco: { name: item.task.name }
+                          "
+                          (click)="toggleLogTask(item.task.id)"
+                        >
+                          {{
+                            (item.removed
+                              ? 'logForm.furtherWorkRestore'
+                              : 'logForm.furtherWorkRemove'
+                            ) | transloco
+                          }}
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              <app-new-task-editor
+                class="log-form__new-tasks"
+                [(drafts)]="logNewTasks"
+                [showErrors]="logShowNewTaskErrors()"
+              />
+
+              <div class="field log-form__measurements">
+                <span class="field__label">{{ 'measurements.title' | transloco }}</span>
+                @if (measurementContext.error()) {
+                  <p class="field__error" role="alert">
+                    {{ 'measurements.errors.load' | transloco }}
+                  </p>
+                }
+                @let context = measurementContext.value();
+                <app-measurement-editor
+                  [(drafts)]="logMeasurements"
+                  [vehicleId]="vehicle.id"
+                  [templates]="context?.templates ?? []"
+                  [specification]="context?.specification"
+                  [latest]="context?.latest"
+                  [editingLogId]="editingLogId()"
+                  [showErrors]="logShowMeasurementErrors()"
                 />
               </div>
 
-              <div class="field">
-                <label class="field__label" for="log-mileage">{{
-                  'logForm.mileage' | transloco
+              <div class="field log-form__materials">
+                <span class="field__label">{{ 'logForm.materials' | transloco }}</span>
+                <app-material-editor
+                  [(drafts)]="logMaterials"
+                  [tasks]="logCheckedTasks()"
+                  [currency]="logCurrency()"
+                  [showErrors]="logShowCostErrors()"
+                  [showTotal]="false"
+                />
+              </div>
+
+              <div class="field log-form__labor">
+                <label class="field__label" for="log-labor-cost">{{
+                  'logForm.laborCost' | transloco: { currency: logCurrency() }
                 }}</label>
                 <input
-                  id="log-mileage"
+                  id="log-labor-cost"
                   class="field__input"
                   type="number"
                   min="0"
-                  [ngModel]="logMileage()"
-                  (ngModelChange)="logMileage.set($event)"
+                  step="any"
+                  [ngModel]="logLaborCost()"
+                  (ngModelChange)="logLaborCost.set(typeof $event === 'number' ? $event : null)"
                 />
+                @if (logShowCostErrors() && logLaborCostError(); as error) {
+                  <p class="field__error" role="alert">{{ error | transloco }}</p>
+                }
               </div>
-            </div>
 
-            <div class="field log-form__tasks">
-              <span class="field__label">{{ 'logForm.tasks' | transloco }}</span>
-              @if (!logTaskOptions().length) {
-                <p class="log-form__tasks-empty">{{ 'logForm.noActiveTasks' | transloco }}</p>
-              } @else {
-                <div class="log-form__task-list">
-                  @for (option of logTaskOptions(); track option.task.id) {
-                    <label class="log-form__task-option">
-                      <input
-                        type="checkbox"
-                        [checked]="option.task.id !== undefined && logTaskIds().has(option.task.id)"
-                        (change)="toggleLogTask(option.task.id)"
-                      />
-                      <mat-icon fontSet="material-symbols-outlined">{{ option.icon }}</mat-icon>
-                      <span class="log-form__task-name">{{ option.task.name }}</span>
-                      @if (option.inactive) {
-                        <span class="log-form__task-badge">{{
-                          'logForm.inactive' | transloco
-                        }}</span>
-                      }
-                    </label>
-                  }
-                </div>
-              }
-            </div>
-
-            @if (logFurtherWork().length) {
-              <div class="field log-form__further-work">
-                <span class="field__label">{{ 'logForm.furtherWork' | transloco }}</span>
-                <ul class="log-form__further-list">
-                  @for (item of logFurtherWork(); track item.task.id) {
-                    <li
-                      class="log-form__further-item"
-                      [class.log-form__further-item--removed]="item.removed"
-                    >
-                      <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
-                      <span class="log-form__further-name">{{ item.task.name }}</span>
-                      @if (item.removed) {
-                        <span class="log-form__further-hint">{{
-                          'logForm.furtherWorkRemoved' | transloco
-                        }}</span>
-                      }
-                      <button
-                        type="button"
-                        class="btn btn--ghost log-form__further-toggle"
-                        [attr.aria-label]="
-                          (item.removed
-                            ? 'logForm.furtherWorkRestoreLabel'
-                            : 'logForm.furtherWorkRemoveLabel'
-                          ) | transloco: { name: item.task.name }
-                        "
-                        (click)="toggleLogTask(item.task.id)"
-                      >
-                        {{
-                          (item.removed
-                            ? 'logForm.furtherWorkRestore'
-                            : 'logForm.furtherWorkRemove'
-                          ) | transloco
-                        }}
-                      </button>
-                    </li>
-                  }
-                </ul>
-              </div>
-            }
-
-            <app-new-task-editor
-              class="log-form__new-tasks"
-              [(drafts)]="logNewTasks"
-              [showErrors]="logShowNewTaskErrors()"
-            />
-
-            <div class="field log-form__measurements">
-              <span class="field__label">{{ 'measurements.title' | transloco }}</span>
-              @if (measurementContext.error()) {
-                <p class="field__error" role="alert">
-                  {{ 'measurements.errors.load' | transloco }}
+              @if (logTotal() !== null) {
+                <p class="log-form__total">
+                  {{ 'logForm.total' | transloco }}:
+                  <strong>{{ logTotal() | localCurrency: logCurrency() }}</strong>
                 </p>
               }
-              @let context = measurementContext.value();
-              <app-measurement-editor
-                [(drafts)]="logMeasurements"
-                [vehicleId]="vehicle.id"
-                [templates]="context?.templates ?? []"
-                [specification]="context?.specification"
-                [latest]="context?.latest"
-                [editingLogId]="editingLogId()"
-                [showErrors]="logShowMeasurementErrors()"
-              />
-            </div>
 
-            <div class="field log-form__materials">
-              <span class="field__label">{{ 'logForm.materials' | transloco }}</span>
-              <app-material-editor
-                [(drafts)]="logMaterials"
-                [tasks]="logCheckedTasks()"
-                [currency]="logCurrency()"
-                [showErrors]="logShowCostErrors()"
-                [showTotal]="false"
-              />
-            </div>
+              <div class="field">
+                <label class="field__label" for="log-notes">{{
+                  'logForm.notes' | transloco
+                }}</label>
+                <textarea
+                  id="log-notes"
+                  class="field__input"
+                  rows="3"
+                  [ngModel]="logNotes()"
+                  (ngModelChange)="logNotes.set($event)"
+                ></textarea>
+              </div>
 
-            <div class="field log-form__labor">
-              <label class="field__label" for="log-labor-cost">{{
-                'logForm.laborCost' | transloco: { currency: logCurrency() }
-              }}</label>
-              <input
-                id="log-labor-cost"
-                class="field__input"
-                type="number"
-                min="0"
-                step="any"
-                [ngModel]="logLaborCost()"
-                (ngModelChange)="logLaborCost.set(typeof $event === 'number' ? $event : null)"
-              />
-              @if (logShowCostErrors() && logLaborCostError(); as error) {
-                <p class="field__error" role="alert">{{ error | transloco }}</p>
+              @if (logSubmitError(); as error) {
+                <p class="field__error">{{ error | transloco }}</p>
               }
-            </div>
 
-            @if (logTotal() !== null) {
-              <p class="log-form__total">
-                {{ 'logForm.total' | transloco }}:
-                <strong>{{ logTotal() | localCurrency: logCurrency() }}</strong>
-              </p>
-            }
-
-            <div class="field">
-              <label class="field__label" for="log-notes">{{ 'logForm.notes' | transloco }}</label>
-              <textarea
-                id="log-notes"
-                class="field__input"
-                rows="3"
-                [ngModel]="logNotes()"
-                (ngModelChange)="logNotes.set($event)"
-              ></textarea>
-            </div>
-
-            @if (logSubmitError(); as error) {
-              <p class="field__error">{{ error | transloco }}</p>
-            }
-
-            <div class="log-form__actions">
-              @if (editingLogId() !== null) {
+              <div class="log-form__actions">
+                @if (editingLogId() !== null) {
+                  <button
+                    type="button"
+                    class="btn btn--ghost"
+                    [disabled]="savingLog()"
+                    (click)="cancelLogEdit()"
+                  >
+                    {{ 'common.cancel' | transloco }}
+                  </button>
+                }
                 <button
                   type="button"
-                  class="btn btn--ghost"
-                  [disabled]="savingLog()"
-                  (click)="cancelLogEdit()"
+                  class="btn btn--primary"
+                  [disabled]="savingLog() || !logDate()"
+                  (click)="submitLog(vehicle)"
                 >
-                  {{ 'common.cancel' | transloco }}
+                  @if (savingLog()) {
+                    <mat-spinner diameter="18" />
+                  } @else {
+                    <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
+                    {{
+                      (editingLogId() === null ? 'logForm.submitNew' : 'common.saveChanges')
+                        | transloco
+                    }}
+                  }
                 </button>
-              }
-              <button
-                type="button"
-                class="btn btn--primary"
-                [disabled]="savingLog() || !logDate()"
-                (click)="submitLog(vehicle)"
-              >
-                @if (savingLog()) {
-                  <mat-spinner diameter="18" />
-                } @else {
-                  <mat-icon fontSet="material-symbols-outlined">save</mat-icon>
-                  {{
-                    (editingLogId() === null ? 'logForm.submitNew' : 'common.saveChanges')
-                      | transloco
-                  }}
-                }
-              </button>
-            </div>
-          </mat-card-content>
-        </mat-card>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
       </section>
     </mat-tab>
 
@@ -613,153 +638,165 @@
         {{ 'vehicleDetail.tabTasks' | transloco }}
       </ng-template>
       <section class="tasks-manage-section">
-        <mat-card class="log-form-card" appearance="outlined">
-          <mat-card-content>
-            <h3 class="tasks-manage__form-title">
-              {{
-                (editingTaskId() === null ? 'taskForm.titleNew' : 'taskForm.titleEdit') | transloco
-              }}
-            </h3>
+        @if (readOnly()) {
+          <mat-card class="stub-card read-only-hint" appearance="outlined">
+            <mat-card-content>
+              <mat-icon fontSet="material-symbols-outlined">lock</mat-icon>
+              <p>{{ 'readOnly.text' | transloco }}</p>
+            </mat-card-content>
+          </mat-card>
+        } @else {
+          <mat-card class="log-form-card" appearance="outlined">
+            <mat-card-content>
+              <h3 class="tasks-manage__form-title">
+                {{
+                  (editingTaskId() === null ? 'taskForm.titleNew' : 'taskForm.titleEdit')
+                    | transloco
+                }}
+              </h3>
 
-            <div class="field">
-              <label class="field__label" for="task-name">{{ 'taskForm.name' | transloco }}</label>
-              <input
-                id="task-name"
-                class="field__input"
-                [ngModel]="taskFormName()"
-                (ngModelChange)="taskFormName.set($event)"
-                [placeholder]="'taskForm.namePlaceholder' | transloco"
-              />
-            </div>
-
-            <div class="field">
-              <label class="field__label" for="task-description">{{
-                'taskForm.description' | transloco
-              }}</label>
-              <input
-                id="task-description"
-                class="field__input"
-                maxlength="1000"
-                [ngModel]="taskFormDescription()"
-                (ngModelChange)="taskFormDescription.set($event)"
-              />
-            </div>
-
-            <div class="log-form__row">
               <div class="field">
-                <label class="field__label" for="task-interval-km">{{
-                  'taskForm.intervalKm' | transloco
+                <label class="field__label" for="task-name">{{
+                  'taskForm.name' | transloco
                 }}</label>
                 <input
-                  id="task-interval-km"
+                  id="task-name"
                   class="field__input"
-                  type="number"
-                  min="0"
-                  [ngModel]="taskFormIntervalKm()"
-                  (ngModelChange)="taskFormIntervalKm.set($event)"
-                  [placeholder]="'taskForm.intervalKmPlaceholder' | transloco"
+                  [ngModel]="taskFormName()"
+                  (ngModelChange)="taskFormName.set($event)"
+                  [placeholder]="'taskForm.namePlaceholder' | transloco"
                 />
               </div>
+
               <div class="field">
-                <label class="field__label" for="task-interval-months">{{
-                  'taskForm.intervalMonths' | transloco
+                <label class="field__label" for="task-description">{{
+                  'taskForm.description' | transloco
                 }}</label>
                 <input
-                  id="task-interval-months"
+                  id="task-description"
                   class="field__input"
-                  type="number"
-                  min="0"
-                  [ngModel]="taskFormIntervalMonths()"
-                  (ngModelChange)="taskFormIntervalMonths.set($event)"
-                  [placeholder]="'taskForm.intervalMonthsPlaceholder' | transloco"
+                  maxlength="1000"
+                  [ngModel]="taskFormDescription()"
+                  (ngModelChange)="taskFormDescription.set($event)"
                 />
               </div>
-            </div>
 
-            <div class="log-form__row">
-              <div class="field">
-                <label class="field__label" for="task-first-due-km">{{
-                  'taskForm.firstDueKm' | transloco
-                }}</label>
-                <input
-                  id="task-first-due-km"
-                  class="field__input"
-                  type="number"
-                  min="0"
-                  [ngModel]="taskFormFirstDueKm()"
-                  (ngModelChange)="taskFormFirstDueKm.set($event)"
-                />
+              <div class="log-form__row">
+                <div class="field">
+                  <label class="field__label" for="task-interval-km">{{
+                    'taskForm.intervalKm' | transloco
+                  }}</label>
+                  <input
+                    id="task-interval-km"
+                    class="field__input"
+                    type="number"
+                    min="0"
+                    [ngModel]="taskFormIntervalKm()"
+                    (ngModelChange)="taskFormIntervalKm.set($event)"
+                    [placeholder]="'taskForm.intervalKmPlaceholder' | transloco"
+                  />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="task-interval-months">{{
+                    'taskForm.intervalMonths' | transloco
+                  }}</label>
+                  <input
+                    id="task-interval-months"
+                    class="field__input"
+                    type="number"
+                    min="0"
+                    [ngModel]="taskFormIntervalMonths()"
+                    (ngModelChange)="taskFormIntervalMonths.set($event)"
+                    [placeholder]="'taskForm.intervalMonthsPlaceholder' | transloco"
+                  />
+                </div>
               </div>
-              <div class="field">
-                <label class="field__label" for="task-first-due-months">{{
-                  'taskForm.firstDueMonths' | transloco
-                }}</label>
-                <input
-                  id="task-first-due-months"
-                  class="field__input"
-                  type="number"
-                  min="0"
-                  [ngModel]="taskFormFirstDueMonths()"
-                  (ngModelChange)="taskFormFirstDueMonths.set($event)"
-                />
+
+              <div class="log-form__row">
+                <div class="field">
+                  <label class="field__label" for="task-first-due-km">{{
+                    'taskForm.firstDueKm' | transloco
+                  }}</label>
+                  <input
+                    id="task-first-due-km"
+                    class="field__input"
+                    type="number"
+                    min="0"
+                    [ngModel]="taskFormFirstDueKm()"
+                    (ngModelChange)="taskFormFirstDueKm.set($event)"
+                  />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="task-first-due-months">{{
+                    'taskForm.firstDueMonths' | transloco
+                  }}</label>
+                  <input
+                    id="task-first-due-months"
+                    class="field__input"
+                    type="number"
+                    min="0"
+                    [ngModel]="taskFormFirstDueMonths()"
+                    (ngModelChange)="taskFormFirstDueMonths.set($event)"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div class="tasks-manage__toggles">
-              <label class="tasks-manage__toggle">
-                <input
-                  type="checkbox"
-                  [checked]="taskFormOneTime()"
-                  (change)="taskFormOneTime.set(!taskFormOneTime())"
-                />
-                {{ 'taskForm.oneTime' | transloco }}
-              </label>
-              <label class="tasks-manage__toggle">
-                <input
-                  type="checkbox"
-                  [checked]="taskFormActive()"
-                  (change)="taskFormActive.set(!taskFormActive())"
-                />
-                {{ 'taskForm.active' | transloco }}
-              </label>
-            </div>
+              <div class="tasks-manage__toggles">
+                <label class="tasks-manage__toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="taskFormOneTime()"
+                    (change)="taskFormOneTime.set(!taskFormOneTime())"
+                  />
+                  {{ 'taskForm.oneTime' | transloco }}
+                </label>
+                <label class="tasks-manage__toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="taskFormActive()"
+                    (change)="taskFormActive.set(!taskFormActive())"
+                  />
+                  {{ 'taskForm.active' | transloco }}
+                </label>
+              </div>
 
-            @if (taskSubmitError(); as error) {
-              <p class="field__error">{{ error | transloco }}</p>
-            }
+              @if (taskSubmitError(); as error) {
+                <p class="field__error">{{ error | transloco }}</p>
+              }
 
-            <div class="tasks-manage__form-actions">
-              @if (editingTaskId() !== null) {
+              <div class="tasks-manage__form-actions">
+                @if (editingTaskId() !== null) {
+                  <button
+                    type="button"
+                    class="btn btn--ghost"
+                    [disabled]="savingTask()"
+                    (click)="cancelTaskEdit()"
+                  >
+                    {{ 'common.cancel' | transloco }}
+                  </button>
+                }
                 <button
                   type="button"
-                  class="btn btn--ghost"
-                  [disabled]="savingTask()"
-                  (click)="cancelTaskEdit()"
+                  class="btn btn--primary"
+                  [disabled]="savingTask() || !taskFormName().trim()"
+                  (click)="submitTask(vehicle)"
                 >
-                  {{ 'common.cancel' | transloco }}
+                  @if (savingTask()) {
+                    <mat-spinner diameter="18" />
+                  } @else {
+                    <mat-icon fontSet="material-symbols-outlined">{{
+                      editingTaskId() === null ? 'add' : 'save'
+                    }}</mat-icon>
+                    {{
+                      (editingTaskId() === null ? 'taskForm.submitNew' : 'common.saveChanges')
+                        | transloco
+                    }}
+                  }
                 </button>
-              }
-              <button
-                type="button"
-                class="btn btn--primary"
-                [disabled]="savingTask() || !taskFormName().trim()"
-                (click)="submitTask(vehicle)"
-              >
-                @if (savingTask()) {
-                  <mat-spinner diameter="18" />
-                } @else {
-                  <mat-icon fontSet="material-symbols-outlined">{{
-                    editingTaskId() === null ? 'add' : 'save'
-                  }}</mat-icon>
-                  {{
-                    (editingTaskId() === null ? 'taskForm.submitNew' : 'common.saveChanges')
-                      | transloco
-                  }}
-                }
-              </button>
-            </div>
-          </mat-card-content>
-        </mat-card>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
 
         @if (!result.tasks.length) {
           <mat-card class="stub-card" appearance="outlined">
@@ -793,7 +830,7 @@
                   }
                 </div>
                 <div class="tasks-manage__item-actions">
-                  @if (task.active === false) {
+                  @if (!readOnly() && task.active === false) {
                     <button
                       type="button"
                       class="btn btn--ghost tasks-manage__activate"
@@ -803,14 +840,16 @@
                       {{ 'taskForm.activate' | transloco }}
                     </button>
                   }
-                  <button
-                    mat-icon-button
-                    type="button"
-                    [attr.aria-label]="'common.edit' | transloco"
-                    (click)="startEditTask(task)"
-                  >
-                    <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-                  </button>
+                  @if (!readOnly()) {
+                    <button
+                      mat-icon-button
+                      type="button"
+                      [attr.aria-label]="'common.edit' | transloco"
+                      (click)="startEditTask(task)"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+                    </button>
+                  }
                   <button
                     mat-icon-button
                     type="button"

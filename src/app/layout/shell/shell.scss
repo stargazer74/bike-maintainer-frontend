@@ -255,3 +255,22 @@
     padding: 16px;
   }
 }
+
+.shell__read-only {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  color: var(--bm-text);
+  font-size: 0.875rem;
+  background: var(--status-overdue-bg);
+  border: 1px solid var(--status-overdue-border);
+  border-radius: 8px;
+}
+
+.shell__read-only-link {
+  color: var(--bm-orange-light);
+  font-weight: 600;
+}

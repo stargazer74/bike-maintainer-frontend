@@ -103,6 +103,7 @@ describe('DeleteAccountDialog', () => {
     [403, { code: 'WRONG_PASSWORD' }, 'Das Passwort ist falsch.'],
     [409, { code: 'LAST_ADMIN' }, 'Du bist der einzige aktive Admin'],
     [429, null, 'Zu viele Versuche, bitte später erneut.'],
+    [503, null, 'Dein Konto wurde deshalb nicht gelöscht'],
     [403, null, 'Das hat nicht geklappt'],
     [500, null, 'Das hat nicht geklappt'],
   ])('shows an error for %s and stays open', async (status, body, message) => {

@@ -1,0 +1,69 @@
+.subscription {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--bm-border);
+}
+
+.subscription__title {
+  margin: 0 0 16px;
+  font-size: 1.125rem;
+  color: var(--bm-text);
+}
+
+.subscription__status {
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: var(--bm-text);
+}
+
+.subscription__status--active {
+  color: var(--status-ok);
+}
+
+.subscription__status--expired {
+  color: var(--status-overdue);
+}
+
+.subscription__text,
+.subscription__hint {
+  margin: 0 0 16px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+.subscription__hint {
+  margin-top: 8px;
+  color: var(--bm-text-dim);
+  font-size: 0.75rem;
+}
+
+.subscription__notice,
+.subscription__success {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 14px;
+  font-size: 0.875rem;
+}
+
+.subscription__notice {
+  color: var(--bm-text-muted);
+}
+
+.subscription__success {
+  color: var(--status-ok);
+}
+
+.subscription__error {
+  margin: 0 0 14px;
+}
+
+.subscription__buy,
+.subscription__manage {
+  width: 100%;
+  justify-content: center;
+}
+
+.subscription__manage {
+  margin-top: 8px;
+}

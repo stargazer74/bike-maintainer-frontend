@@ -5,7 +5,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { firstValueFrom } from 'rxjs';
-import { Language, OperatingMode, UserRole } from '../api-client';
+import { AccessStatus, Language, OperatingMode, UserRole } from '../api-client';
 import { AppConfigStore } from '../config/app-config-store';
 import { authInterceptor } from './auth-interceptor';
 import { AuthStore } from './auth-store';
@@ -114,5 +114,36 @@ describe('authInterceptor', () => {
 
     expect(store.isLoggedIn()).toBe(true);
     expect(router.url).toBe('/fahrzeuge/3');
+  });
+
+  it('reloads the user when the backend reports a read-only account', async () => {
+    const response = firstValueFrom(http.post('/api/v1/vehicles', {})).catch(() => undefined);
+    httpMock
+      .expectOne('/api/v1/vehicles')
+      .flush(
+        { status: 403, code: 'SUBSCRIPTION_REQUIRED' },
+        { status: 403, statusText: 'Forbidden' },
+      );
+    await response;
+    httpMock.expectOne('http://localhost/api/v1/auth/me').flush({
+      id: 1,
+      email: 'a@example.com',
+      role: UserRole.User,
+      language: Language.De,
+      active: true,
+      emailVerified: true,
+      createdAt: '2026-10-09T12:00:00Z',
+      accessStatus: AccessStatus.Expired,
+      hasSubscription: false,
+    });
+
+    expect(store.isReadOnly()).toBe(true);
+    expect(router.url).toBe('/fahrzeuge/3');
+  });
+
+  it('does not reload the user on another 403', async () => {
+    await failRequest('/api/v1/vehicles', { status: 403, statusText: 'Forbidden' });
+
+    expect(store.isReadOnly()).toBe(false);
   });
 });
