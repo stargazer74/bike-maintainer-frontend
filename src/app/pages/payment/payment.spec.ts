@@ -48,22 +48,23 @@ describe('Payment', () => {
     return paddle.Initialize.mock.calls[0][0].eventCallback;
   }
 
-  it('opens the checkout of the transaction in the sandbox, without a customer for Retain', async () => {
+  it('lets Paddle.js open the checkout of the transaction in the sandbox, without a customer for Retain', async () => {
     const page = await open('/abo/bezahlen?_ptxn=txn_1');
 
     expect(paddle.Environment.set).toHaveBeenCalledWith('sandbox');
     expect(paddle.Initialize).toHaveBeenCalledWith({
       token: 'test_token',
       eventCallback: expect.any(Function),
-    });
-    expect(paddle.Checkout.open).toHaveBeenCalledWith({
-      transactionId: 'txn_1',
-      settings: {
-        displayMode: 'overlay',
-        locale: 'de',
-        successUrl: `${document.location.origin}/konto?abo=danke`,
+      checkout: {
+        settings: {
+          displayMode: 'overlay',
+          locale: 'de',
+          successUrl: `${document.location.origin}/konto?abo=danke`,
+        },
       },
     });
+    // Initialize opens the checkout of `_ptxn` itself.
+    expect(paddle.Checkout.open).not.toHaveBeenCalled();
     expect(page.querySelector('[role="status"]')?.textContent).toContain('Bezahlfenster');
     expect(page.textContent).toContain('Paddle.com Market Ltd');
   });
@@ -88,7 +89,10 @@ describe('Payment', () => {
 
     (page.querySelector('button') as HTMLButtonElement).click();
     harness.detectChanges();
-    expect(paddle.Checkout.open).toHaveBeenCalledTimes(2);
+    expect(paddle.Checkout.open).toHaveBeenCalledWith({
+      transactionId: 'txn_1',
+      settings: expect.objectContaining({ displayMode: 'overlay' }),
+    });
     expect(page.querySelector('button')).toBeNull();
   });
 
