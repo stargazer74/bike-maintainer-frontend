@@ -1,0 +1,13 @@
+/* Type check of the Cucumber/Playwright tests (Playwright itself only strips the types). */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["node"]
+  },
+  "include": ["playwright.config.ts", "e2e/**/*.ts"],
+  "exclude": ["e2e/.features-gen/**"]
+}

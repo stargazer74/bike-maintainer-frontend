@@ -7,7 +7,15 @@ const angular = require('angular-eslint');
 module.exports = defineConfig([
   // Generated (npm run generate:api) or build output – not linted.
   {
-    ignores: ['src/app/api-client/**', 'dist/**', '.angular/**', 'coverage/**'],
+    ignores: [
+      'src/app/api-client/**',
+      'dist/**',
+      '.angular/**',
+      'coverage/**',
+      'e2e/.features-gen/**',
+      'playwright-report/**',
+      'test-results/**',
+    ],
   },
   {
     files: ['**/*.ts'],

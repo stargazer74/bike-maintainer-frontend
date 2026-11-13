@@ -25,6 +25,8 @@ npm run build          # production build to dist/
 npm run watch          # dev build in watch mode
 npm test               # unit tests (Vitest via @angular/build:unit-test)
 npm run test:coverage  # single run with coverage; fails below the minimums in angular.json (CI runs this)
+npm run e2e            # Cucumber scenarios in Chromium (once before: npx playwright install chromium)
+npm run e2e:typecheck  # type check of e2e/ and playwright.config.ts (Playwright itself only strips types)
 npm run lint           # ESLint (angular-eslint: TS, templates, accessibility); CI fails on findings
 npm run format         # Prettier (.prettierrc); `npm run format:check` in CI. Markdown is not formatted.
 ```
@@ -41,6 +43,23 @@ ESLint is configured in `eslint.config.js` (flat config; `src/app/api-client/` i
 and `npm run format` before committing – CI fails on lint findings and unformatted files. Use
 `npx tsc -p tsconfig.app.json --noEmit` to type-check and `npx ng build` to catch Angular template compile
 errors — `tsc` alone does not validate templates.
+
+## Cucumber tests (e2e/)
+
+Behaviour from the user's view is described in Gherkin (`e2e/features/*.feature`, English like the backend's
+features; quoted UI text is the German UI) and run with Playwright via `playwright-bdd` against `ng serve` on
+port 4300 (`playwright.config.ts`; `bddgen` writes the generated specs to `e2e/.features-gen/`, gitignored).
+
+- **No real backend:** `e2e/support/fake-backend.ts` answers every `/api/` request in memory (`page.route`), typed
+  with the generated models (`src/app/api-client/model/models`, not the barrel — that pulls in Angular). Each
+  scenario gets a fresh one via the `backend` fixture (`e2e/support/fixtures.ts`), which **fails the scenario if
+  the app calls an endpoint the fake does not implement** — add the endpoint to the fake rather than loosening
+  that. ALTCHA challenges are real (cheap) ones from `altcha/lib`, so the widget really solves them.
+- The fake keeps rules simple (e.g. task status by km only); business rules are tested in the backend's
+  Cucumber suite. Don't assert on fake-only semantics in scenarios.
+- Steps: `e2e/steps/ui.steps.ts` (generic, by role/label/visible text), `e2e/steps/backend.steps.ts` (seed the
+  fake, assert what the app sent). Prefer reusing generic steps over new page-specific ones.
+- When UI text in `public/i18n/de.json` changes, scenarios quoting it must change too.
 
 ## API client (generated, do not hand-edit)
 

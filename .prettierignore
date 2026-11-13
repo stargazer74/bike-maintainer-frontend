@@ -7,3 +7,6 @@ package-lock.json
 
 # Markdown is wrapped by hand
 *.md
+e2e/.features-gen/
+playwright-report/
+test-results/
