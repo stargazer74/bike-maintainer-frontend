@@ -667,7 +667,7 @@
     "expiredText": "Your data is kept. To record and change anything you need a subscription.",
     "full": "Unlimited access",
     "buy": "Get the yearly subscription",
-    "buyHint": "Payment happens on the page of our payment provider Polar. We never see payment details.",
+    "buyHint": "Payment is handled by our payment provider Paddle; the payment window loads Paddle.js for this. We never see payment details.",
     "manage": "Manage subscription (invoices, cancellation)",
     "cancel": "Cancel contracts here",
     "paidWaiting": "Thank you! Your subscription is being activated …",
@@ -687,5 +687,15 @@
     "text": "Scan the code in the Bike Maintainer app under “Own server → Scan QR code”. Opened with the camera app, it leads to this web app.",
     "qrLabel": "QR code with the address {{address}}",
     "loopback": "This page is opened via “localhost” – the phone cannot reach the server that way. Open the page via its address in the home network, for example http://192.168.1.20:8080, and show the code there."
+  },
+  "payment": {
+    "title": "Payment",
+    "loading": "Loading Paddle's payment window …",
+    "closed": "The payment window was closed.",
+    "reopen": "Open payment window again",
+    "back": "Back to account",
+    "invalid": "This payment link is incomplete. Please start the subscription again from your account.",
+    "error": "Paddle's payment window could not be loaded. Please reload the page or try again later.",
+    "privacy": "On this page our payment provider Paddle (Paddle.com Market Ltd, London) loads its payment window and receives the data needed for payment and fraud prevention. Details in the privacy policy."
   }
 }

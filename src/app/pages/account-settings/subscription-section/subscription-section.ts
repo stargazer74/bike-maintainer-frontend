@@ -20,13 +20,13 @@ import { AuthStore } from '../../../auth/auth-store';
 import { injectWebsiteLinks } from '../../../config/website-links';
 import { LocalDatePipe } from '../../../i18n/localized-pipes';
 
-/** Query parameter Polar returns with after a successful payment (`/konto?abo=danke`). */
+/** Query parameter the payment page returns with after a successful payment (`/konto?abo=danke`). */
 export const PAID_PARAM = 'abo';
 /** How often and how far apart the status is asked again after the payment; the webhook usually takes seconds. */
 export const PAID_POLLS = 6;
 export const PAID_POLL_INTERVAL_MS = 2000;
 
-/** Leaves the app for a page of the payment provider; replaced in tests. */
+/** Leaves the app with a full page load (payment page, provider's customer portal); replaced in tests. */
 export const LEAVE_APP = new InjectionToken<(url: string) => void>('LEAVE_APP', {
   providedIn: 'root',
   factory: () => {
@@ -50,7 +50,8 @@ function errorKey(error: unknown): string {
 
 /**
  * Trial and subscription of the account (portal mode): the status, buying the yearly subscription and the customer
- * portal of the payment provider. Payment happens on the provider's own page; no script of the provider is loaded here.
+ * portal of the payment provider. Payment happens on the payment page `/abo/bezahlen` (Paddle.js); no script of the
+ * provider is loaded here.
  */
 @Component({
   selector: 'app-subscription-section',

@@ -96,6 +96,11 @@ Internet ──443──▶ TLS-Proxy ──▶ frontend (nginx)
 | `BACKEND_HOST` | `bike-maintainer-backend:8080` | Host und Port des Backends im Docker-Netz |
 | `NGINX_RESOLVER` | `127.0.0.11` | DNS-Server, über den `BACKEND_HOST` pro Request aufgelöst wird (Dockers eingebautes DNS) |
 
+Alle Seiten bekommen eine strikte Content-Security-Policy ohne fremde Quellen (`security-headers.conf`). Einzige
+Ausnahme ist die Bezahlseite `/abo/bezahlen` (Standard-Zahlungslink bei Paddle): Sie lädt Paddle.js von
+`cdn.paddle.com` und bekommt dafür eine eigene, gelockerte Policy (`payment-security-headers.conf`). Die Domains von
+Paddle Retain (ProfitWell) sind dort bewusst nicht freigegeben.
+
 `X-Forwarded-Proto`, `-Host` und `-For` eines vorgeschalteten TLS-Proxys werden ans Backend
 durchgereicht (für `Secure`-Cookies und die Client-IP beim Rate-Limit). Fertige
 Compose-Dateien für den Betrieb liegen in

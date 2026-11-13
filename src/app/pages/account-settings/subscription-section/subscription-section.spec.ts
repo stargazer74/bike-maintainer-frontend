@@ -95,9 +95,9 @@ describe('SubscriptionSection', () => {
     element.querySelector<HTMLButtonElement>('.subscription__buy')!.click();
     const request = httpMock.expectOne(CHECKOUT_URL);
     expect(request.request.method).toBe('POST');
-    request.flush({ url: 'https://polar.sh/checkout/1' });
+    request.flush({ url: 'https://app.example.org/abo/bezahlen?_ptxn=txn_1' });
 
-    expect(assign).toHaveBeenCalledWith('https://polar.sh/checkout/1');
+    expect(assign).toHaveBeenCalledWith('https://app.example.org/abo/bezahlen?_ptxn=txn_1');
   });
 
   it('explains when the provider cannot be reached', async () => {
@@ -135,9 +135,9 @@ describe('SubscriptionSection', () => {
     expect(element.textContent).toContain('bezahlt bis 12.11.2027');
     expect(element.querySelector('.subscription__buy')).toBeNull();
     element.querySelector<HTMLButtonElement>('.subscription__manage')!.click();
-    httpMock.expectOne(PORTAL_URL).flush({ url: 'https://polar.sh/portal/1' });
+    httpMock.expectOne(PORTAL_URL).flush({ url: 'https://customer-portal.paddle.com/cpl_1' });
 
-    expect(assign).toHaveBeenCalledWith('https://polar.sh/portal/1');
+    expect(assign).toHaveBeenCalledWith('https://customer-portal.paddle.com/cpl_1');
   });
 
   it('shows unlimited access for administrators', async () => {

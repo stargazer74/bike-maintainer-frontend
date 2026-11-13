@@ -80,6 +80,11 @@ service signatures or model shapes.
 - **Fonts are self-hosted, never from Google Fonts or a CDN:** Inter comes from `@fontsource/inter` (weights
   400–700, split by unicode range), the icon font from `material-symbols` (outlined); both are listed under `styles`
   in `angular.json`. New fonts or icon sets must be bundled the same way.
+- **No third-party requests from the browser – one documented exception:** the payment page `/abo/bezahlen`
+  (`pages/payment/`, Paddle's default payment link) loads Paddle.js from `cdn.paddle.com` via `LOAD_PADDLE`
+  (`pages/payment/paddle.ts`). nginx sends this page its own, relaxed CSP (`payment-security-headers.conf`); the app
+  must therefore always reach it with a full page load (`LEAVE_APP` / plain `href`), never via the router. Paddle
+  Retain stays off: never pass a customer (`pwCustomer`) to Paddle.js. Don't load Paddle.js anywhere else.
 - Colors/spacing use the CSS custom properties defined in `src/styles.scss` (`--bm-*`, `--status-*`)
   rather than hardcoded hex values, to stay consistent with the dark "Werkstatt" theme.
 - **Gotcha:** `mat-card` sets `display: flex; flex-direction: column` on itself at the same CSS

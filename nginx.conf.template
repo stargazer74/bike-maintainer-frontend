@@ -60,6 +60,14 @@ server {
         }
     }
 
+    # Payment page of Paddle (default payment link): the same index.html, but with the relaxed policy that lets
+    # Paddle.js run. The app always opens it with a full page load (backend checkout URL, Paddle's emails), so other
+    # pages never get this policy. try_files serves the file within this location, so its headers apply.
+    location = /abo/bezahlen {
+        include /etc/nginx/snippets/payment-security-headers.conf;
+        try_files /index.html =404;
+    }
+
     # Angular router fallback — unknown paths resolve client-side.
     location / {
         try_files $uri $uri/ /index.html;

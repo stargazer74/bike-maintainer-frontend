@@ -667,7 +667,7 @@
     "expiredText": "Deine Daten bleiben erhalten. Zum Erfassen und Ändern brauchst du ein Abo.",
     "full": "Unbegrenzter Zugang",
     "buy": "Jahresabo abschließen",
-    "buyHint": "Bezahlt wird auf der Seite unseres Zahlungsanbieters Polar. Wir sehen keine Zahlungsdaten.",
+    "buyHint": "Bezahlt wird über unseren Zahlungsanbieter Paddle; das Bezahlfenster lädt dazu Paddle.js. Wir sehen keine Zahlungsdaten.",
     "manage": "Abo verwalten (Rechnungen, Kündigung)",
     "cancel": "Verträge hier kündigen",
     "paidWaiting": "Danke! Dein Abo wird freigeschaltet …",
@@ -687,5 +687,15 @@
     "text": "Scanne den Code in der Bike-Maintainer-App unter „Eigener Server → QR-Code scannen“. Mit der Kamera-App geöffnet, führt er zu dieser Web-App.",
     "qrLabel": "QR-Code mit der Adresse {{address}}",
     "loopback": "Diese Seite ist über „localhost“ geöffnet – das Handy erreicht den Server so nicht. Öffne die Seite über die Adresse im Heimnetz, zum Beispiel http://192.168.1.20:8080, und zeige den Code dort an."
+  },
+  "payment": {
+    "title": "Bezahlen",
+    "loading": "Bezahlfenster von Paddle wird geladen …",
+    "closed": "Das Bezahlfenster wurde geschlossen.",
+    "reopen": "Bezahlfenster wieder öffnen",
+    "back": "Zurück zum Konto",
+    "invalid": "Dieser Bezahllink ist unvollständig. Starte das Abo bitte im Konto neu.",
+    "error": "Das Bezahlfenster von Paddle konnte nicht geladen werden. Bitte lade die Seite neu oder versuche es später noch einmal.",
+    "privacy": "Auf dieser Seite lädt unser Zahlungsanbieter Paddle (Paddle.com Market Ltd, London) sein Bezahlfenster; dabei erhält Paddle die für Zahlung und Betrugsprävention nötigen Daten. Details in der Datenschutzerklärung."
   }
 }

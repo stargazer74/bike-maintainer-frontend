@@ -29,6 +29,29 @@ describe('AppConfigStore', () => {
 
     expect(store.mode()).toBe(OperatingMode.Household);
     expect(store.isHousehold()).toBe(true);
+    expect(store.payment()).toBeNull();
+  });
+
+  it('load() keeps the payment config of the portal', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(CONFIG_URL).flush({
+      mode: OperatingMode.Portal,
+      payment: { clientToken: 'test_token', sandbox: true },
+    });
+    await loaded;
+
+    expect(store.payment()).toEqual({ clientToken: 'test_token', sandbox: true });
+  });
+
+  it('load() ignores a payment config in household mode', async () => {
+    const loaded = store.load();
+    httpMock.expectOne(CONFIG_URL).flush({
+      mode: OperatingMode.Household,
+      payment: { clientToken: 'test_token', sandbox: true },
+    });
+    await loaded;
+
+    expect(store.payment()).toBeNull();
   });
 
   describe('when the backend cannot be asked', () => {
