@@ -93,6 +93,27 @@ jobs:
       - name: Test with coverage
         run: npm run test:coverage
 
+      # Cucumber scenarios (e2e/features) in Chromium against `ng serve`; the backend is the in-memory FakeBackend
+      # (e2e/support), so no other service is started.
+      - name: Type-check Cucumber steps
+        run: npm run e2e:typecheck
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Cucumber tests (Playwright)
+        run: npm run e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            bike-maintainer-frontend/playwright-report/
+            bike-maintainer-frontend/test-results/
+          retention-days: 7
+
       - name: Build
         run: npm run build
 

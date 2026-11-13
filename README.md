@@ -155,6 +155,12 @@ npm run build
 # Unit-Tests (Vitest)
 npm test
 
+# Cucumber-Tests (Gherkin in e2e/features, Playwright + playwright-bdd) – startet ng serve auf :4300,
+# das Backend ersetzt ein In-Memory-Fake (e2e/support/fake-backend.ts); einmalig vorher:
+npx playwright install chromium
+npm run e2e
+npm run e2e:typecheck   # Typprüfung der Steps
+
 # Lint (ESLint mit angular-eslint) und Formatierung (Prettier) – beides prüft auch die CI
 npm run lint
 npm run format          # formatiert; npm run format:check prüft nur
