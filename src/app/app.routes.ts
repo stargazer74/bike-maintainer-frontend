@@ -38,6 +38,14 @@ export const routes: Routes = [
       import('./pages/reset-password/reset-password').then((m) => m.ResetPassword),
   },
   {
+    // Payment page of Paddle (default payment link, `?_ptxn=…`): checkout and payment method updates. No login
+    // needed – Paddle's emails link here, too. Always opened with a full page load, so nginx can send the relaxed
+    // Content-Security-Policy that this one page needs (nginx.conf.template).
+    path: 'abo/bezahlen',
+    canMatch: [portalOnlyGuard],
+    loadComponent: () => import('./pages/payment/payment').then((m) => m.Payment),
+  },
+  {
     // Household mode: pick a profile instead of logging in.
     path: 'person-waehlen',
     canMatch: [householdOnlyGuard, guestGuard],

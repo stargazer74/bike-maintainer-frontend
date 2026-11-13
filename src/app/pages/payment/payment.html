@@ -1,0 +1,33 @@
+<div class="payment">
+  <mat-card class="payment__card">
+    <h1 class="payment__title">{{ 'payment.title' | transloco }}</h1>
+
+    @switch (state()) {
+      @case ('closed') {
+        <p class="payment__text" role="status">{{ 'payment.closed' | transloco }}</p>
+        <button type="button" class="btn btn--primary payment__action" (click)="open()">
+          {{ 'payment.reopen' | transloco }}
+        </button>
+        <a class="btn btn--ghost payment__action" href="/konto">{{ 'payment.back' | transloco }}</a>
+      }
+      @case ('invalid') {
+        <p class="field__error payment__text" role="alert">{{ 'payment.invalid' | transloco }}</p>
+        <a class="btn btn--primary payment__action" href="/konto">{{
+          'payment.back' | transloco
+        }}</a>
+      }
+      @case ('error') {
+        <p class="field__error payment__text" role="alert">{{ 'payment.error' | transloco }}</p>
+        <a class="btn btn--ghost payment__action" href="/konto">{{ 'payment.back' | transloco }}</a>
+      }
+      @default {
+        <p class="payment__text payment__text--busy" role="status">
+          <mat-spinner diameter="16" />
+          {{ 'payment.loading' | transloco }}
+        </p>
+      }
+    }
+
+    <p class="payment__privacy">{{ 'payment.privacy' | transloco }}</p>
+  </mat-card>
+</div>
