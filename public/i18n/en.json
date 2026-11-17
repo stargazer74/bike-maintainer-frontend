@@ -677,6 +677,9 @@
       "providerUnavailable": "The payment provider cannot be reached right now. Please try again later."
     }
   },
+  "errorId": {
+    "text": "An error occurred on the server. Error ID: {{id}} – please quote it when you report the error."
+  },
   "readOnly": {
     "text": "Your trial or subscription has expired. Your data is kept, but recording and changing is no longer possible.",
     "link": "Get a subscription",

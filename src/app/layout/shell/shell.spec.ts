@@ -14,6 +14,7 @@ import {
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
 import { translocoTesting } from '../../i18n/testing';
+import { ErrorIdStore } from '../../shared/error-id/error-id';
 import { Shell } from './shell';
 
 const ME_URL = 'http://localhost/api/v1/auth/me';
@@ -364,5 +365,34 @@ describe('Shell connect app', () => {
     await userMenu(OperatingMode.Portal);
 
     expect(document.querySelector('.shell__connect-app')).toBeNull();
+  });
+});
+
+describe('Shell error ID', () => {
+  it('shows the error ID of the last server error until it is closed', async () => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [translocoTesting()],
+      providers: [provideHttpClientTesting(), provideRouter([])],
+    });
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('.shell__error-id')).toBeNull();
+
+    TestBed.inject(ErrorIdStore).report('4bf92f35');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const notice = element.querySelector('.shell__error-id');
+    expect(notice?.getAttribute('role')).toBe('alert');
+    expect(notice?.textContent).toContain('Fehler-ID: 4bf92f35');
+
+    element.querySelector<HTMLButtonElement>('.shell__error-id-close')!.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(element.querySelector('.shell__error-id')).toBeNull();
   });
 });

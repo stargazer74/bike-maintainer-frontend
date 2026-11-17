@@ -677,6 +677,9 @@
       "providerUnavailable": "Der Zahlungsanbieter ist gerade nicht erreichbar. Bitte versuche es später noch einmal."
     }
   },
+  "errorId": {
+    "text": "Auf dem Server ist ein Fehler aufgetreten. Fehler-ID: {{id}} – bitte gib sie an, wenn du den Fehler meldest."
+  },
   "readOnly": {
     "text": "Deine Testphase bzw. dein Abo ist abgelaufen. Deine Daten bleiben erhalten, erfassen und ändern ist aber nicht mehr möglich.",
     "link": "Abo abschließen",

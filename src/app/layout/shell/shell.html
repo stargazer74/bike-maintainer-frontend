@@ -157,6 +157,21 @@
           {{ 'app.waitingForServer' | transloco }}
         </p>
       }
+      @if (errorIds.errorId(); as errorId) {
+        <p class="shell__error-id" role="alert">
+          <mat-icon fontSet="material-symbols-outlined">error</mat-icon>
+          <span>{{ 'errorId.text' | transloco: { id: errorId } }}</span>
+          <button
+            mat-icon-button
+            type="button"
+            class="shell__error-id-close"
+            [attr.aria-label]="'common.close' | transloco"
+            (click)="errorIds.dismiss()"
+          >
+            <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+          </button>
+        </p>
+      }
       @if (authStore.isReadOnly()) {
         <p class="shell__read-only" role="status">
           <mat-icon fontSet="material-symbols-outlined">lock</mat-icon>

@@ -18,6 +18,7 @@ import { LOGIN_PATH, PROFILE_SELECT_PATH } from '../../auth/auth-guards';
 import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
 import { injectWebsiteLinks } from '../../config/website-links';
+import { ErrorIdStore } from '../../shared/error-id/error-id';
 import { APP_LANGUAGES, AppLanguage, LanguageService } from '../../i18n/language';
 import {
   AppConnectDialog,
@@ -56,6 +57,8 @@ export class Shell {
   protected readonly language = inject(LanguageService);
   protected readonly authStore = inject(AuthStore);
   protected readonly config = inject(AppConfigStore);
+  /** Error ID of the last server error, to quote in a report. */
+  protected readonly errorIds = inject(ErrorIdStore);
   /** Footer links to website, legal notice and privacy policy; none without a website. */
   protected readonly websiteLinks = injectWebsiteLinks();
 

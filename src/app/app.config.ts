@@ -14,6 +14,7 @@ import { provideApi } from './api-client';
 import { startApp } from './app-init';
 import { authInterceptor } from './auth/auth-interceptor';
 import { provideI18n } from './i18n/i18n.config';
+import { errorIdInterceptor } from './shared/error-id/error-id';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     // The first navigation starts in startApp(), once the mode and the session are known.
     provideRouter(routes, withComponentInputBinding(), withDisabledInitialNavigation()),
     provideHttpClient(
-      withInterceptors([authInterceptor]),
+      withInterceptors([authInterceptor, errorIdInterceptor]),
       // Spring Security's cookie/header names for the CSRF token.
       withXsrfConfiguration({ cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN' }),
     ),

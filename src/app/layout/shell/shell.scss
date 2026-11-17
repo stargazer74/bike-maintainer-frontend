@@ -274,3 +274,20 @@
   color: var(--bm-orange-light);
   font-weight: 600;
 }
+
+.shell__error-id {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 16px;
+  padding: 4px 4px 4px 16px;
+  color: var(--bm-text);
+  font-size: 0.875rem;
+  background: var(--status-overdue-bg);
+  border: 1px solid var(--status-overdue-border);
+  border-radius: 8px;
+
+  span {
+    flex: 1;
+  }
+}
