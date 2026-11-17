@@ -12,6 +12,19 @@ map $http_x_forwarded_host $bm_forwarded_host {
     ''      $host;
 }
 
+# Trace ID per request: nginx's $request_id (32 random hex characters) is a valid W3C trace ID. The backend takes it
+# over from the traceparent header (its log lines carry it as traceId), and the access log below writes it as
+# trace_id=…, so the lines of one request can be found in both logs. The parent span ID is the first half of it;
+# flag 00: not sampled, nothing is exported. A traceparent sent by the client is always replaced.
+map $request_id $bm_traceparent {
+    "~^(?<bm_span_id>[0-9a-f]{16})" "00-$request_id-$bm_span_id-00";
+}
+
+# The image's default format "main" plus the trace ID.
+log_format bm_main '$remote_addr - $remote_user [$time_local] "$request" '
+                   '$status $body_bytes_sent "$http_referer" '
+                   '"$http_user_agent" "$http_x_forwarded_for" trace_id=$request_id';
+
 server {
     listen 80;
     server_name _;
@@ -20,6 +33,8 @@ server {
 
     # No nginx version in the Server header and on error pages.
     server_tokens off;
+
+    access_log /var/log/nginx/access.log bm_main;
 
     include /etc/nginx/snippets/security-headers.conf;
 
@@ -41,6 +56,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $bm_forwarded_proto;
         proxy_set_header X-Forwarded-Host $bm_forwarded_host;
+        proxy_set_header traceparent $bm_traceparent;
 
         # No uploads in the API; nginx must not cache API responses (the backend sets its own Cache-Control).
         client_max_body_size 1m;
@@ -51,8 +67,14 @@ server {
         proxy_hide_header X-Content-Type-Options;
         proxy_hide_header X-Frame-Options;
 
+        # The trace ID back to the client: on a server error the web and Android apps show its start as error ID,
+        # which users can quote in a report. Also on nginx's own errors (502/504 while the backend is down), hence
+        # always. An add_header here replaces the server-level ones, so the security headers are included again.
+        add_header X-Request-Id $request_id always;
+        include /etc/nginx/snippets/security-headers.conf;
+
         # The one exception: a vehicle export file (Epic #82) may have up to 5 MB, the backend enforces the same
-        # limit. The proxy headers above are inherited; set and proxy_pass are not and must be repeated.
+        # limit. The proxy and response headers above are inherited; set and proxy_pass are not and must be repeated.
         location = /api/v1/vehicles/import {
             set $bm_backend http://${BACKEND_HOST};
             proxy_pass $bm_backend;

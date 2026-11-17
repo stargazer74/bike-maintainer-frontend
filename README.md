@@ -96,6 +96,13 @@ Internet ──443──▶ TLS-Proxy ──▶ frontend (nginx)
 | `BACKEND_HOST` | `bike-maintainer-backend:8080` | Host und Port des Backends im Docker-Netz |
 | `NGINX_RESOLVER` | `127.0.0.11` | DNS-Server, über den `BACKEND_HOST` pro Request aufgelöst wird (Dockers eingebautes DNS) |
 
+Jede Anfrage bekommt eine Trace-ID (`$request_id`, 32 Hex-Zeichen). nginx schreibt sie als `trace_id=…` ans Ende
+der Zeile im Zugriffs-Log und gibt sie bei `/api/` im W3C-Header `traceparent` ans Backend weiter, das sie in seine
+Logzeilen übernimmt (`traceId`). Ein vom Client mitgeschickter `traceparent` wird immer ersetzt. Die Antworten unter
+`/api/` tragen die ID im Header `X-Request-Id`, auch Fehler von nginx selbst (502/504). Bei einem Serverfehler (5xx)
+zeigen Web-App und Android-App deren erste 8 Zeichen als „Fehler-ID“ an, die Nutzer bei einer Meldung angeben können;
+die Suche danach im Log findet die Anfrage.
+
 Alle Seiten bekommen eine strikte Content-Security-Policy ohne fremde Quellen (`security-headers.conf`). Einzige
 Ausnahme ist die Bezahlseite `/abo/bezahlen` (Standard-Zahlungslink bei Paddle): Sie lädt Paddle.js von
 `cdn.paddle.com` und bekommt dafür eine eigene, gelockerte Policy (`payment-security-headers.conf`). Die Domains von
