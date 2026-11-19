@@ -100,8 +100,9 @@
         @if (websiteLinks(); as links) {
           <p class="register__privacy">
             {{ 'register.privacyBefore' | transloco }}
-            <a [href]="links.privacy">{{ 'register.privacyLink' | transloco }}</a
-            >{{ 'register.privacyAfter' | transloco }}
+            <a [href]="links.privacy">{{ 'register.privacyLink' | transloco }}</a>{{
+              'register.privacyAfter' | transloco
+            }}
           </p>
         }
       </form>
