@@ -668,6 +668,10 @@
     "full": "Unlimited access",
     "buy": "Get the yearly subscription",
     "buyHint": "Payment is handled by our payment provider Paddle; the payment window loads Paddle.js for this. We never see payment details.",
+    "legal": "Sold and invoiced by our reseller Paddle.com (merchant of record). The subscription is subject to:",
+    "terms": "Terms",
+    "withdrawal": "Right of withdrawal",
+    "refunds": "Refund policy",
     "manage": "Manage subscription (invoices, cancellation)",
     "cancel": "Cancel contracts here",
     "paidWaiting": "Thank you! Your subscription is being activated …",
@@ -699,6 +703,8 @@
     "back": "Back to account",
     "invalid": "This payment link is incomplete. Please start the subscription again from your account.",
     "error": "Paddle's payment window could not be loaded. Please reload the page or try again later.",
-    "privacy": "On this page our payment provider Paddle (Paddle.com Market Ltd, London) loads its payment window and receives the data needed for payment and fraud prevention. Details in the privacy policy."
+    "privacy": "On this page our payment provider Paddle (Paddle.com Market Ltd, London) loads its payment window and receives the data needed for payment and fraud prevention. Details in the",
+    "privacyLink": "privacy policy",
+    "privacyAfter": "."
   }
 }

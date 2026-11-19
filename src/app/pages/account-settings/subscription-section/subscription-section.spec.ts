@@ -207,4 +207,53 @@ describe('SubscriptionSection', () => {
       expect(element.querySelector('.subscription__cancel-link')).toBeNull();
     });
   });
+
+  describe('terms, withdrawal and refunds before buying', () => {
+    const portal = { mode: OperatingMode.Portal, websiteUrl: 'https://www.example.com' };
+
+    function legalLinks(element: HTMLElement): [string, string | null][] {
+      return [...element.querySelectorAll<HTMLAnchorElement>('.subscription__legal-link')].map(
+        (link) => [link.textContent?.trim() ?? '', link.getAttribute('href')],
+      );
+    }
+
+    it('links them under the buy button, with Paddle as seller', async () => {
+      const element = await render({}, '/konto', portal);
+
+      expect(element.querySelector('.subscription__legal')?.textContent).toContain('Paddle.com');
+      expect(legalLinks(element)).toEqual([
+        ['AGB', 'https://www.example.com/agb/'],
+        ['Widerrufsbelehrung', 'https://www.example.com/widerruf/'],
+        ['Erstattungen', 'https://www.example.com/erstattung/'],
+      ]);
+    });
+
+    it('links the English pages in English', async () => {
+      const element = await render({ language: Language.En }, '/konto', portal);
+      await TestBed.inject(LanguageService).use('en', false);
+      TestBed.tick();
+
+      expect(legalLinks(element)).toEqual([
+        ['Terms', 'https://www.example.com/en/terms/'],
+        ['Right of withdrawal', 'https://www.example.com/en/withdrawal/'],
+        ['Refund policy', 'https://www.example.com/en/refunds/'],
+      ]);
+    });
+
+    it('are missing without a website', async () => {
+      const element = await render({}, '/konto', { mode: OperatingMode.Portal });
+
+      expect(element.querySelector('.subscription__legal')).toBeNull();
+    });
+
+    it('are missing when there is nothing to buy', async () => {
+      const element = await render(
+        { accessStatus: AccessStatus.Active, hasSubscription: true },
+        '/konto',
+        portal,
+      );
+
+      expect(element.querySelector('.subscription__legal')).toBeNull();
+    });
+  });
 });

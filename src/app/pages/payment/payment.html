@@ -28,6 +28,15 @@
       }
     }
 
-    <p class="payment__privacy">{{ 'payment.privacy' | transloco }}</p>
+    <p class="payment__privacy">
+      {{ 'payment.privacy' | transloco }}
+      @if (websiteLinks(); as links) {
+        <a class="payment__privacy-link" [href]="links.privacy">{{
+          'payment.privacyLink' | transloco
+        }}</a>{{ 'payment.privacyAfter' | transloco }}
+      } @else {
+        {{ 'payment.privacyLink' | transloco }}{{ 'payment.privacyAfter' | transloco }}
+      }
+    </p>
   </mat-card>
 </div>

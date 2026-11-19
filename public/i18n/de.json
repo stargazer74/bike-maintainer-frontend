@@ -668,6 +668,10 @@
     "full": "Unbegrenzter Zugang",
     "buy": "Jahresabo abschließen",
     "buyHint": "Bezahlt wird über unseren Zahlungsanbieter Paddle; das Bezahlfenster lädt dazu Paddle.js. Wir sehen keine Zahlungsdaten.",
+    "legal": "Verkauf und Rechnung über unseren Vertriebspartner Paddle.com (Merchant of Record). Für das Abo gelten:",
+    "terms": "AGB",
+    "withdrawal": "Widerrufsbelehrung",
+    "refunds": "Erstattungen",
     "manage": "Abo verwalten (Rechnungen, Kündigung)",
     "cancel": "Verträge hier kündigen",
     "paidWaiting": "Danke! Dein Abo wird freigeschaltet …",
@@ -699,6 +703,8 @@
     "back": "Zurück zum Konto",
     "invalid": "Dieser Bezahllink ist unvollständig. Starte das Abo bitte im Konto neu.",
     "error": "Das Bezahlfenster von Paddle konnte nicht geladen werden. Bitte lade die Seite neu oder versuche es später noch einmal.",
-    "privacy": "Auf dieser Seite lädt unser Zahlungsanbieter Paddle (Paddle.com Market Ltd, London) sein Bezahlfenster; dabei erhält Paddle die für Zahlung und Betrugsprävention nötigen Daten. Details in der Datenschutzerklärung."
+    "privacy": "Auf dieser Seite lädt unser Zahlungsanbieter Paddle (Paddle.com Market Ltd, London) sein Bezahlfenster; dabei erhält Paddle die für Zahlung und Betrugsprävention nötigen Daten. Details in der",
+    "privacyLink": "Datenschutzerklärung",
+    "privacyAfter": "."
   }
 }

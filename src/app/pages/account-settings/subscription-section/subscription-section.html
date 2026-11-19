@@ -62,6 +62,22 @@
       {{ 'subscription.buy' | transloco }}
     </button>
     <p class="subscription__hint">{{ 'subscription.buyHint' | transloco }}</p>
+    @if (websiteLinks(); as links) {
+      <p class="subscription__legal">
+        {{ 'subscription.legal' | transloco }}
+        <a class="subscription__legal-link" [href]="links.terms">{{
+          'subscription.terms' | transloco
+        }}</a>
+        ·
+        <a class="subscription__legal-link" [href]="links.withdrawal">{{
+          'subscription.withdrawal' | transloco
+        }}</a>
+        ·
+        <a class="subscription__legal-link" [href]="links.refunds">{{
+          'subscription.refunds' | transloco
+        }}</a>
+      </p>
+    }
   }
   @if (canManage()) {
     <button

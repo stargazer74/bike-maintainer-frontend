@@ -11,6 +11,7 @@ import { Payment } from './payment';
 describe('Payment', () => {
   let harness: RouterTestingHarness;
   let payment: ReturnType<typeof signal<PaymentConfig | null>>;
+  let websiteUrl: ReturnType<typeof signal<string | null>>;
   let load: ReturnType<typeof vi.fn<() => Promise<PaddleApi>>>;
   let paddle: {
     Environment: { set: ReturnType<typeof vi.fn> };
@@ -20,6 +21,7 @@ describe('Payment', () => {
 
   beforeEach(async () => {
     payment = signal<PaymentConfig | null>({ clientToken: 'test_token', sandbox: true });
+    websiteUrl = signal<string | null>(null);
     paddle = {
       Environment: { set: vi.fn() },
       Initialize: vi.fn(),
@@ -30,7 +32,7 @@ describe('Payment', () => {
       imports: [translocoTesting()],
       providers: [
         provideRouter([{ path: 'abo/bezahlen', component: Payment }], withComponentInputBinding()),
-        { provide: AppConfigStore, useValue: { payment } },
+        { provide: AppConfigStore, useValue: { payment, websiteUrl } },
         { provide: LOAD_PADDLE, useValue: load },
       ],
     });
@@ -118,5 +120,22 @@ describe('Payment', () => {
     const page = await open('/abo/bezahlen?_ptxn=txn_1');
 
     expect(page.querySelector('[role="alert"]')?.textContent).toContain('nicht geladen');
+  });
+
+  it('links the privacy policy of the website', async () => {
+    websiteUrl.set('https://www.example.com');
+
+    const page = await open('/abo/bezahlen?_ptxn=txn_1');
+
+    const link = page.querySelector<HTMLAnchorElement>('.payment__privacy-link');
+    expect(link?.textContent?.trim()).toBe('Datenschutzerklärung');
+    expect(link?.getAttribute('href')).toBe('https://www.example.com/datenschutz/');
+  });
+
+  it('names the privacy policy without a link when there is no website', async () => {
+    const page = await open('/abo/bezahlen?_ptxn=txn_1');
+
+    expect(page.querySelector('.payment__privacy-link')).toBeNull();
+    expect(page.querySelector('.payment__privacy')?.textContent).toContain('Datenschutzerklärung.');
   });
 });

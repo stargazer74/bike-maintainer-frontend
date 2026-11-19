@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AppConfigStore } from '../../config/app-config-store';
+import { injectWebsiteLinks } from '../../config/website-links';
 import { LanguageService } from '../../i18n/language';
 import { PAID_PARAM } from '../account-settings/subscription-section/subscription-section';
 import { LOAD_PADDLE, PaddleApi, PaddleCheckoutSettings, PaddleEvent } from './paddle';
@@ -39,6 +40,8 @@ export class Payment implements OnInit {
   private readonly loadPaddle = inject(LOAD_PADDLE);
   private readonly document = inject(DOCUMENT);
 
+  /** Link to the privacy policy of the website, if there is one. */
+  protected readonly websiteLinks = injectWebsiteLinks();
   protected readonly state = signal<PaymentState>('loading');
   private paddle: PaddleApi | null = null;
 
