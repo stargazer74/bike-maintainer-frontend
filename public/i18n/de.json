@@ -92,6 +92,7 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Überblick über alle Fahrzeuge und fällige Wartungen.",
+    "vehicleDeleted": "„{{name}}“ wurde gelöscht.",
     "loadError": "Daten konnten nicht geladen werden.",
     "lastMaintenance": "Letzte Wartung",
     "noMaintenance": "Noch keine Wartung erfasst",
@@ -143,9 +144,24 @@
     "currentYear": "Dieses Jahr",
     "empty": "Noch keine Kosten erfasst"
   },
+  "vehicleDelete": {
+    "title": "Fahrzeug löschen?",
+    "message": "„{{name}}“ wird mit allem gelöscht, was dazu erfasst ist:",
+    "tasks": "Wartungsaufgaben: {{count}}",
+    "logs": "Wartungseinträge: {{count}}",
+    "more": "dazu Kosten, Materialien, Messwerte und Sollwerte",
+    "irreversible": "Das lässt sich nicht rückgängig machen. Exportiere das Fahrzeug vorher, wenn du die Daten behalten oder später wieder importieren möchtest.",
+    "export": "Vorher exportieren",
+    "confirm": "Endgültig löschen",
+    "errors": {
+      "notFound": "Das Fahrzeug gibt es nicht mehr. Lade die Seite neu.",
+      "unknown": "Das Fahrzeug konnte nicht gelöscht werden. Bitte versuche es erneut."
+    }
+  },
   "vehicleDetail": {
     "loadError": "Fahrzeug konnte nicht geladen werden.",
     "editVehicle": "Fahrzeugdaten bearbeiten",
+    "deleteVehicle": "Fahrzeug löschen",
     "currentMileage": "Aktueller Stand",
     "editMileage": "Kilometerstand bearbeiten",
     "tabStatus": "Dashboard & Status",

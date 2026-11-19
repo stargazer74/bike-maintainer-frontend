@@ -1,0 +1,58 @@
+<h2 mat-dialog-title class="delete-vehicle__title">
+  <mat-icon fontSet="material-symbols-outlined">warning</mat-icon>
+  {{ 'vehicleDelete.title' | transloco }}
+</h2>
+
+<mat-dialog-content>
+  <p class="delete-vehicle__message">
+    {{ 'vehicleDelete.message' | transloco: { name: data.name } }}
+  </p>
+  <ul class="delete-vehicle__list">
+    <li>{{ 'vehicleDelete.tasks' | transloco: { count: data.taskCount } }}</li>
+    <li>{{ 'vehicleDelete.logs' | transloco: { count: data.logCount } }}</li>
+    <li>{{ 'vehicleDelete.more' | transloco }}</li>
+  </ul>
+  <p class="delete-vehicle__message">{{ 'vehicleDelete.irreversible' | transloco }}</p>
+
+  @if (data.exportErrorKey(); as key) {
+    <p class="field__error delete-vehicle__error" role="alert">{{ key | transloco }}</p>
+  }
+  @if (errorKey(); as key) {
+    <p class="field__error delete-vehicle__error" role="alert">{{ key | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions class="delete-vehicle__actions">
+  <button
+    type="button"
+    class="btn btn--ghost delete-vehicle__export"
+    [disabled]="data.exporting() || deleting()"
+    (click)="data.exportVehicle()"
+  >
+    @if (data.exporting()) {
+      <mat-spinner diameter="16" />
+    }
+    {{ 'vehicleDelete.export' | transloco }}
+  </button>
+  <span class="delete-vehicle__spacer"></span>
+  <button
+    type="button"
+    class="btn btn--ghost delete-vehicle__cancel"
+    cdkFocusInitial
+    [disabled]="deleting()"
+    (click)="cancel()"
+  >
+    {{ 'common.cancel' | transloco }}
+  </button>
+  <button
+    type="button"
+    class="btn btn--danger delete-vehicle__confirm"
+    [disabled]="deleting()"
+    (click)="onDelete()"
+  >
+    @if (deleting()) {
+      <mat-spinner diameter="16" />
+    }
+    {{ 'vehicleDelete.confirm' | transloco }}
+  </button>
+</mat-dialog-actions>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin, map, of, switchMap } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { MaintenanceLogsService, MaintenanceTasksService, VehiclesService } from
 import { LanguageService } from '../../i18n/language';
 import { LocalDatePipe, LocalNumberPipe } from '../../i18n/localized-pipes';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
+import { DELETED_VEHICLE_STATE } from '../../shared/vehicle-list-refresh';
 import { computeTaskStatus } from '../vehicle-detail/maintenance-status';
 import { resolveTaskIcon } from '../vehicle-detail/task-icon';
 
@@ -43,6 +44,10 @@ export class Dashboard {
 
   protected readonly vehicleIcon = vehicleIcon;
   protected readonly vehicleSubtitle = vehicleSubtitle;
+
+  /** Name of the vehicle deleted on its page right before (navigation state), to confirm it once. */
+  protected readonly deletedVehicle: string | null =
+    inject(Router).currentNavigation()?.extras.state?.[DELETED_VEHICLE_STATE] ?? null;
 
   protected readonly data = rxResource({
     stream: () =>

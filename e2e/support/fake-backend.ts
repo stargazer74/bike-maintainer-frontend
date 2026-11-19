@@ -284,6 +284,12 @@ export class FakeBackend {
       case 'PUT ':
         Object.assign(vehicle, body as VehicleRequest, { updatedAt: new Date().toISOString() });
         return json(200, vehicle);
+      case 'DELETE ':
+        // Like the backend: the vehicle goes with its tasks and logs.
+        removeWhere(this.vehicles, (v) => v.id === vehicle.id);
+        removeWhere(this.tasks, (task) => task.vehicleId === vehicle.id);
+        removeWhere(this.logs, (l) => l.vehicleId === vehicle.id);
+        return json(204);
       case 'GET /maintenance-tasks':
         return json(
           200,
@@ -403,6 +409,15 @@ export class FakeBackend {
 
   private id(): number {
     return this.nextId++;
+  }
+}
+
+/** Removes the matching entries in place (the lists are readonly fields). */
+function removeWhere<T>(list: T[], matches: (entry: T) => boolean): void {
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (matches(list[i])) {
+      list.splice(i, 1);
+    }
   }
 }
 

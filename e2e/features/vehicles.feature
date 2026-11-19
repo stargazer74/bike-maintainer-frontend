@@ -43,3 +43,25 @@ Feature: Vehicles on the dashboard
     When I open the vehicle "Tenere"
     Then I see the heading "Tenere"
     And I see the text "Noch keine Wartungsaufgaben hinterlegt."
+
+  Scenario: Deleting a vehicle removes it after confirmation
+    Given a motorcycle "Tenere" with 19600 km exists
+    And I open the app
+    When I open the vehicle "Tenere"
+    And I click "Fahrzeug löschen"
+    Then I see the text "„Tenere“ wird mit allem gelöscht"
+    When I click "Endgültig löschen"
+    Then the dialog is closed
+    And I am on the page "/dashboard"
+    And I see the text "„Tenere“ wurde gelöscht."
+    And I see the text "Noch keine Fahrzeuge erfasst."
+
+  Scenario: Cancelling the deletion keeps the vehicle
+    Given a motorcycle "Tenere" with 19600 km exists
+    And I open the app
+    When I open the vehicle "Tenere"
+    And I click "Fahrzeug löschen"
+    And I click "Abbrechen"
+    Then the dialog is closed
+    And I am on the page of the vehicle "Tenere"
+    And I see the heading "Tenere"

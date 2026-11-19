@@ -25,6 +25,7 @@ import {
   AppConnectDialogData,
 } from '../../shared/app-connect-dialog/app-connect-dialog';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
+import { VehicleListRefresh } from '../../shared/vehicle-list-refresh';
 import {
   VehicleImportDialog,
   VehicleImportDialogData,
@@ -76,9 +77,19 @@ export class Shell {
   /** Only a different user reloads the vehicles, not a change of their settings (e.g. language). */
   private readonly userId = computed(() => this.authStore.currentUser()?.id);
 
-  /** Loaded per logged-in user; idle (and empty) while logged out, reloaded when the user changes. */
+  private readonly vehicleListRefresh = inject(VehicleListRefresh);
+
+  /**
+   * Loaded per logged-in user; idle (and empty) while logged out, reloaded when the user changes or a page reports
+   * changed vehicles (e.g. one was deleted).
+   */
   protected readonly vehicles = rxResource({
-    params: () => this.userId(),
+    params: () => {
+      const userId = this.userId();
+      return userId === undefined
+        ? undefined
+        : { userId, version: this.vehicleListRefresh.version() };
+    },
     stream: () => this.vehiclesService.listVehicles(),
   });
 
