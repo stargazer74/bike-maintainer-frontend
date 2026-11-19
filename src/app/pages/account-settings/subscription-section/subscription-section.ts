@@ -67,7 +67,8 @@ export class SubscriptionSection implements OnInit {
   private readonly router = inject(Router);
   private readonly leaveApp = inject(LEAVE_APP);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly websiteLinks = injectWebsiteLinks();
+  /** Links into the website (portal mode only): terms, withdrawal and refunds before buying, cancellation form. */
+  protected readonly websiteLinks = injectWebsiteLinks();
 
   protected readonly AccessStatus = AccessStatus;
   protected readonly user = this.authStore.currentUser;

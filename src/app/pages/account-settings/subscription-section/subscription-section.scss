@@ -73,6 +73,13 @@
   font-size: 0.875rem;
 }
 
+.subscription__legal {
+  margin: 0 0 16px;
+  color: var(--bm-text-dim);
+  font-size: 0.75rem;
+}
+
+.subscription__legal-link,
 .subscription__cancel-link {
   color: var(--bm-text);
   text-decoration: underline;

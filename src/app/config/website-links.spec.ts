@@ -16,6 +16,9 @@ describe('websiteLinks', () => {
       imprint: 'https://www.example.com/impressum/',
       privacy: 'https://www.example.com/datenschutz/',
       cancel: 'https://www.example.com/kuendigen/',
+      terms: 'https://www.example.com/agb/',
+      withdrawal: 'https://www.example.com/widerruf/',
+      refunds: 'https://www.example.com/erstattung/',
     });
   });
 
@@ -25,6 +28,9 @@ describe('websiteLinks', () => {
       imprint: 'https://www.example.com/en/legal-notice/',
       privacy: 'https://www.example.com/en/privacy/',
       cancel: 'https://www.example.com/en/cancel/',
+      terms: 'https://www.example.com/en/terms/',
+      withdrawal: 'https://www.example.com/en/withdrawal/',
+      refunds: 'https://www.example.com/en/refunds/',
     });
   });
 });
