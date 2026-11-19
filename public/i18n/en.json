@@ -92,6 +92,7 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of all vehicles and due maintenance.",
+    "vehicleDeleted": "“{{name}}” was deleted.",
     "loadError": "Data could not be loaded.",
     "lastMaintenance": "Last maintenance",
     "noMaintenance": "No maintenance recorded yet",
@@ -143,9 +144,24 @@
     "currentYear": "This year",
     "empty": "No costs recorded yet"
   },
+  "vehicleDelete": {
+    "title": "Delete vehicle?",
+    "message": "“{{name}}” will be deleted with everything recorded for it:",
+    "tasks": "Maintenance tasks: {{count}}",
+    "logs": "Maintenance entries: {{count}}",
+    "more": "plus costs, materials, measurements and target values",
+    "irreversible": "This cannot be undone. Export the vehicle first if you want to keep the data or import it again later.",
+    "export": "Export first",
+    "confirm": "Delete permanently",
+    "errors": {
+      "notFound": "This vehicle no longer exists. Please reload the page.",
+      "unknown": "The vehicle could not be deleted. Please try again."
+    }
+  },
   "vehicleDetail": {
     "loadError": "The vehicle could not be loaded.",
     "editVehicle": "Edit vehicle details",
+    "deleteVehicle": "Delete vehicle",
     "currentMileage": "Current mileage",
     "editMileage": "Edit mileage",
     "tabStatus": "Dashboard & status",

@@ -50,6 +50,16 @@
           >
             <mat-icon fontSet="material-symbols-outlined">file_export</mat-icon>
           </button>
+          <button
+            mat-icon-button
+            type="button"
+            class="vehicle-header__delete"
+            [attr.aria-label]="'vehicleDetail.deleteVehicle' | transloco"
+            [title]="'vehicleDetail.deleteVehicle' | transloco"
+            (click)="openDeleteVehicleDialog(vehicle, result.tasks.length, result.logs.length)"
+          >
+            <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+          </button>
         </div>
         @if (exportErrorKey(); as key) {
           <p class="field__error" role="alert">{{ key | transloco }}</p>

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import {
@@ -20,6 +20,8 @@ import {
 import { AuthStore } from '../../auth/auth-store';
 import { translocoTesting } from '../../i18n/testing';
 import '../../i18n/i18n.config';
+import { VehicleListRefresh } from '../../shared/vehicle-list-refresh';
+import { DeleteVehicleDialog } from './delete-vehicle-dialog/delete-vehicle-dialog';
 import { VehicleDetail } from './vehicle-detail';
 
 const BASE = 'http://localhost/api/v1/vehicles/7';
@@ -518,6 +520,7 @@ describe('VehicleDetail', () => {
     expect(page().querySelector('.vehicle-header__stat-edit-btn')).toBeNull();
     expect(page().querySelector('.status-section__worksheet')).toBeNull();
     expect(page().querySelector('.vehicle-header__export')).not.toBeNull();
+    expect(page().querySelector('.vehicle-header__delete')).not.toBeNull();
     await openTab(2);
     expect(page().querySelector('.read-only-hint')).not.toBeNull();
     expect(page().querySelector('#log-date')).toBeNull();
@@ -744,6 +747,52 @@ describe('VehicleDetail', () => {
       httpMock.expectOne(BASE).flush(VEHICLE);
       httpMock.match(() => true).forEach((pending) => pending.flush([]));
       await fixture.whenStable();
+    });
+  });
+
+  describe('deleting the vehicle (frontend#95)', () => {
+    function mockDialog(deleted: boolean) {
+      return vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
+        afterClosed: () => of(deleted),
+      } as ReturnType<MatDialog['open']>);
+    }
+
+    it('asks with what goes with it, then goes to the dashboard and refreshes the vehicle lists', async () => {
+      await render([log(1, '2026-05-01'), log(2, '2026-06-01')], [OIL_CHANGE]);
+      const open = mockDialog(true);
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      const refresh = TestBed.inject(VehicleListRefresh);
+      const version = refresh.version();
+
+      page().querySelector<HTMLButtonElement>('.vehicle-header__delete')!.click();
+
+      expect(open).toHaveBeenCalledWith(
+        DeleteVehicleDialog,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            vehicleId: 7,
+            name: 'Kawasaki VN800',
+            taskCount: 1,
+            logCount: 2,
+          }),
+        }),
+      );
+      expect(refresh.version()).toBe(version + 1);
+      expect(navigate).toHaveBeenCalledWith(['/dashboard'], {
+        state: { deletedVehicle: 'Kawasaki VN800' },
+      });
+    });
+
+    it('stays on the page when the deletion is cancelled', async () => {
+      await render([]);
+      mockDialog(false);
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+      const version = TestBed.inject(VehicleListRefresh).version();
+
+      page().querySelector<HTMLButtonElement>('.vehicle-header__delete')!.click();
+
+      expect(navigate).not.toHaveBeenCalled();
+      expect(TestBed.inject(VehicleListRefresh).version()).toBe(version);
     });
   });
 

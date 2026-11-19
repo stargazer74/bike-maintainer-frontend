@@ -15,6 +15,7 @@ import { AuthStore } from '../../auth/auth-store';
 import { AppConfigStore } from '../../config/app-config-store';
 import { translocoTesting } from '../../i18n/testing';
 import { ErrorIdStore } from '../../shared/error-id/error-id';
+import { VehicleListRefresh } from '../../shared/vehicle-list-refresh';
 import { Shell } from './shell';
 
 const ME_URL = 'http://localhost/api/v1/auth/me';
@@ -264,6 +265,17 @@ describe('Shell vehicle import', () => {
     httpMock.expectOne(VEHICLES_URL).flush([]);
     await fixture.whenStable();
     expect(navigate).toHaveBeenCalledWith(['/fahrzeuge', 9]);
+  });
+
+  it('reloads the vehicle list when a page reports changed vehicles (frontend#95)', async () => {
+    await render();
+
+    TestBed.inject(VehicleListRefresh).notify();
+    TestBed.tick();
+
+    // A second request for the vehicles; httpMock.verify() fails if there is none or more.
+    httpMock.expectOne(VEHICLES_URL).flush([]);
+    await fixture.whenStable();
   });
 
   it('stays where it is when the import is cancelled', async () => {

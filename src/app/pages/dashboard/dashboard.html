@@ -3,6 +3,12 @@
   <p>{{ 'dashboard.subtitle' | transloco }}</p>
 </header>
 
+@if (deletedVehicle; as name) {
+  <p class="dashboard__notice" role="status">
+    {{ 'dashboard.vehicleDeleted' | transloco: { name } }}
+  </p>
+}
+
 @if (data.isLoading()) {
   <div class="state-row">
     <mat-spinner diameter="32" />

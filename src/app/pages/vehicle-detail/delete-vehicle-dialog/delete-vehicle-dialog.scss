@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  min-width: 300px;
+  max-width: 600px;
+}
+
+.delete-vehicle__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--bm-text);
+
+  mat-icon {
+    color: var(--status-overdue);
+  }
+}
+
+.delete-vehicle__message {
+  margin: 0 0 12px;
+  color: var(--bm-text-muted);
+}
+
+.delete-vehicle__list {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  color: var(--bm-text);
+}
+
+.delete-vehicle__error {
+  margin: 0 0 8px;
+}
+
+.delete-vehicle__actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.delete-vehicle__spacer {
+  flex: 1;
+}
+
+// `.field__error`, `.btn`, `.btn--ghost` and `.btn--danger` are defined globally in src/styles/_forms.scss.

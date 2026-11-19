@@ -14,6 +14,7 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { filter, forkJoin, map, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -77,6 +78,8 @@ import {
 import { draftError, NewTaskDraft, toNewTaskRequests } from './new-task-editor/new-task-draft';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
+import { DELETED_VEHICLE_STATE, VehicleListRefresh } from '../../shared/vehicle-list-refresh';
+import { openDeleteVehicleDialog } from './delete-vehicle-dialog/delete-vehicle-dialog';
 import { computeTaskStatus } from './maintenance-status';
 import { describeTaskInterval } from './task-interval';
 import { resolveTaskIcon } from './task-icon';
@@ -121,6 +124,8 @@ export class VehicleDetail {
   private readonly authStore = inject(AuthStore);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private readonly vehicleListRefresh = inject(VehicleListRefresh);
   protected readonly language = inject(LanguageService);
   /** Trial and subscription over: everything stays visible, but nothing can be recorded or changed. */
   protected readonly readOnly = this.authStore.isReadOnly;
@@ -314,6 +319,33 @@ export class VehicleDetail {
           this.exportErrorKey.set('vehicleDetail.exportError');
         },
       });
+  }
+
+  /**
+   * Deletes the vehicle with everything recorded for it after asking (frontend#95), also on a read-only account – it
+   * may delete its data. Afterwards the dashboard confirms it; the name travels in the navigation state, not the URL.
+   */
+  protected openDeleteVehicleDialog(
+    vehicle: VehicleResponse,
+    taskCount: number,
+    logCount: number,
+  ): void {
+    const name = vehicle.name ?? '';
+    openDeleteVehicleDialog(this.dialog, {
+      vehicleId: vehicle.id!,
+      name,
+      taskCount,
+      logCount,
+      exportVehicle: () => this.exportVehicle(vehicle.id!),
+      exporting: this.exporting,
+      exportErrorKey: this.exportErrorKey,
+    }).subscribe((deleted) => {
+      if (!deleted) {
+        return;
+      }
+      this.vehicleListRefresh.notify();
+      void this.router.navigate(['/dashboard'], { state: { [DELETED_VEHICLE_STATE]: name } });
+    });
   }
 
   protected openEditVehicleDialog(vehicle: VehicleResponse): void {

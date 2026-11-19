@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import {
   Currency,
   MaintenanceLogResponse,
@@ -193,5 +194,39 @@ describe('Dashboard', () => {
       title.textContent!.trim(),
     );
     expect(titles).toEqual(['Ölwechsel, Kette, Unbekannte Aufgabe +1 weitere', 'Wartung']);
+  });
+
+  describe('after deleting a vehicle (frontend#95)', () => {
+    async function navigate(state?: Record<string, unknown>): Promise<HTMLElement> {
+      TestBed.configureTestingModule({
+        imports: [translocoTesting()],
+        providers: [
+          provideHttpClientTesting(),
+          provideRouter([{ path: 'dashboard', component: Dashboard }]),
+        ],
+      });
+      httpMock = TestBed.inject(HttpTestingController);
+      const harness = await RouterTestingHarness.create();
+      await TestBed.inject(Router).navigateByUrl('/dashboard', { state });
+      await tick();
+      httpMock.expectOne(API).flush([]);
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+      return harness.routeNativeElement!;
+    }
+
+    it('confirms the deletion with the name from the navigation state', async () => {
+      const element = await navigate({ deletedVehicle: 'Tenere' });
+
+      expect(element.querySelector('.dashboard__notice[role="status"]')?.textContent?.trim()).toBe(
+        '„Tenere“ wurde gelöscht.',
+      );
+    });
+
+    it('shows no confirmation on a normal visit', async () => {
+      const element = await navigate();
+
+      expect(element.querySelector('.dashboard__notice')).toBeNull();
+    });
   });
 });

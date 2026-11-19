@@ -115,6 +115,11 @@
       color: var(--bm-orange-light);
     }
   }
+
+  // Destructive: red on hover instead of the orange of the other actions.
+  .vehicle-header__delete:hover {
+    color: var(--status-overdue);
+  }
 }
 
 .vehicle-header__stat {
