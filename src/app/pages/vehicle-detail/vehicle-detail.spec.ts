@@ -22,6 +22,10 @@ import { translocoTesting } from '../../i18n/testing';
 import '../../i18n/i18n.config';
 import { VehicleListRefresh } from '../../shared/vehicle-list-refresh';
 import { DeleteVehicleDialog } from './delete-vehicle-dialog/delete-vehicle-dialog';
+import {
+  DELETE_VEHICLE,
+  VehicleFormDialog,
+} from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { VehicleDetail } from './vehicle-detail';
 
 const BASE = 'http://localhost/api/v1/vehicles/7';
@@ -520,7 +524,16 @@ describe('VehicleDetail', () => {
     expect(page().querySelector('.vehicle-header__stat-edit-btn')).toBeNull();
     expect(page().querySelector('.status-section__worksheet')).toBeNull();
     expect(page().querySelector('.vehicle-header__export')).not.toBeNull();
-    expect(page().querySelector('.vehicle-header__delete')).not.toBeNull();
+    // Deleting goes through the (read-only) vehicle dialog.
+    const open = vi
+      .spyOn(fixture.debugElement.injector.get(MatDialog), 'open')
+      .mockReturnValue({ afterClosed: () => of(undefined) } as ReturnType<MatDialog['open']>);
+    page().querySelector<HTMLButtonElement>('[aria-label="Fahrzeugdaten anzeigen"]')!.click();
+    expect(open).toHaveBeenCalledWith(
+      VehicleFormDialog,
+      expect.objectContaining({ data: expect.objectContaining({ readOnly: true }) }),
+    );
+    open.mockRestore();
     await openTab(2);
     expect(page().querySelector('.read-only-hint')).not.toBeNull();
     expect(page().querySelector('#log-date')).toBeNull();
@@ -751,11 +764,21 @@ describe('VehicleDetail', () => {
   });
 
   describe('deleting the vehicle (frontend#95)', () => {
+    /** The edit dialog asks to delete, then the delete dialog answers [deleted]. */
     function mockDialog(deleted: boolean) {
-      return vi.spyOn(fixture.debugElement.injector.get(MatDialog), 'open').mockReturnValue({
-        afterClosed: () => of(deleted),
-      } as ReturnType<MatDialog['open']>);
+      return vi
+        .spyOn(fixture.debugElement.injector.get(MatDialog), 'open')
+        .mockReturnValueOnce({ afterClosed: () => of(DELETE_VEHICLE) } as ReturnType<
+          MatDialog['open']
+        >)
+        .mockReturnValueOnce({ afterClosed: () => of(deleted) } as ReturnType<MatDialog['open']>);
     }
+
+    it('is not offered on the page itself, only in the edit dialog', async () => {
+      await render([]);
+
+      expect(page().querySelector('[aria-label="Fahrzeug löschen"]')).toBeNull();
+    });
 
     it('asks with what goes with it, then goes to the dashboard and refreshes the vehicle lists', async () => {
       await render([log(1, '2026-05-01'), log(2, '2026-06-01')], [OIL_CHANGE]);
@@ -764,9 +787,15 @@ describe('VehicleDetail', () => {
       const refresh = TestBed.inject(VehicleListRefresh);
       const version = refresh.version();
 
-      page().querySelector<HTMLButtonElement>('.vehicle-header__delete')!.click();
+      page().querySelector<HTMLButtonElement>('.vehicle-header__edit')!.click();
 
-      expect(open).toHaveBeenCalledWith(
+      expect(open).toHaveBeenNthCalledWith(
+        1,
+        VehicleFormDialog,
+        expect.objectContaining({ data: expect.objectContaining({ readOnly: false }) }),
+      );
+      expect(open).toHaveBeenNthCalledWith(
+        2,
         DeleteVehicleDialog,
         expect.objectContaining({
           data: expect.objectContaining({
@@ -789,7 +818,7 @@ describe('VehicleDetail', () => {
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
       const version = TestBed.inject(VehicleListRefresh).version();
 
-      page().querySelector<HTMLButtonElement>('.vehicle-header__delete')!.click();
+      page().querySelector<HTMLButtonElement>('.vehicle-header__edit')!.click();
 
       expect(navigate).not.toHaveBeenCalled();
       expect(TestBed.inject(VehicleListRefresh).version()).toBe(version);

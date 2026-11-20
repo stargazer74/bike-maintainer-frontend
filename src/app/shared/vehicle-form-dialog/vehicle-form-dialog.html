@@ -1,12 +1,22 @@
 <h2 mat-dialog-title class="add-vehicle__title">
   <mat-icon fontSet="material-symbols-outlined">{{
-    editingVehicle ? 'edit' : 'two_wheeler'
+    readOnly ? 'info' : editingVehicle ? 'edit' : 'two_wheeler'
   }}</mat-icon>
-  {{ (editingVehicle ? 'vehicleForm.titleEdit' : 'vehicleForm.titleNew') | transloco }}
+  {{
+    (readOnly
+      ? 'vehicleForm.titleView'
+      : editingVehicle
+        ? 'vehicleForm.titleEdit'
+        : 'vehicleForm.titleNew'
+    ) | transloco
+  }}
 </h2>
 
 <form [formGroup]="form" (ngSubmit)="submit()">
   <mat-dialog-content class="add-vehicle__content">
+    @if (readOnly) {
+      <p class="add-vehicle__hint">{{ 'vehicleForm.readOnlyHint' | transloco }}</p>
+    }
     <div class="field">
       <label class="field__label" for="av-name">{{ 'vehicleForm.name' | transloco }}</label>
       <input
@@ -115,15 +125,28 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
+    @if (editingVehicle) {
+      <button
+        type="button"
+        class="btn btn--danger add-vehicle__delete"
+        (click)="requestDelete()"
+        [disabled]="saving()"
+      >
+        <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+        {{ 'vehicleDetail.deleteVehicle' | transloco }}
+      </button>
+    }
     <button type="button" class="btn btn--ghost" (click)="cancel()" [disabled]="saving()">
-      {{ 'common.cancel' | transloco }}
+      {{ (readOnly ? 'common.close' : 'common.cancel') | transloco }}
     </button>
-    <button type="submit" class="btn btn--primary" [disabled]="saving()">
-      @if (saving()) {
-        <mat-spinner diameter="18" />
-      } @else {
-        {{ (editingVehicle ? 'common.saveChanges' : 'vehicleForm.submitNew') | transloco }}
-      }
-    </button>
+    @if (!readOnly) {
+      <button type="submit" class="btn btn--primary" [disabled]="saving()">
+        @if (saving()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          {{ (editingVehicle ? 'common.saveChanges' : 'vehicleForm.submitNew') | transloco }}
+        }
+      </button>
+    }
   </mat-dialog-actions>
 </form>

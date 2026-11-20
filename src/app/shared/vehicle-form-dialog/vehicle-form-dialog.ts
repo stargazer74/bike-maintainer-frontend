@@ -10,7 +10,15 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 export interface VehicleFormDialogData {
   readonly vehicle?: VehicleResponse;
+  /** Read-only account: the data is only shown, deleting the vehicle stays possible (Epic backend#136). */
+  readonly readOnly?: boolean;
 }
+
+/** Result of the edit dialog when the user wants to delete the vehicle; the caller then asks for confirmation. */
+export const DELETE_VEHICLE = 'delete';
+
+/** What the dialog closes with: the saved vehicle, {@link DELETE_VEHICLE}, or nothing when cancelled. */
+export type VehicleFormDialogResult = VehicleResponse | typeof DELETE_VEHICLE;
 
 @Component({
   selector: 'app-vehicle-form-dialog',
@@ -28,10 +36,12 @@ export interface VehicleFormDialogData {
 export class VehicleFormDialog {
   private readonly fb = inject(FormBuilder);
   private readonly vehiclesService = inject(VehiclesService);
-  private readonly dialogRef = inject(MatDialogRef<VehicleFormDialog, VehicleResponse>);
+  private readonly dialogRef = inject(MatDialogRef<VehicleFormDialog, VehicleFormDialogResult>);
   private readonly data = inject<VehicleFormDialogData | null>(MAT_DIALOG_DATA, { optional: true });
 
   protected readonly editingVehicle = this.data?.vehicle ?? null;
+  /** Only an existing vehicle can be read-only. */
+  protected readonly readOnly = this.editingVehicle !== null && this.data?.readOnly === true;
 
   protected readonly minYear = 1900;
   protected readonly maxYear = CURRENT_YEAR + 1;
@@ -73,8 +83,14 @@ export class VehicleFormDialog {
     ),
   });
 
+  constructor() {
+    if (this.readOnly) {
+      this.form.disable();
+    }
+  }
+
   protected submit(): void {
-    if (this.saving()) {
+    if (this.saving() || this.readOnly) {
       return;
     }
     if (this.form.invalid) {
@@ -115,5 +131,10 @@ export class VehicleFormDialog {
 
   protected cancel(): void {
     this.dialogRef.close();
+  }
+
+  /** Hands the deletion to the vehicle page, which asks first and offers an export. */
+  protected requestDelete(): void {
+    this.dialogRef.close(DELETE_VEHICLE);
   }
 }

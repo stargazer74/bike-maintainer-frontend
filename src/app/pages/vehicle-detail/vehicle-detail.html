@@ -29,16 +29,22 @@
       <div class="vehicle-header__body">
         <div class="vehicle-header__title-row">
           <h1>{{ vehicle.name }}</h1>
-          @if (!readOnly()) {
-            <button
-              mat-icon-button
-              type="button"
-              [attr.aria-label]="'vehicleDetail.editVehicle' | transloco"
-              (click)="openEditVehicleDialog(vehicle)"
-            >
-              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-            </button>
-          }
+          <button
+            mat-icon-button
+            type="button"
+            class="vehicle-header__edit"
+            [attr.aria-label]="
+              (readOnly() ? 'vehicleDetail.showVehicle' : 'vehicleDetail.editVehicle') | transloco
+            "
+            [title]="
+              (readOnly() ? 'vehicleDetail.showVehicle' : 'vehicleDetail.editVehicle') | transloco
+            "
+            (click)="openEditVehicleDialog(vehicle, result.tasks.length, result.logs.length)"
+          >
+            <mat-icon fontSet="material-symbols-outlined">{{
+              readOnly() ? 'info' : 'edit'
+            }}</mat-icon>
+          </button>
           <button
             mat-icon-button
             type="button"
@@ -49,16 +55,6 @@
             (click)="exportVehicle(vehicle.id!)"
           >
             <mat-icon fontSet="material-symbols-outlined">file_export</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            type="button"
-            class="vehicle-header__delete"
-            [attr.aria-label]="'vehicleDetail.deleteVehicle' | transloco"
-            [title]="'vehicleDetail.deleteVehicle' | transloco"
-            (click)="openDeleteVehicleDialog(vehicle, result.tasks.length, result.logs.length)"
-          >
-            <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
           </button>
         </div>
         @if (exportErrorKey(); as key) {

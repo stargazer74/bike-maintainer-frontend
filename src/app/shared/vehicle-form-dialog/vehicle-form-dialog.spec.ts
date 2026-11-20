@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VehicleResponse, VehicleType } from '../../api-client';
 import { translocoTesting } from '../../i18n/testing';
-import { VehicleFormDialog, VehicleFormDialogData } from './vehicle-form-dialog';
+import { DELETE_VEHICLE, VehicleFormDialog, VehicleFormDialogData } from './vehicle-form-dialog';
 
 const API = 'http://localhost/api/v1/vehicles';
 
@@ -181,5 +181,43 @@ describe('VehicleFormDialog', () => {
     page().querySelector<HTMLButtonElement>('.btn--ghost')!.click();
 
     expect(close).toHaveBeenCalledWith();
+  });
+
+  describe('deleting (moved from the vehicle page)', () => {
+    function deleteButton(): HTMLButtonElement | null {
+      return page().querySelector<HTMLButtonElement>('.add-vehicle__delete');
+    }
+
+    it('is not offered for a new vehicle', async () => {
+      await render(null);
+
+      expect(deleteButton()).toBeNull();
+    });
+
+    it('hands the deletion to the caller without deleting itself', async () => {
+      await render({ vehicle: VEHICLE });
+      expect(deleteButton()!.textContent).toContain('Fahrzeug löschen');
+
+      deleteButton()!.click();
+
+      expect(close).toHaveBeenCalledWith(DELETE_VEHICLE);
+      httpMock.expectNone(() => true);
+    });
+
+    it('read-only: shows the data without saving, but keeps deleting', async () => {
+      await render({ vehicle: VEHICLE, readOnly: true });
+
+      expect(page().textContent).toContain('Fahrzeugdaten');
+      expect(page().textContent).toContain('Löschen ist weiterhin möglich');
+      expect(input('av-name').disabled).toBe(true);
+      expect(page().querySelector('button[type="submit"]')).toBeNull();
+      expect(page().querySelector('.btn--ghost')!.textContent).toContain('Schließen');
+
+      await submit();
+      httpMock.expectNone(() => true);
+
+      deleteButton()!.click();
+      expect(close).toHaveBeenCalledWith(DELETE_VEHICLE);
+    });
   });
 });

@@ -77,7 +77,12 @@ import {
 } from './measurements/specification-dialog/specification-dialog';
 import { draftError, NewTaskDraft, toNewTaskRequests } from './new-task-editor/new-task-draft';
 import { vehicleIcon, vehicleSubtitle } from '../../shared/vehicle-format';
-import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
+import {
+  DELETE_VEHICLE,
+  VehicleFormDialog,
+  VehicleFormDialogData,
+  VehicleFormDialogResult,
+} from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { DELETED_VEHICLE_STATE, VehicleListRefresh } from '../../shared/vehicle-list-refresh';
 import { openDeleteVehicleDialog } from './delete-vehicle-dialog/delete-vehicle-dialog';
 import { computeTaskStatus } from './maintenance-status';
@@ -323,9 +328,10 @@ export class VehicleDetail {
 
   /**
    * Deletes the vehicle with everything recorded for it after asking (frontend#95), also on a read-only account – it
-   * may delete its data. Afterwards the dashboard confirms it; the name travels in the navigation state, not the URL.
+   * may delete its data. Reached from the edit dialog only, so it is not right on the page. Afterwards the dashboard
+   * confirms it; the name travels in the navigation state, not the URL.
    */
-  protected openDeleteVehicleDialog(
+  private openDeleteVehicleDialog(
     vehicle: VehicleResponse,
     taskCount: number,
     logCount: number,
@@ -348,15 +354,24 @@ export class VehicleDetail {
     });
   }
 
-  protected openEditVehicleDialog(vehicle: VehicleResponse): void {
+  /** Edit dialog, on a read-only account only showing the data; it is also the way to delete the vehicle. */
+  protected openEditVehicleDialog(
+    vehicle: VehicleResponse,
+    taskCount: number,
+    logCount: number,
+  ): void {
     this.dialog
-      .open(VehicleFormDialog, { autoFocus: 'first-tabbable', data: { vehicle } })
+      .open<VehicleFormDialog, VehicleFormDialogData, VehicleFormDialogResult>(VehicleFormDialog, {
+        autoFocus: 'first-tabbable',
+        data: { vehicle, readOnly: this.readOnly() },
+      })
       .afterClosed()
-      .subscribe((updatedVehicle) => {
-        if (!updatedVehicle) {
-          return;
+      .subscribe((result) => {
+        if (result === DELETE_VEHICLE) {
+          this.openDeleteVehicleDialog(vehicle, taskCount, logCount);
+        } else if (result) {
+          this.data.reload();
         }
-        this.data.reload();
       });
   }
 

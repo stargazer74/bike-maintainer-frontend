@@ -48,6 +48,7 @@ Feature: Vehicles on the dashboard
     Given a motorcycle "Tenere" with 19600 km exists
     And I open the app
     When I open the vehicle "Tenere"
+    And I click "Fahrzeugdaten bearbeiten"
     And I click "Fahrzeug löschen"
     Then I see the text "„Tenere“ wird mit allem gelöscht"
     When I click "Endgültig löschen"
@@ -60,6 +61,7 @@ Feature: Vehicles on the dashboard
     Given a motorcycle "Tenere" with 19600 km exists
     And I open the app
     When I open the vehicle "Tenere"
+    And I click "Fahrzeugdaten bearbeiten"
     And I click "Fahrzeug löschen"
     And I click "Abbrechen"
     Then the dialog is closed

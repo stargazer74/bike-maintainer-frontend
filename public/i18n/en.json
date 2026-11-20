@@ -119,6 +119,7 @@
   "vehicleForm": {
     "titleNew": "Add new vehicle",
     "titleEdit": "Edit vehicle",
+    "titleView": "Vehicle details",
     "name": "Name *",
     "namePlaceholder": "e.g. Yamaha MT-09 SP",
     "nameRequired": "Name is required.",
@@ -136,7 +137,8 @@
     "firstRegistrationRequired": "First registration is required.",
     "submitNew": "Add vehicle",
     "createError": "The vehicle could not be added. Please try again.",
-    "updateError": "The vehicle could not be updated. Please try again."
+    "updateError": "The vehicle could not be updated. Please try again.",
+    "readOnlyHint": "With read-only access you can view the vehicle details but not change them. Deleting is still possible."
   },
   "costTile": {
     "title": "Costs",
@@ -161,6 +163,7 @@
   "vehicleDetail": {
     "loadError": "The vehicle could not be loaded.",
     "editVehicle": "Edit vehicle details",
+    "showVehicle": "Show vehicle details",
     "deleteVehicle": "Delete vehicle",
     "currentMileage": "Current mileage",
     "editMileage": "Edit mileage",
