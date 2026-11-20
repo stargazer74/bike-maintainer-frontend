@@ -119,6 +119,7 @@
   "vehicleForm": {
     "titleNew": "Neues Fahrzeug anlegen",
     "titleEdit": "Fahrzeug bearbeiten",
+    "titleView": "Fahrzeugdaten",
     "name": "Name *",
     "namePlaceholder": "z. B. Yamaha MT-09 SP",
     "nameRequired": "Name ist erforderlich.",
@@ -136,7 +137,8 @@
     "firstRegistrationRequired": "Erstzulassung ist erforderlich.",
     "submitNew": "Fahrzeug anlegen",
     "createError": "Fahrzeug konnte nicht angelegt werden. Bitte versuche es erneut.",
-    "updateError": "Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut."
+    "updateError": "Fahrzeug konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+    "readOnlyHint": "Mit Lesezugriff kannst du die Fahrzeugdaten ansehen, aber nicht ändern. Löschen ist weiterhin möglich."
   },
   "costTile": {
     "title": "Kosten",
@@ -161,6 +163,7 @@
   "vehicleDetail": {
     "loadError": "Fahrzeug konnte nicht geladen werden.",
     "editVehicle": "Fahrzeugdaten bearbeiten",
+    "showVehicle": "Fahrzeugdaten anzeigen",
     "deleteVehicle": "Fahrzeug löschen",
     "currentMileage": "Aktueller Stand",
     "editMileage": "Kilometerstand bearbeiten",

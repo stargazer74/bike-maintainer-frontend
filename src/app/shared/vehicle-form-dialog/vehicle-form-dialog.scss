@@ -35,5 +35,25 @@
   font-size: 0.8125rem;
 }
 
+.add-vehicle__hint {
+  margin: 0 0 12px;
+  color: var(--bm-text-muted);
+  font-size: 0.875rem;
+}
+
+// Destructive and rarely needed: set apart on the left, away from saving.
+.add-vehicle__delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
 // `.field`, `.field__input`, `.btn`, etc. are defined globally in
 // src/styles/_forms.scss and shared by every form in the app.
