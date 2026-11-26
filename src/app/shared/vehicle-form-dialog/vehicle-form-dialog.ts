@@ -1,10 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { VehicleRequest, VehicleResponse, VehicleType, VehiclesService } from '../../api-client';
+import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
+import {
+  VehicleRequest,
+  VehicleResponse,
+  VehicleTemplatesService,
+  VehicleType,
+  VehiclesService,
+} from '../../api-client';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -36,6 +44,8 @@ export type VehicleFormDialogResult = VehicleResponse | typeof DELETE_VEHICLE;
 export class VehicleFormDialog {
   private readonly fb = inject(FormBuilder);
   private readonly vehiclesService = inject(VehiclesService);
+  private readonly templatesService = inject(VehicleTemplatesService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dialogRef = inject(MatDialogRef<VehicleFormDialog, VehicleFormDialogResult>);
   private readonly data = inject<VehicleFormDialogData | null>(MAT_DIALOG_DATA, { optional: true });
 
@@ -83,10 +93,50 @@ export class VehicleFormDialog {
     ),
   });
 
+  /** A maintenance plan template exists for the entered vehicle (new vehicles only; purely informational). */
+  protected readonly templateHint = signal(false);
+
   constructor() {
     if (this.readOnly) {
       this.form.disable();
     }
+    if (!this.editingVehicle) {
+      this.watchForTemplate();
+    }
+  }
+
+  /**
+   * Looks for a template once make and model are filled in. Never touches `saving` or the form's validity: a failed
+   * search just means no hint, creating the vehicle always stays possible.
+   */
+  private watchForTemplate(): void {
+    this.form.valueChanges
+      .pipe(
+        map(({ type, make, model, modelYear }) => ({
+          type: type!,
+          make: (make ?? '').trim(),
+          model: (model ?? '').trim(),
+          modelYear: typeof modelYear === 'number' ? modelYear : undefined,
+        })),
+        distinctUntilChanged(
+          (a, b) =>
+            a.type === b.type &&
+            a.make === b.make &&
+            a.model === b.model &&
+            a.modelYear === b.modelYear,
+        ),
+        debounceTime(400),
+        switchMap(({ type, make, model, modelYear }) =>
+          make.length < 2 || !model
+            ? of(false)
+            : this.templatesService.searchVehicleTemplates(make, type, model, modelYear).pipe(
+                map((hits) => hits.length > 0),
+                catchError(() => of(false)),
+              ),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((found) => this.templateHint.set(found));
   }
 
   protected submit(): void {

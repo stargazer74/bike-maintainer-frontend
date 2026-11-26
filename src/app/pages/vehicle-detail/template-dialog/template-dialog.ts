@@ -8,12 +8,10 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   ApplyTemplateResponse,
-  MaintenanceTaskResponse,
   VehicleResponse,
   VehicleTemplateResponse,
   VehicleTemplatesService,
@@ -49,7 +47,7 @@ type Step = 'search' | 'apply';
  */
 @Component({
   selector: 'app-template-dialog',
-  imports: [MatDialogModule, MatIconModule, MatProgressSpinnerModule, TranslocoPipe, LocalDatePipe],
+  imports: [MatDialogModule, MatProgressSpinnerModule, TranslocoPipe, LocalDatePipe],
   templateUrl: './template-dialog.html',
   styleUrl: './template-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -163,8 +161,7 @@ export class TemplateDialog {
   }
 
   protected interval(row: TemplateTaskRow) {
-    // describeTaskInterval only reads oneTime, intervalKm and intervalMonths, which template tasks share.
-    return describeTaskInterval(row.task as unknown as MaintenanceTaskResponse, this.locale());
+    return describeTaskInterval(row.task, this.locale());
   }
 
   protected reportUrl(taskKey?: string): string {

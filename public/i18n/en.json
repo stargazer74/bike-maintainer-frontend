@@ -117,6 +117,7 @@
     "SCOOTER": "Scooter"
   },
   "vehicleForm": {
+    "templateHint": "A maintenance plan is available for this model",
     "titleNew": "Add new vehicle",
     "titleEdit": "Edit vehicle",
     "titleView": "Vehicle details",
@@ -757,7 +758,8 @@
     "report": "Report an error",
     "reportTask": "Report an error in this task",
     "apply": "Apply",
-    "selected": "{{count}} selected",
+    "open": "Apply template",
+    "applied": "{{created}} applied, {{skipped}} already present",
     "errors": {
       "search": "The search failed. Please try again.",
       "load": "The template could not be loaded.",

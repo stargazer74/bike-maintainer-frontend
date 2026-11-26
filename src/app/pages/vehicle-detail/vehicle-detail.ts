@@ -41,6 +41,8 @@ import {
   VehiclesService,
   VehicleSpecifications,
   WorksheetsService,
+  ApplyTemplateResponse,
+  VehicleTemplatesService,
 } from '../../api-client';
 import { AuthStore } from '../../auth/auth-store';
 import { LanguageService } from '../../i18n/language';
@@ -49,6 +51,7 @@ import { confirmAction, showInfo } from '../../shared/confirm-dialog/confirm-dia
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
 import { WorksheetDialog, WorksheetDialogData } from './worksheet-dialog/worksheet-dialog';
+import { TemplateDialog, TemplateDialogData } from './template-dialog/template-dialog';
 import { CostTile } from './cost-tile/cost-tile';
 import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
 import { MaterialEditor } from './material-editor/material-editor';
@@ -83,7 +86,11 @@ import {
   VehicleFormDialogData,
   VehicleFormDialogResult,
 } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
-import { DELETED_VEHICLE_STATE, VehicleListRefresh } from '../../shared/vehicle-list-refresh';
+import {
+  DELETED_VEHICLE_STATE,
+  OFFER_TEMPLATE_STATE,
+  VehicleListRefresh,
+} from '../../shared/vehicle-list-refresh';
 import { openDeleteVehicleDialog } from './delete-vehicle-dialog/delete-vehicle-dialog';
 import { computeTaskStatus } from './maintenance-status';
 import { describeTaskInterval } from './task-interval';
@@ -131,6 +138,7 @@ export class VehicleDetail {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly vehicleListRefresh = inject(VehicleListRefresh);
+  private readonly templatesService = inject(VehicleTemplatesService);
   protected readonly language = inject(LanguageService);
   /** Trial and subscription over: everything stays visible, but nothing can be recorded or changed. */
   protected readonly readOnly = this.authStore.isReadOnly;
@@ -168,6 +176,9 @@ export class VehicleDetail {
   });
 
   protected readonly outOfRangeCount = outOfRangeCount;
+
+  /** Result of the last template application, shown above the task list (translation params). */
+  protected readonly templateResult = signal<ApplyTemplateResponse | null>(null);
 
   protected readonly taskCards = computed(() => {
     const result = this.data.value();
@@ -246,6 +257,61 @@ export class VehicleDetail {
       autoFocus: 'first-tabbable',
       data: { vehicleId, tasks },
     });
+  }
+
+  /** Opens the template dialog for the maintenance plan; afterwards confirms the result and reloads the tasks. */
+  protected openTemplateDialog(vehicle: VehicleResponse, tasks: MaintenanceTaskResponse[]): void {
+    this.dialog
+      .open<TemplateDialog, TemplateDialogData, ApplyTemplateResponse>(TemplateDialog, {
+        autoFocus: 'first-tabbable',
+        data: {
+          vehicle,
+          existingKeys: tasks.flatMap((task) => (task.templateKey ? [task.templateKey] : [])),
+        },
+      })
+      .afterClosed()
+      .subscribe((response) => {
+        if (response) {
+          this.templateResult.set(response);
+          this.data.reload();
+        }
+      });
+  }
+
+  /** Searches for a template of the new vehicle and opens the dialog on a hit; a failing search is ignored. */
+  private offerTemplate(vehicle: VehicleResponse, tasks: MaintenanceTaskResponse[]): void {
+    const make = vehicle.make?.trim() ?? '';
+    if (make.length < 2) {
+      return;
+    }
+    this.templatesService
+      .searchVehicleTemplates(
+        make,
+        vehicle.type,
+        vehicle.model?.trim() || undefined,
+        vehicle.modelYear,
+      )
+      .subscribe({
+        next: (hits) => {
+          if (hits.length > 0) {
+            this.openTemplateDialog(vehicle, tasks);
+          }
+        },
+        error: () => undefined,
+      });
+  }
+
+  /**
+   * True once after the shell navigated here with `{ offerTemplate: true }` in the history state; the flag is
+   * cleared, so a reload or going back does not offer again.
+   */
+  private consumeOfferTemplate(): boolean {
+    const history = this.document.defaultView?.history;
+    if (history?.state?.[OFFER_TEMPLATE_STATE] !== true) {
+      return false;
+    }
+    history.replaceState({ ...history.state, [OFFER_TEMPLATE_STATE]: false }, '');
+    return true;
   }
 
   protected openWorksheetDialog(vehicleId: number): void {
@@ -485,6 +551,13 @@ export class VehicleDetail {
       if (result && !this.logMileageSeeded()) {
         this.logMileageSeeded.set(true);
         this.logMileage.set(result.vehicle.currentMileage ?? 0);
+      }
+    });
+    // Right after creating a vehicle (shell): offer the template dialog once, if there is a template for it.
+    effect(() => {
+      const result = this.data.value();
+      if (result && !this.readOnly() && this.consumeOfferTemplate()) {
+        this.offerTemplate(result.vehicle, result.tasks);
       }
     });
   }

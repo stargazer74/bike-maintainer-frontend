@@ -25,7 +25,7 @@ import {
   AppConnectDialogData,
 } from '../../shared/app-connect-dialog/app-connect-dialog';
 import { VehicleFormDialog } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
-import { VehicleListRefresh } from '../../shared/vehicle-list-refresh';
+import { OFFER_TEMPLATE_STATE, VehicleListRefresh } from '../../shared/vehicle-list-refresh';
 import {
   VehicleImportDialog,
   VehicleImportDialogData,
@@ -133,7 +133,9 @@ export class Shell {
           return;
         }
         this.vehicles.reload();
-        this.router.navigate(['/fahrzeuge', createdVehicle.id]);
+        this.router.navigate(['/fahrzeuge', createdVehicle.id], {
+          state: { [OFFER_TEMPLATE_STATE]: true },
+        });
       });
   }
 

@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import type { DataTable } from 'playwright-bdd';
-import { OperatingMode, VehicleType } from '../../src/app/api-client/model/models';
+import { AccessStatus, OperatingMode, VehicleType } from '../../src/app/api-client/model/models';
 import { Given, Then } from '../support/fixtures';
 
 /** Default password of seeded accounts; meets the backend rules (10–72 characters). */
@@ -31,6 +31,11 @@ Given('I am logged in as {string}', ({ backend }, email: string) => {
   if (!backend.accounts.some((account) => account.user.email === email)) {
     backend.addAccount(email, DEFAULT_PASSWORD);
   }
+  backend.logIn(email);
+});
+
+Given('I am logged in as {string} with expired access', ({ backend }, email: string) => {
+  backend.addAccount(email, DEFAULT_PASSWORD, { accessStatus: AccessStatus.Expired });
   backend.logIn(email);
 });
 
@@ -77,6 +82,26 @@ Given(
       mileageAtPerformed: mileage,
       performedTaskIds: [created.id],
     });
+  },
+);
+
+Given(
+  'a vehicle template for {string} {string} exists with the tasks:',
+  ({ backend }, make: string, model: string, table: DataTable) => {
+    backend.addTemplate(
+      make,
+      model,
+      table.raw().map(([name, intervalKm]) => [name, Number(intervalKm)]),
+    );
+  },
+);
+
+Given(
+  'the vehicle {string} has the task {string} from the template',
+  ({ backend }, vehicle: string, task: string) => {
+    const created = backend.addTask(backend.vehicleByName(vehicle).id, { name: task });
+    const key = backend.templates.flatMap((t) => t.tasks).find((t) => t.name === task)?.key;
+    Object.assign(created, { templateKey: key });
   },
 );
 

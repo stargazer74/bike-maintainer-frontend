@@ -117,6 +117,7 @@
     "SCOOTER": "Roller"
   },
   "vehicleForm": {
+    "templateHint": "Für dieses Modell gibt es einen Wartungsplan",
     "titleNew": "Neues Fahrzeug anlegen",
     "titleEdit": "Fahrzeug bearbeiten",
     "titleView": "Fahrzeugdaten",
@@ -757,7 +758,8 @@
     "report": "Fehler melden",
     "reportTask": "Fehler in dieser Aufgabe melden",
     "apply": "Übernehmen",
-    "selected": "{{count}} ausgewählt",
+    "open": "Vorlage übernehmen",
+    "applied": "{{created}} übernommen, {{skipped}} schon vorhanden",
     "errors": {
       "search": "Die Suche ist fehlgeschlagen. Bitte versuche es erneut.",
       "load": "Die Vorlage konnte nicht geladen werden.",

@@ -27,6 +27,7 @@ import {
   VehicleFormDialog,
 } from '../../shared/vehicle-form-dialog/vehicle-form-dialog';
 import { VehicleDetail } from './vehicle-detail';
+import { TemplateDialog } from './template-dialog/template-dialog';
 
 const BASE = 'http://localhost/api/v1/vehicles/7';
 
@@ -65,6 +66,7 @@ function tick(): Promise<void> {
 describe('VehicleDetail', () => {
   let fixture: ComponentFixture<VehicleDetail>;
   let httpMock: HttpTestingController;
+  let vehicle: VehicleResponse = VEHICLE;
   const originalUrl = { create: URL.createObjectURL, revoke: URL.revokeObjectURL };
 
   async function render(
@@ -82,7 +84,7 @@ describe('VehicleDetail', () => {
     fixture.componentRef.setInput('id', '7');
     fixture.autoDetectChanges();
     await tick();
-    httpMock.expectOne(BASE).flush(VEHICLE);
+    httpMock.expectOne(BASE).flush(vehicle);
     httpMock.expectOne(`${BASE}/maintenance-tasks`).flush(tasks);
     httpMock.expectOne(`${BASE}/maintenance-logs`).flush(logs);
     httpMock.expectOne(`${BASE}/cost-summary`).flush(costSummary);
@@ -541,6 +543,7 @@ describe('VehicleDetail', () => {
     expect(page().querySelector('.read-only-hint')).not.toBeNull();
     expect(page().querySelector('[aria-label="Löschen"]')).not.toBeNull();
     expect(page().querySelector('.tasks-manage__item [aria-label="Bearbeiten"]')).toBeNull();
+    expect(page().querySelector('.tasks-manage__template-open')).toBeNull();
   });
 
   it('uses the currency of the user for a new log', async () => {
@@ -1243,6 +1246,106 @@ describe('VehicleDetail', () => {
       httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
       flushMeasurementContext(BRAKES_ONLY);
       await fixture.whenStable();
+    });
+  });
+
+  describe('vehicle templates', () => {
+    const SEARCH = (req: { url: string }) =>
+      req.url === 'http://localhost/api/v1/vehicle-templates';
+    const GUZZI = {
+      ...VEHICLE,
+      make: 'Moto Guzzi',
+      model: 'V7',
+      modelYear: 2021,
+    } as VehicleResponse;
+
+    beforeEach(() => {
+      vehicle = GUZZI;
+    });
+
+    afterEach(() => {
+      vehicle = VEHICLE;
+      history.replaceState(null, '');
+      vi.restoreAllMocks();
+    });
+
+    function mockDialog(result: unknown) {
+      return vi.spyOn(MatDialog.prototype, 'open').mockReturnValue({
+        afterClosed: () => of(result),
+      } as never);
+    }
+
+    it('the button opens the dialog with the keys of existing tasks and confirms the result', async () => {
+      await render([], [{ ...OIL_CHANGE, templateKey: 'oil' } as MaintenanceTaskResponse]);
+      const open = mockDialog({ created: 3, skipped: 1 });
+
+      await openTab(3);
+      page().querySelector<HTMLButtonElement>('.tasks-manage__template-open')!.click();
+      await tick();
+
+      expect(open.mock.calls[0][0]).toBe(TemplateDialog);
+      expect(open.mock.calls[0][1]!.data).toEqual({ vehicle: GUZZI, existingKeys: ['oil'] });
+      httpMock.expectOne(BASE).flush(GUZZI);
+      httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
+      httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
+      httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
+      await fixture.whenStable();
+      expect(page().querySelector('.tasks-manage__template-result')!.textContent).toContain(
+        '3 übernommen, 1 schon vorhanden',
+      );
+    });
+
+    it('cancelling the dialog changes nothing', async () => {
+      await render([]);
+      mockDialog(undefined);
+
+      await openTab(3);
+      page().querySelector<HTMLButtonElement>('.tasks-manage__template-open')!.click();
+      await tick();
+
+      httpMock.expectNone(BASE);
+      expect(page().querySelector('.tasks-manage__template-result')).toBeNull();
+    });
+
+    it('right after creating (offerTemplate): opens the dialog on a hit', async () => {
+      history.replaceState({ offerTemplate: true }, '');
+      const open = mockDialog(undefined);
+      await render([]);
+      await tick();
+
+      const search = httpMock.expectOne(SEARCH);
+      expect(search.request.params.get('make')).toBe('Moto%20Guzzi');
+      search.flush([{ id: 'guzzi-v7' }]);
+
+      expect(open).toHaveBeenCalledTimes(1);
+      expect(open.mock.calls[0][0]).toBe(TemplateDialog);
+      expect(history.state.offerTemplate).toBe(false);
+    });
+
+    it('right after creating: no dialog without a hit or when the search fails', async () => {
+      history.replaceState({ offerTemplate: true }, '');
+      const open = mockDialog(undefined);
+      await render([]);
+      await tick();
+      httpMock.expectOne(SEARCH).flush([]);
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('right after creating: a failing search is ignored', async () => {
+      history.replaceState({ offerTemplate: true }, '');
+      const open = mockDialog(undefined);
+      await render([]);
+      await tick();
+      httpMock.expectOne(SEARCH).flush('x', { status: 500, statusText: 'Error' });
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('normal navigation does not search', async () => {
+      const open = mockDialog(undefined);
+      await render([]);
+      await tick();
+      httpMock.expectNone(SEARCH);
+      expect(open).not.toHaveBeenCalled();
     });
   });
 });

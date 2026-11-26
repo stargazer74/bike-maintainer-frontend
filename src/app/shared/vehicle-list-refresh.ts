@@ -3,6 +3,9 @@ import { Injectable, signal } from '@angular/core';
 /** Key in the navigation state to the dashboard: name of the vehicle that was just deleted, to confirm it there. */
 export const DELETED_VEHICLE_STATE = 'deletedVehicle';
 
+/** Key in the navigation state to a new vehicle's page: offer the maintenance plan template there. */
+export const OFFER_TEMPLATE_STATE = 'offerTemplate';
+
 /**
  * Tells lists of vehicles outside the current page (the shell's vehicle navigation) that the vehicles changed, e.g.
  * after one was deleted on its own page. Lists read {@link version} in their resource params and reload on a change.

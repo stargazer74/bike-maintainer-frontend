@@ -100,6 +100,18 @@ Then('I see a button {string}', async ({ page }, name: string) => {
   await expect(clickable(page, name)).toBeVisible();
 });
 
+Then('I do not see a button {string}', async ({ page }, name: string) => {
+  await expect(clickable(page, name)).toHaveCount(0);
+});
+
+Then('the button {string} is disabled', async ({ page }, name: string) => {
+  await expect(page.getByRole('button', { name, exact: true })).toBeDisabled();
+});
+
+Then('the dialog shows {string}', async ({ page }, text: string) => {
+  await expect(page.getByRole('dialog').getByText(text).first()).toBeVisible();
+});
+
 Then('the dialog is closed', async ({ page }) => {
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });

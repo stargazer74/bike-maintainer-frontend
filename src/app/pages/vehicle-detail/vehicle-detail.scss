@@ -669,6 +669,19 @@
   gap: 16px;
 }
 
+.tasks-manage__template {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.tasks-manage__template-result {
+  margin: 0;
+  color: var(--status-ok);
+  font-size: 0.875rem;
+}
+
 .tasks-manage__form-title {
   margin: 0 0 16px;
   font: var(--mat-sys-title-medium);

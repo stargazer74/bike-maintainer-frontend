@@ -220,4 +220,83 @@ describe('VehicleFormDialog', () => {
       expect(close).toHaveBeenCalledWith(DELETE_VEHICLE);
     });
   });
+
+  describe('template hint', () => {
+    const SEARCH = (req: { url: string }) =>
+      req.url === 'http://localhost/api/v1/vehicle-templates';
+
+    /** Waits out the debounce of the search. */
+    function debounce(): Promise<void> {
+      return new Promise((resolve) => setTimeout(resolve, 450));
+    }
+
+    function hint(): string | undefined {
+      return page().querySelector('.add-vehicle__template-hint')?.textContent?.trim();
+    }
+
+    it('does not search for a half-filled form: make "K", model empty', async () => {
+      await render(null);
+      await type('av-make', 'K');
+      await debounce();
+      await type('av-make', 'Ka');
+      await debounce();
+
+      httpMock.expectNone(SEARCH);
+      expect(hint()).toBeUndefined();
+      expect(errors()).toEqual([]);
+    });
+
+    it('shows the hint when a template matches', async () => {
+      await render(null);
+      await type('av-make', 'Guzzi');
+      await type('av-model', 'V7');
+      await debounce();
+
+      const request = httpMock.expectOne(SEARCH);
+      expect(request.request.params.get('make')).toBe('Guzzi');
+      expect(request.request.params.get('model')).toBe('V7');
+      request.flush([{ id: 'moto-guzzi-v7' }]);
+      await fixture.whenStable();
+
+      expect(hint()).toContain('Für dieses Modell gibt es einen Wartungsplan');
+    });
+
+    it('shows no hint without a match', async () => {
+      await render(null);
+      await type('av-make', 'Kawasaki');
+      await type('av-model', 'Nothing');
+      await debounce();
+      httpMock.expectOne(SEARCH).flush([]);
+      await fixture.whenStable();
+
+      expect(hint()).toBeUndefined();
+    });
+
+    it('a failing search shows nothing and does not prevent saving', async () => {
+      await render(null);
+      await type('av-name', 'Guzzi');
+      await type('av-make', 'Moto Guzzi');
+      await type('av-model', 'V7');
+      await debounce();
+      httpMock.expectOne(SEARCH).flush('boom', { status: 500, statusText: 'Server Error' });
+      await fixture.whenStable();
+
+      expect(hint()).toBeUndefined();
+      expect(errors()).toEqual([]);
+      await submit();
+      httpMock
+        .expectOne((req) => req.method === 'POST' && req.url === API)
+        .flush({ ...VEHICLE, id: 8 });
+      expect(close).toHaveBeenCalled();
+    });
+
+    it('never searches when editing', async () => {
+      await render({ vehicle: VEHICLE });
+      await type('av-model', 'VN900');
+      await debounce();
+
+      httpMock.expectNone(SEARCH);
+      expect(hint()).toBeUndefined();
+    });
+  });
 });

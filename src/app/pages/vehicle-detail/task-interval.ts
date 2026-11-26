@@ -4,7 +4,7 @@ import { TranslatableText } from '../../i18n/translatable-text';
 
 /** Human-readable summary of a task's due interval for the management list. */
 export function describeTaskInterval(
-  task: MaintenanceTaskResponse,
+  task: Pick<MaintenanceTaskResponse, 'oneTime' | 'intervalKm' | 'intervalMonths'>,
   locale: string,
 ): TranslatableText {
   if (task.oneTime) {
