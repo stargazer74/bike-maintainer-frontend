@@ -51,6 +51,7 @@ import { confirmAction, showInfo } from '../../shared/confirm-dialog/confirm-dia
 import { saveFile } from '../../shared/download';
 import { ChecklistDialog, ChecklistDialogData } from './checklist-dialog/checklist-dialog';
 import { WorksheetDialog, WorksheetDialogData } from './worksheet-dialog/worksheet-dialog';
+import { templateSearchParams } from './template-dialog/template-search';
 import { TemplateDialog, TemplateDialogData } from './template-dialog/template-dialog';
 import { CostTile } from './cost-tile/cost-tile';
 import { ReportDialog, ReportDialogData } from './report-dialog/report-dialog';
@@ -280,17 +281,13 @@ export class VehicleDetail {
 
   /** Searches for a template of the new vehicle and opens the dialog on a hit; a failing search is ignored. */
   private offerTemplate(vehicle: VehicleResponse, tasks: MaintenanceTaskResponse[]): void {
-    const make = vehicle.make?.trim() ?? '';
-    if (make.length < 2) {
+    const params = templateSearchParams(vehicle);
+    if (!params) {
       return;
     }
     this.templatesService
-      .searchVehicleTemplates(
-        make,
-        vehicle.type,
-        vehicle.model?.trim() || undefined,
-        vehicle.modelYear,
-      )
+      .searchVehicleTemplates(params.make, params.type, params.model, params.modelYear)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (hits) => {
           if (hits.length > 0) {

@@ -5,6 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { templateSearchParams } from '../../pages/vehicle-detail/template-dialog/template-search';
 import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import {
   VehicleRequest,
@@ -126,14 +127,17 @@ export class VehicleFormDialog {
             a.modelYear === b.modelYear,
         ),
         debounceTime(400),
-        switchMap(({ type, make, model, modelYear }) =>
-          make.length < 2 || !model
-            ? of(false)
-            : this.templatesService.searchVehicleTemplates(make, type, model, modelYear).pipe(
-                map((hits) => hits.length > 0),
-                catchError(() => of(false)),
-              ),
-        ),
+        switchMap((values) => {
+          const params = templateSearchParams(values);
+          return params
+            ? this.templatesService
+                .searchVehicleTemplates(params.make, params.type, params.model, params.modelYear)
+                .pipe(
+                  map((hits) => hits.length > 0),
+                  catchError(() => of(false)),
+                )
+            : of(false);
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((found) => this.templateHint.set(found));

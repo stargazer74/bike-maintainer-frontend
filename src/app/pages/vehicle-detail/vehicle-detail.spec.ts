@@ -1322,12 +1322,48 @@ describe('VehicleDetail', () => {
       expect(history.state.offerTemplate).toBe(false);
     });
 
-    it('right after creating: no dialog without a hit or when the search fails', async () => {
+    it('right after creating: no dialog without a hit', async () => {
       history.replaceState({ offerTemplate: true }, '');
       const open = mockDialog(undefined);
       await render([]);
       await tick();
       httpMock.expectOne(SEARCH).flush([]);
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('right after creating: no search without a model', async () => {
+      vehicle = { ...GUZZI, model: undefined } as VehicleResponse;
+      history.replaceState({ offerTemplate: true }, '');
+      const open = mockDialog(undefined);
+      await render([]);
+      await tick();
+      httpMock.expectNone(SEARCH);
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('right after creating: no search on a read-only account', async () => {
+      history.replaceState({ offerTemplate: true }, '');
+      const open = mockDialog(undefined);
+      TestBed.configureTestingModule({
+        imports: [translocoTesting()],
+        providers: [provideHttpClientTesting(), provideRouter([])],
+      });
+      httpMock = TestBed.inject(HttpTestingController);
+      TestBed.inject(AuthStore).selectProfile(3).subscribe();
+      httpMock
+        .expectOne((req) => req.url.endsWith('/profiles/3/select'))
+        .flush({ id: 3, name: 'Chris', role: 'USER', language: 'de', accessStatus: 'EXPIRED' });
+      fixture = TestBed.createComponent(VehicleDetail);
+      fixture.componentRef.setInput('id', '7');
+      fixture.autoDetectChanges();
+      await tick();
+      httpMock.expectOne(BASE).flush(GUZZI);
+      httpMock.expectOne(`${BASE}/maintenance-tasks`).flush([]);
+      httpMock.expectOne(`${BASE}/maintenance-logs`).flush([]);
+      httpMock.expectOne(`${BASE}/cost-summary`).flush([]);
+      flushMeasurementContext();
+      await fixture.whenStable();
+      httpMock.expectNone(SEARCH);
       expect(open).not.toHaveBeenCalled();
     });
 
