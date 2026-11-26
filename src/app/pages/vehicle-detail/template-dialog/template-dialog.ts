@@ -120,10 +120,9 @@ export class TemplateDialog {
       .subscribe({
         next: (hits) => {
           this.searching.set(false);
+          // Always show the hits, even a single one: the user sees what was searched for and can
+          // still adjust the search before opening a template.
           this.results.set(hits);
-          if (hits.length === 1) {
-            this.pick(hits[0]);
-          }
         },
         error: () => {
           this.searching.set(false);

@@ -52,6 +52,11 @@ When('I click {string}', async ({ page }, name: string) => {
   await clickable(page, name).click();
 });
 
+When('I click the button containing {string}', async ({ page }, text: string) => {
+  // For buttons whose accessible name carries more than a fixed label, e.g. a search hit.
+  await page.getByRole('button', { name: text }).click();
+});
+
 When('I open the tab {string}', async ({ page }, name: string) => {
   // Tab labels may carry a counter, e.g. "Wartungshistorie (1)".
   await page.getByRole('tab', { name: new RegExp('^' + escapeRegExp(name)) }).click();
