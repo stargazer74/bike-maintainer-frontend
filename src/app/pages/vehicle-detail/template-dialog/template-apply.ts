@@ -54,17 +54,36 @@ export function initialRows(
   });
 }
 
+/**
+ * A task whose template sets a first due point (e.g. the run-in service at 1,000 km) that the vehicle hasn't reached
+ * yet. Filling it with "done now" would push the next due date a whole interval out and silently drop that service.
+ */
+function firstDueStillAhead(
+  task: VehicleTemplateTaskResponse,
+  vehicle: VehicleResponse,
+  today: string,
+): boolean {
+  return (
+    (task.firstDueKm != null || task.firstDueMonths != null) &&
+    !firstDueAlreadyPassed(task, vehicle, today)
+  );
+}
+
+/**
+ * Fills empty "last done" fields with the current mileage and today. Skips existing rows and rows whose first due
+ * point is still ahead, so an upcoming first service is kept.
+ */
 export function fillEmpty(
   rows: TemplateTaskRow[],
-  currentMileage: number,
+  vehicle: VehicleResponse,
   today: string,
 ): TemplateTaskRow[] {
   return rows.map((row) =>
-    row.existing
+    row.existing || firstDueStillAhead(row.task, vehicle, today)
       ? { ...row }
       : {
           ...row,
-          lastDoneKm: row.lastDoneKm ?? currentMileage,
+          lastDoneKm: row.lastDoneKm ?? vehicle.currentMileage,
           lastDoneDate: row.lastDoneDate ?? today,
         },
   );

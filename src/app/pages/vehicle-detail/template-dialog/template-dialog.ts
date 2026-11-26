@@ -171,7 +171,7 @@ export class TemplateDialog {
   }
 
   protected fillEmptyFields(): void {
-    this.rows.update((rows) => fillEmpty(rows, this.vehicle.currentMileage, this.today()));
+    this.rows.update((rows) => fillEmpty(rows, this.vehicle, this.today()));
   }
 
   protected interval(row: TemplateTaskRow) {

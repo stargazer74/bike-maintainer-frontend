@@ -752,7 +752,7 @@
     "lastDoneKm": "km",
     "lastDoneDate": "Datum",
     "fillEmpty": "Leere Felder: aktueller Stand und heute",
-    "overdueHint": "Aufgaben ohne Angabe erscheinen als überfällig.",
+    "overdueHint": "Aufgaben ohne Angabe, deren erste Fälligkeit schon erreicht ist, erscheinen als überfällig. „Leere Felder“ füllt nur diese – eine anstehende Erstinspektion bleibt erhalten.",
     "disclaimer": "Die Vorlagen sind Richtwerte ohne Gewähr. Wir übernehmen keine Haftung für die Richtigkeit der Daten; die Nutzung erfolgt auf eigene Gefahr. Maßgeblich ist das Handbuch deines Fahrzeugs.",
     "disclaimerConfirm": "Ich habe den Hinweis gelesen.",
     "report": "Fehler melden",

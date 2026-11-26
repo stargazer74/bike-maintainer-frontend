@@ -752,7 +752,7 @@
     "lastDoneKm": "km",
     "lastDoneDate": "Date",
     "fillEmpty": "Empty fields: current mileage and today",
-    "overdueHint": "Tasks without an entry will show as overdue.",
+    "overdueHint": "Tasks without an entry whose first due point has already been reached show as overdue. “Empty fields” fills only these – an upcoming first service is kept.",
     "disclaimer": "The templates are guideline values without warranty. We accept no liability for the accuracy of the data; use at your own risk. Your vehicle's manual is authoritative.",
     "disclaimerConfirm": "I have read the notice.",
     "report": "Report an error",

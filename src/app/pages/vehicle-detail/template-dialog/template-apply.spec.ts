@@ -111,7 +111,7 @@ describe('fillEmpty', () => {
       row('b', { lastDoneDate: '2026-01-01' }),
       row('c'),
     ];
-    const result = fillEmpty(rows, 40000, TODAY);
+    const result = fillEmpty(rows, vehicle, TODAY);
     expect(result.map((r) => [r.lastDoneKm, r.lastDoneDate])).toEqual([
       [100, TODAY],
       [40000, '2026-01-01'],
@@ -121,11 +121,37 @@ describe('fillEmpty', () => {
 
   it('leaves existing rows untouched and returns new objects', () => {
     const rows = [row('a', { existing: true, selected: false }), row('b')];
-    const result = fillEmpty(rows, 40000, TODAY);
+    const result = fillEmpty(rows, vehicle, TODAY);
     expect(result[0]).toEqual(rows[0]);
     expect(result[0]).not.toBe(rows[0]);
     expect(result[1]).not.toBe(rows[1]);
     expect(rows[1].lastDoneKm).toBeNull();
+  });
+
+  it('keeps a first due point that is still ahead empty', () => {
+    const fresh = { currentMileage: 300, firstRegistrationDate: '2026-09-01' } as VehicleResponse;
+    const rows = [
+      row('run-in', { task: task('run-in', { firstDueKm: 1000, intervalKm: 12000 }) }),
+      row('by-time', { task: task('by-time', { firstDueMonths: 12, intervalMonths: 12 }) }),
+      row('plain', { task: task('plain', { intervalKm: 6000 }) }),
+    ];
+    const result = fillEmpty(rows, fresh, TODAY);
+    expect(result.map((r) => [r.lastDoneKm, r.lastDoneDate])).toEqual([
+      [null, null],
+      [null, null],
+      [300, TODAY],
+    ]);
+  });
+
+  it('fills a row once either first due axis is reached', () => {
+    const rows = [
+      row('km-reached', { task: task('km-reached', { firstDueKm: 1000, firstDueMonths: 120 }) }),
+      row('months-reached', {
+        task: task('months-reached', { firstDueKm: 90000, firstDueMonths: 12 }),
+      }),
+    ];
+    const result = fillEmpty(rows, vehicle, TODAY);
+    expect(result.map((r) => r.lastDoneKm)).toEqual([40000, 40000]);
   });
 });
 
