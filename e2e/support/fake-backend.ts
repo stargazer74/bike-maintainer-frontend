@@ -3,6 +3,8 @@ import { createChallenge, pbkdf2, verifySolution, type Payload } from 'altcha/li
 // The model files only, not the barrel of the client: that one pulls in the Angular services.
 import {
   AccessStatus,
+  type ApplyTemplateRequest,
+  type ApplyTemplateResponse,
   type AppConfigResponse,
   type Currency,
   type Language,
@@ -16,7 +18,10 @@ import {
   type UserResponse,
   UserRole,
   type VehicleRequest,
+  VehicleType,
   type VehicleResponse,
+  type VehicleTemplateResponse,
+  type VehicleTemplateSummaryResponse,
 } from '../../src/app/api-client/model/models';
 
 /** HMAC secret of the fake ALTCHA challenges; only ever used inside the test run. */
@@ -55,6 +60,7 @@ export class FakeBackend {
   readonly vehicles: VehicleResponse[] = [];
   readonly tasks: MaintenanceTaskResponse[] = [];
   readonly logs: MaintenanceLogResponse[] = [];
+  readonly templates: VehicleTemplateResponse[] = [];
   readonly requests: RecordedRequest[] = [];
   readonly unhandled: string[] = [];
   /** Registrations the backend accepted (only with a solved ALTCHA). */
@@ -108,6 +114,30 @@ export class FakeBackend {
     return task;
   }
 
+  /** A maintenance plan template; its tasks are `[name, intervalKm]` pairs, keyed by their position. */
+  addTemplate(make: string, model: string, tasks: [string, number][]): VehicleTemplateResponse {
+    const template: VehicleTemplateResponse = {
+      id: `${make}-${model}`.toLowerCase().replace(/\W+/g, '-'),
+      type: VehicleType.Motorcycle,
+      make,
+      model,
+      yearFrom: 2000,
+      taskCount: tasks.length,
+      sourceQuality: 'MANUFACTURER' as VehicleTemplateResponse['sourceQuality'],
+      sources: [],
+      tasks: tasks.map(([name, intervalKm], index) => ({
+        key: `task-${index + 1}`,
+        name,
+        intervalKm,
+        oneTime: false,
+        sourceIds: [],
+        details: [],
+      })),
+    };
+    this.templates.push(template);
+    return template;
+  }
+
   addLog(vehicleId: number, request: MaintenanceLogRequest): MaintenanceLogResponse {
     const log: MaintenanceLogResponse = {
       id: this.id(),
@@ -153,7 +183,7 @@ export class FakeBackend {
 
     let reply: Reply | undefined;
     try {
-      reply = await this.dispatch(method, path, body);
+      reply = await this.dispatch(method, path, body, new URL(request.url()).searchParams);
     } catch (error) {
       reply = json(500, { status: 500, message: String(error) });
     }
@@ -168,7 +198,12 @@ export class FakeBackend {
     });
   }
 
-  private async dispatch(method: string, path: string, body: unknown): Promise<Reply | undefined> {
+  private async dispatch(
+    method: string,
+    path: string,
+    body: unknown,
+    query: URLSearchParams,
+  ): Promise<Reply | undefined> {
     const p = path.replace(/^\/api\/v1/, '');
     const route = `${method} ${p}`;
 
@@ -191,6 +226,9 @@ export class FakeBackend {
     }
     if (!this.sessionUser) {
       return json(401, { status: 401, error: 'Unauthorized' });
+    }
+    if (p.startsWith('/vehicle-templates')) {
+      return this.dispatchTemplates(method, p, query);
     }
     if (p.startsWith('/vehicles')) {
       return this.dispatchVehicles(method, p, body);
@@ -304,6 +342,8 @@ export class FakeBackend {
         return json(200, vehicleLogs());
       case 'POST /maintenance-logs':
         return json(201, this.addLog(vehicle.id, body as MaintenanceLogRequest));
+      case 'POST /template':
+        return json(200, this.applyTemplate(vehicle.id, body as ApplyTemplateRequest));
       case 'GET /cost-summary':
         return json(200, []);
       case 'GET /worksheets':
@@ -315,6 +355,43 @@ export class FakeBackend {
       default:
         return undefined;
     }
+  }
+
+  private dispatchTemplates(method: string, p: string, query: URLSearchParams): Reply | undefined {
+    if (method !== 'GET') {
+      return undefined;
+    }
+    if (p === '/vehicle-templates') {
+      const make = (query.get('make') ?? '').toLowerCase();
+      const model = (query.get('model') ?? '').toLowerCase();
+      const hits: VehicleTemplateSummaryResponse[] = this.templates.filter(
+        (t) => t.make.toLowerCase().includes(make) && t.model.toLowerCase().includes(model),
+      );
+      return json(200, hits);
+    }
+    const template = this.templates.find((t) => `/vehicle-templates/${t.id}` === p);
+    return template ? json(200, template) : notFound();
+  }
+
+  /** Creates the chosen tasks the vehicle does not have yet (matched by `templateKey`). */
+  private applyTemplate(vehicleId: number, request: ApplyTemplateRequest): ApplyTemplateResponse {
+    const template = this.templates.find((t) => t.id === request.templateId);
+    let created = 0;
+    let skipped = 0;
+    for (const chosen of request.tasks) {
+      const source = template?.tasks.find((task) => task.key === chosen.key);
+      if (!source) {
+        continue;
+      }
+      if (this.tasks.some((t) => t.vehicleId === vehicleId && t.templateKey === chosen.key)) {
+        skipped++;
+        continue;
+      }
+      const task = this.addTask(vehicleId, { name: source.name, intervalKm: source.intervalKm });
+      Object.assign(task, { templateKey: chosen.key });
+      created++;
+    }
+    return { created, skipped };
   }
 
   // ---- behaviour -------------------------------------------------------------------------------

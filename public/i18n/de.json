@@ -117,6 +117,7 @@
     "SCOOTER": "Roller"
   },
   "vehicleForm": {
+    "templateHint": "Für dieses Modell gibt es einen Wartungsplan",
     "titleNew": "Neues Fahrzeug anlegen",
     "titleEdit": "Fahrzeug bearbeiten",
     "titleView": "Fahrzeugdaten",
@@ -725,5 +726,47 @@
     "privacy": "Auf dieser Seite lädt unser Zahlungsanbieter Paddle (Paddle.com Market Ltd, London) sein Bezahlfenster; dabei erhält Paddle die für Zahlung und Betrugsprävention nötigen Daten. Details in der",
     "privacyLink": "Datenschutzerklärung",
     "privacyAfter": "."
+  },
+  "templateDialog": {
+    "title": "Wartungsplan aus Vorlage",
+    "make": "Hersteller",
+    "model": "Modell",
+    "search": "Suchen",
+    "searching": "Suche läuft …",
+    "searchIntro": "Suche eine Vorlage für dein Fahrzeug.",
+    "none": "Keine Vorlage gefunden",
+    "pick": "Vorlage wählen",
+    "years": "{{from}}–{{to}}",
+    "yearsOpen": "ab {{from}}",
+    "taskCount": "{{count}} Aufgaben",
+    "back": "Zurück zur Suche",
+    "quality": {
+      "MANUFACTURER": "Herstellerangaben",
+      "SECONDARY": "Zweitrangige Quelle"
+    },
+    "alreadyPresent": "schon vorhanden",
+    "details": "Details",
+    "sources": "Quellen",
+    "retrieved": "abgerufen am {{date}}",
+    "lastDone": "Zuletzt erledigt",
+    "lastDoneKm": "km",
+    "lastDoneDate": "Datum",
+    "fillEmpty": "Leere Felder: aktueller Stand und heute",
+    "overdueHint": "Aufgaben ohne Angabe, deren erste Fälligkeit schon erreicht ist, erscheinen als überfällig. „Leere Felder“ füllt nur diese – eine anstehende Erstinspektion bleibt erhalten.",
+    "disclaimer": "Die Vorlagen sind Richtwerte ohne Gewähr. Wir übernehmen keine Haftung für die Richtigkeit der Daten; die Nutzung erfolgt auf eigene Gefahr. Maßgeblich ist das Handbuch deines Fahrzeugs.",
+    "disclaimerConfirm": "Ich habe den Hinweis gelesen.",
+    "report": "Fehler melden",
+    "reportTask": "Fehler in dieser Aufgabe melden",
+    "apply": "Übernehmen",
+    "open": "Vorlage übernehmen",
+    "applied": "{{created}} übernommen, {{skipped}} schon vorhanden",
+    "errors": {
+      "lastDone": "Zuletzt erledigt passt nicht zum Fahrzeug (Kilometerstand oder Datum).",
+      "lastDoneKm": "Der Kilometerstand darf höchstens {{max}} km betragen.",
+      "lastDoneDate": "Das Datum muss zwischen Erstzulassung und heute liegen.",
+      "search": "Die Suche ist fehlgeschlagen. Bitte versuche es erneut.",
+      "load": "Die Vorlage konnte nicht geladen werden.",
+      "unknown": "Die Vorlage konnte nicht übernommen werden. Bitte versuche es erneut."
+    }
   }
 }

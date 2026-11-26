@@ -119,6 +119,13 @@
       }
     </div>
 
+    @if (templateHint()) {
+      <p class="add-vehicle__template-hint" role="status">
+        <mat-icon fontSet="material-symbols-outlined">checklist</mat-icon>
+        {{ 'vehicleForm.templateHint' | transloco }}
+      </p>
+    }
+
     @if (submitError(); as error) {
       <p class="add-vehicle__error">{{ error | transloco }}</p>
     }

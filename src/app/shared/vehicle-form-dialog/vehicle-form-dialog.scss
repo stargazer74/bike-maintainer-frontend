@@ -35,6 +35,15 @@
   font-size: 0.8125rem;
 }
 
+.add-vehicle__template-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 0;
+  color: var(--status-ok);
+  font-size: 0.875rem;
+}
+
 .add-vehicle__hint {
   margin: 0 0 12px;
   color: var(--bm-text-muted);

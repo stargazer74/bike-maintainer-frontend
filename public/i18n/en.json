@@ -117,6 +117,7 @@
     "SCOOTER": "Scooter"
   },
   "vehicleForm": {
+    "templateHint": "A maintenance plan is available for this model",
     "titleNew": "Add new vehicle",
     "titleEdit": "Edit vehicle",
     "titleView": "Vehicle details",
@@ -725,5 +726,47 @@
     "privacy": "On this page our payment provider Paddle (Paddle.com Market Ltd, London) loads its payment window and receives the data needed for payment and fraud prevention. Details in the",
     "privacyLink": "privacy policy",
     "privacyAfter": "."
+  },
+  "templateDialog": {
+    "title": "Maintenance plan from template",
+    "make": "Make",
+    "model": "Model",
+    "search": "Search",
+    "searching": "Searching …",
+    "searchIntro": "Search for a template for your vehicle.",
+    "none": "No template found",
+    "pick": "Choose a template",
+    "years": "{{from}}–{{to}}",
+    "yearsOpen": "from {{from}}",
+    "taskCount": "{{count}} tasks",
+    "back": "Back to search",
+    "quality": {
+      "MANUFACTURER": "Manufacturer data",
+      "SECONDARY": "Secondary source"
+    },
+    "alreadyPresent": "already present",
+    "details": "Details",
+    "sources": "Sources",
+    "retrieved": "retrieved on {{date}}",
+    "lastDone": "Last done",
+    "lastDoneKm": "km",
+    "lastDoneDate": "Date",
+    "fillEmpty": "Empty fields: current mileage and today",
+    "overdueHint": "Tasks without an entry whose first due point has already been reached show as overdue. “Empty fields” fills only these – an upcoming first service is kept.",
+    "disclaimer": "The templates are guideline values without warranty. We accept no liability for the accuracy of the data; use at your own risk. Your vehicle's manual is authoritative.",
+    "disclaimerConfirm": "I have read the notice.",
+    "report": "Report an error",
+    "reportTask": "Report an error in this task",
+    "apply": "Apply",
+    "open": "Apply template",
+    "applied": "{{created}} applied, {{skipped}} already present",
+    "errors": {
+      "lastDone": "Last done doesn't fit the vehicle (mileage or date).",
+      "lastDoneKm": "The mileage must not exceed {{max}} km.",
+      "lastDoneDate": "The date must be between first registration and today.",
+      "search": "The search failed. Please try again.",
+      "load": "The template could not be loaded.",
+      "unknown": "The template could not be applied. Please try again."
+    }
   }
 }

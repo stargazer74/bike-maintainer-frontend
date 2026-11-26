@@ -652,6 +652,21 @@
             </mat-card-content>
           </mat-card>
         } @else {
+          <div class="tasks-manage__template">
+            <button
+              type="button"
+              class="btn btn--ghost tasks-manage__template-open"
+              (click)="openTemplateDialog(result.vehicle, result.tasks)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">playlist_add</mat-icon>
+              {{ 'templateDialog.open' | transloco }}
+            </button>
+            @if (templateResult(); as applied) {
+              <p class="tasks-manage__template-result" role="status">
+                {{ 'templateDialog.applied' | transloco: applied }}
+              </p>
+            }
+          </div>
           <mat-card class="log-form-card" appearance="outlined">
             <mat-card-content>
               <h3 class="tasks-manage__form-title">

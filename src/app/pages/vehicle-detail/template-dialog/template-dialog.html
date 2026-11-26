@@ -1,0 +1,281 @@
+<h2 mat-dialog-title>{{ 'templateDialog.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  @if (step() === 'search') {
+    <form class="template-dialog__search" (submit)="$event.preventDefault(); search()">
+      <p class="template-dialog__intro">{{ 'templateDialog.searchIntro' | transloco }}</p>
+      <div class="template-dialog__search-fields">
+        <div class="field">
+          <label class="field__label" for="template-make">{{
+            'templateDialog.make' | transloco
+          }}</label>
+          <input
+            id="template-make"
+            class="field__input"
+            type="text"
+            autocomplete="off"
+            [value]="make()"
+            (input)="make.set($any($event.target).value)"
+          />
+        </div>
+        <div class="field">
+          <label class="field__label" for="template-model">{{
+            'templateDialog.model' | transloco
+          }}</label>
+          <input
+            id="template-model"
+            class="field__input"
+            type="text"
+            autocomplete="off"
+            [value]="model()"
+            (input)="model.set($any($event.target).value)"
+          />
+        </div>
+      </div>
+      <button type="submit" class="btn btn--primary" [disabled]="!canSearch() || searching()">
+        {{ (searching() ? 'templateDialog.searching' : 'templateDialog.search') | transloco }}
+      </button>
+    </form>
+
+    @if (loading()) {
+      <mat-spinner diameter="24" />
+    }
+
+    @if (results(); as hits) {
+      @if (hits.length === 0) {
+        <p class="template-dialog__none">{{ 'templateDialog.none' | transloco }}</p>
+      } @else {
+        @if (hits.length > 1) {
+          <h3 class="template-dialog__subtitle">{{ 'templateDialog.pick' | transloco }}</h3>
+        }
+        <ul class="template-dialog__results">
+          @for (hit of hits; track hit.id) {
+            <li>
+              <button type="button" class="template-dialog__result" (click)="pick(hit)">
+                <span class="template-dialog__result-name">{{ hit.make }} {{ hit.model }}</span>
+                <span class="template-dialog__result-meta">
+                  @if (hit.yearTo) {
+                    {{ 'templateDialog.years' | transloco: { from: hit.yearFrom, to: hit.yearTo } }}
+                  } @else {
+                    {{ 'templateDialog.yearsOpen' | transloco: { from: hit.yearFrom } }}
+                  }
+                  · {{ 'templateDialog.taskCount' | transloco: { count: hit.taskCount } }} ·
+                  {{ 'templateDialog.quality.' + hit.sourceQuality | transloco }}
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    }
+  } @else if (template(); as tpl) {
+    <div class="template-dialog__head">
+      <div class="template-dialog__title-row">
+        <strong class="template-dialog__model">{{ tpl.make }} {{ tpl.model }}</strong>
+        <span class="template-dialog__years">
+          @if (tpl.yearTo) {
+            {{ 'templateDialog.years' | transloco: { from: tpl.yearFrom, to: tpl.yearTo } }}
+          } @else {
+            {{ 'templateDialog.yearsOpen' | transloco: { from: tpl.yearFrom } }}
+          }
+        </span>
+        <span
+          class="template-dialog__chip"
+          [class.template-dialog__chip--secondary]="tpl.sourceQuality === 'SECONDARY'"
+          >{{ 'templateDialog.quality.' + tpl.sourceQuality | transloco }}</span
+        >
+      </div>
+      @if (tpl.notes) {
+        <p class="template-dialog__notes">{{ tpl.notes }}</p>
+      }
+      <a
+        class="template-dialog__link"
+        [href]="reportUrl()"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'templateDialog.report' | transloco }}</a
+      >
+    </div>
+
+    @if (showLastDone) {
+      <div class="template-dialog__fill-row">
+        <p class="template-dialog__hint">{{ 'templateDialog.overdueHint' | transloco }}</p>
+        <button
+          type="button"
+          class="btn btn--ghost template-dialog__fill"
+          (click)="fillEmptyFields()"
+        >
+          {{ 'templateDialog.fillEmpty' | transloco }}
+        </button>
+      </div>
+    }
+
+    <ul class="template-dialog__tasks">
+      @for (row of rows(); track row.task.key; let i = $index) {
+        <li class="template-dialog__task" [class.template-dialog__task--existing]="row.existing">
+          <label class="template-dialog__task-label">
+            <input
+              type="checkbox"
+              class="template-dialog__checkbox"
+              [checked]="row.selected"
+              [disabled]="row.existing"
+              (change)="toggle(i)"
+            />
+            <span class="template-dialog__task-name">{{ row.task.name }}</span>
+            @if (row.existing) {
+              <span class="template-dialog__existing">{{
+                'templateDialog.alreadyPresent' | transloco
+              }}</span>
+            }
+          </label>
+          <div class="template-dialog__interval">
+            {{ interval(row).key | transloco: interval(row).params }}
+          </div>
+          @if (row.task.description) {
+            <p class="template-dialog__description">{{ row.task.description }}</p>
+          }
+          @if (showLastDone && !row.existing) {
+            <div class="template-dialog__lastdone">
+              <span class="template-dialog__lastdone-label">{{
+                'templateDialog.lastDone' | transloco
+              }}</span>
+              <input
+                class="field__input"
+                type="number"
+                min="0"
+                [attr.max]="vehicle.currentMileage"
+                inputmode="numeric"
+                [attr.aria-label]="
+                  ('templateDialog.lastDone' | transloco) +
+                  ' ' +
+                  row.task.name +
+                  ' (' +
+                  ('templateDialog.lastDoneKm' | transloco) +
+                  ')'
+                "
+                [placeholder]="'templateDialog.lastDoneKm' | transloco"
+                [value]="row.lastDoneKm ?? ''"
+                (input)="setLastDoneKm(i, $any($event.target).value)"
+              />
+              <input
+                class="field__input"
+                type="date"
+                [attr.min]="vehicle.firstRegistrationDate"
+                [attr.max]="maxDate"
+                [attr.aria-label]="
+                  ('templateDialog.lastDone' | transloco) +
+                  ' ' +
+                  row.task.name +
+                  ' (' +
+                  ('templateDialog.lastDoneDate' | transloco) +
+                  ')'
+                "
+                [value]="row.lastDoneDate ?? ''"
+                (input)="setLastDoneDate(i, $any($event.target).value)"
+              />
+              @if (limitErrors()[i].km) {
+                <span class="field__error" role="alert">{{
+                  'templateDialog.errors.lastDoneKm' | transloco: { max: vehicle.currentMileage }
+                }}</span>
+              }
+              @if (limitErrors()[i].date) {
+                <span class="field__error" role="alert">{{
+                  'templateDialog.errors.lastDoneDate' | transloco
+                }}</span>
+              }
+            </div>
+          }
+          @if (row.task.details.length) {
+            <details class="template-dialog__details">
+              <summary>{{ 'templateDialog.details' | transloco }}</summary>
+              <ul>
+                @for (detail of row.task.details; track $index) {
+                  <li>
+                    {{ detail.label }}: {{ detail.value }}
+                    @if (detail.quantity) {
+                      ({{ detail.quantity }})
+                    }
+                  </li>
+                }
+              </ul>
+            </details>
+          }
+          <a
+            class="template-dialog__link"
+            [href]="reportUrl(row.task.key)"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="('templateDialog.reportTask' | transloco) + ': ' + row.task.name"
+            >{{ 'templateDialog.report' | transloco }}</a
+          >
+        </li>
+      }
+    </ul>
+
+    @if (tpl.sources.length) {
+      <details class="template-dialog__sources">
+        <summary>{{ 'templateDialog.sources' | transloco }}</summary>
+        <ul>
+          @for (source of tpl.sources; track source.id) {
+            <li>
+              @if (source.url) {
+                <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{
+                  source.title
+                }}</a>
+              } @else {
+                {{ source.title }}
+              }
+              @if (source.locator) {
+                <span>, {{ source.locator }}</span>
+              }
+              <span class="template-dialog__retrieved"
+                >({{
+                  'templateDialog.retrieved' | transloco: { date: (source.retrieved | localDate) }
+                }})</span
+              >
+            </li>
+          }
+        </ul>
+      </details>
+    }
+
+    <p class="template-dialog__disclaimer">{{ 'templateDialog.disclaimer' | transloco }}</p>
+    <label class="template-dialog__confirm">
+      <input
+        type="checkbox"
+        class="template-dialog__checkbox"
+        [checked]="confirmed()"
+        (change)="confirmed.set(!confirmed())"
+      />
+      <span>{{ 'templateDialog.disclaimerConfirm' | transloco }}</span>
+    </label>
+  }
+
+  @if (errorKey(); as key) {
+    <p class="field__error template-dialog__error" role="alert">{{ key | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (step() === 'apply') {
+    <button type="button" class="btn btn--ghost template-dialog__back" (click)="backToSearch()">
+      {{ 'templateDialog.back' | transloco }}
+    </button>
+  }
+  <button type="button" class="btn btn--ghost" mat-dialog-close>
+    {{ 'common.cancel' | transloco }}
+  </button>
+  @if (step() === 'apply') {
+    <button
+      type="button"
+      class="btn btn--primary template-dialog__apply"
+      [disabled]="!canApply()"
+      (click)="apply()"
+    >
+      @if (applying()) {
+        <mat-spinner diameter="16" />
+      }
+      {{ 'templateDialog.apply' | transloco }}
+    </button>
+  }
+</mat-dialog-actions>

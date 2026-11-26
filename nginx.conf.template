@@ -25,6 +25,12 @@ log_format bm_main '$remote_addr - $remote_user [$time_local] "$request" '
                    '$status $body_bytes_sent "$http_referer" '
                    '"$http_user_agent" "$http_x_forwarded_for" trace_id=$request_id';
 
+# Same as bm_main, but without the query string: the template search (/api/v1/vehicle-templates?make=…&model=…&year=…)
+# carries terms typed by users, which must not end up in the log together with the client IP. Used for /api/.
+log_format bm_api '$remote_addr - $remote_user [$time_local] "$request_method $uri $server_protocol" '
+                  '$status $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" "$http_x_forwarded_for" trace_id=$request_id';
+
 server {
     listen 80;
     server_name _;
@@ -44,6 +50,9 @@ server {
     # The only container exposed to the outside: /api/ goes to the backend in the internal Docker network, so the
     # backend needs no published port. ^~ keeps the static-asset regex below from matching API paths.
     location ^~ /api/ {
+        # No query strings in the access log (see bm_api).
+        access_log /var/log/nginx/access.log bm_api;
+
         # Resolve the backend at request time via Docker's DNS: nginx starts even if the backend isn't up yet and
         # follows a recreated backend container to its new IP. With a variable, proxy_pass forwards the original
         # URI unchanged (/api/v1/...).
