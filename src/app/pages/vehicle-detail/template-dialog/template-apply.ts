@@ -87,3 +87,22 @@ export function reportUrl(templateId: string, taskKey?: string): string {
   const task = taskKey ? `&aufgabe=${encodeURIComponent(taskKey)}` : '';
   return `${REPORT_BASE}&vorlage=${encodeURIComponent(templateId)}${task}`;
 }
+
+export interface RowLimitErrors {
+  km: boolean;
+  date: boolean;
+}
+
+/** Whether the "last done" values of a row lie outside what the vehicle allows (mileage, registration date, today). */
+export function rowLimitErrors(
+  row: TemplateTaskRow,
+  vehicle: VehicleResponse,
+  today: string,
+): RowLimitErrors {
+  return {
+    km: row.lastDoneKm != null && row.lastDoneKm > vehicle.currentMileage,
+    date:
+      row.lastDoneDate != null &&
+      (row.lastDoneDate < vehicle.firstRegistrationDate || row.lastDoneDate > today),
+  };
+}

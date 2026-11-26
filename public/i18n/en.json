@@ -761,6 +761,9 @@
     "open": "Apply template",
     "applied": "{{created}} applied, {{skipped}} already present",
     "errors": {
+      "lastDone": "Last done doesn't fit the vehicle (mileage or date).",
+      "lastDoneKm": "The mileage must not exceed {{max}} km.",
+      "lastDoneDate": "The date must be between first registration and today.",
       "search": "The search failed. Please try again.",
       "load": "The template could not be loaded.",
       "unknown": "The template could not be applied. Please try again."

@@ -368,5 +368,59 @@ describe('TemplateDialog', () => {
     page().querySelector<HTMLButtonElement>('.template-dialog__back')!.click();
     await settle();
     expect(page().querySelector('.template-dialog__search')).not.toBeNull();
+    expect(page().querySelectorAll('.template-dialog__result').length).toBe(1);
+    expect(page().querySelector('.template-dialog__subtitle')).toBeNull();
+  });
+
+  async function enterKm(value: string): Promise<void> {
+    const km = page().querySelector<HTMLInputElement>(
+      '.template-dialog__lastdone input[type=number]',
+    )!;
+    km.value = value;
+    km.dispatchEvent(new Event('input'));
+    await settle();
+  }
+
+  it('limits last done km and date and blocks applying outside the limits', async () => {
+    await openApplyStep();
+    const inputs = page().querySelectorAll<HTMLInputElement>('.template-dialog__lastdone input');
+    expect(inputs[0].max).toBe('12000');
+    expect(inputs[1].min).toBe('2019-05-01');
+    expect(inputs[1].max).toBe('2026-11-26');
+    disclaimerCheckbox().click();
+    await settle();
+    expect(applyButton().disabled).toBe(false);
+    await enterKm('12001');
+    expect(applyButton().disabled).toBe(true);
+    expect(page().querySelector('.template-dialog__lastdone .field__error')).not.toBeNull();
+    await enterKm('12000');
+    expect(applyButton().disabled).toBe(false);
+    inputs[1].value = '2026-11-27';
+    inputs[1].dispatchEvent(new Event('input'));
+    await settle();
+    expect(applyButton().disabled).toBe(true);
+    inputs[1].value = '2019-04-30';
+    inputs[1].dispatchEvent(new Event('input'));
+    await settle();
+    expect(applyButton().disabled).toBe(true);
+  });
+
+  it('shows a specific message on 400', async () => {
+    await openApplyStep();
+    disclaimerCheckbox().click();
+    await settle();
+    applyButton().click();
+    httpMock
+      .expectOne('http://localhost/api/v1/vehicles/7/template')
+      .flush('x', { status: 400, statusText: 'Bad Request' });
+    await settle();
+    expect(page().querySelector('[role=alert]')!.textContent).toContain('passt nicht zum Fahrzeug');
+  });
+
+  it('shows quantity in parentheses', async () => {
+    await openApplyStep();
+    expect(page().querySelector('.template-dialog__details')!.textContent).toMatch(
+      /Ölmenge: .+\(.+\)/,
+    );
   });
 });

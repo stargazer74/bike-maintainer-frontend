@@ -44,8 +44,10 @@
     @if (results(); as hits) {
       @if (hits.length === 0) {
         <p class="template-dialog__none">{{ 'templateDialog.none' | transloco }}</p>
-      } @else if (hits.length > 1) {
-        <h3 class="template-dialog__subtitle">{{ 'templateDialog.pick' | transloco }}</h3>
+      } @else {
+        @if (hits.length > 1) {
+          <h3 class="template-dialog__subtitle">{{ 'templateDialog.pick' | transloco }}</h3>
+        }
         <ul class="template-dialog__results">
           @for (hit of hits; track hit.id) {
             <li>
@@ -141,6 +143,7 @@
                 class="field__input"
                 type="number"
                 min="0"
+                [attr.max]="vehicle.currentMileage"
                 inputmode="numeric"
                 [attr.aria-label]="
                   ('templateDialog.lastDone' | transloco) +
@@ -157,6 +160,8 @@
               <input
                 class="field__input"
                 type="date"
+                [attr.min]="vehicle.firstRegistrationDate"
+                [attr.max]="maxDate"
                 [attr.aria-label]="
                   ('templateDialog.lastDone' | transloco) +
                   ' ' +
@@ -168,6 +173,16 @@
                 [value]="row.lastDoneDate ?? ''"
                 (input)="setLastDoneDate(i, $any($event.target).value)"
               />
+              @if (limitErrors()[i].km) {
+                <span class="field__error" role="alert">{{
+                  'templateDialog.errors.lastDoneKm' | transloco: { max: vehicle.currentMileage }
+                }}</span>
+              }
+              @if (limitErrors()[i].date) {
+                <span class="field__error" role="alert">{{
+                  'templateDialog.errors.lastDoneDate' | transloco
+                }}</span>
+              }
             </div>
           }
           @if (row.task.details.length) {
@@ -178,7 +193,7 @@
                   <li>
                     {{ detail.label }}: {{ detail.value }}
                     @if (detail.quantity) {
-                      {{ detail.quantity }}
+                      ({{ detail.quantity }})
                     }
                   </li>
                 }

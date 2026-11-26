@@ -761,6 +761,9 @@
     "open": "Vorlage übernehmen",
     "applied": "{{created}} übernommen, {{skipped}} schon vorhanden",
     "errors": {
+      "lastDone": "Zuletzt erledigt passt nicht zum Fahrzeug (Kilometerstand oder Datum).",
+      "lastDoneKm": "Der Kilometerstand darf höchstens {{max}} km betragen.",
+      "lastDoneDate": "Das Datum muss zwischen Erstzulassung und heute liegen.",
       "search": "Die Suche ist fehlgeschlagen. Bitte versuche es erneut.",
       "load": "Die Vorlage konnte nicht geladen werden.",
       "unknown": "Die Vorlage konnte nicht übernommen werden. Bitte versuche es erneut."

@@ -24,6 +24,7 @@ import {
   fillEmpty,
   initialRows,
   reportUrl,
+  rowLimitErrors,
   TemplateTaskRow,
   toApplyRequest,
 } from './template-apply';
@@ -60,6 +61,7 @@ export class TemplateDialog {
   private readonly language = inject(LanguageService);
 
   protected readonly vehicle = this.data.vehicle;
+  protected readonly maxDate = this.today();
   protected readonly step = signal<Step>('search');
   protected readonly make = signal(this.vehicle.make ?? '');
   protected readonly model = signal(this.vehicle.model ?? '');
@@ -78,8 +80,20 @@ export class TemplateDialog {
   protected readonly selectedCount = computed(
     () => this.rows().filter((row) => row.selected && !row.existing).length,
   );
+  /** Limit violations per row index (only rows that are selected and editable). */
+  protected readonly limitErrors = computed(() =>
+    this.rows().map((row) =>
+      row.selected && !row.existing
+        ? rowLimitErrors(row, this.vehicle, this.maxDate)
+        : { km: false, date: false },
+    ),
+  );
   protected readonly canApply = computed(
-    () => this.confirmed() && !this.applying() && this.selectedCount() > 0,
+    () =>
+      this.confirmed() &&
+      !this.applying() &&
+      this.selectedCount() > 0 &&
+      !this.limitErrors().some((e) => e.km || e.date),
   );
   protected readonly locale = this.language.locale;
 
@@ -181,10 +195,14 @@ export class TemplateDialog {
         next: (response) => this.dialogRef.close(response),
         error: (error: unknown) => {
           this.applying.set(false);
+          const status = error instanceof HttpErrorResponse ? error.status : 0;
+          // A 403 SUBSCRIPTION_REQUIRED also reloads the AuthStore in the authInterceptor.
           this.errorKey.set(
-            error instanceof HttpErrorResponse && error.status === 403
+            status === 403
               ? 'readOnly.text'
-              : 'templateDialog.errors.unknown',
+              : status === 400
+                ? 'templateDialog.errors.lastDone'
+                : 'templateDialog.errors.unknown',
           );
         },
       });
