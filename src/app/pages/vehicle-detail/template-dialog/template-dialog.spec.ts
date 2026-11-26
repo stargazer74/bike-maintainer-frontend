@@ -198,6 +198,9 @@ describe('TemplateDialog', () => {
     await answerSearch([SUMMARY]);
     expect(page().querySelector('.template-dialog__search')).not.toBeNull();
     expect(page().querySelectorAll('.template-dialog__result').length).toBe(1);
+    expect(page().querySelector('.template-dialog__subtitle')!.textContent).toContain(
+      'Vorlage wählen',
+    );
     expect(page().querySelector('.template-dialog__task')).toBeNull();
     page().querySelector<HTMLButtonElement>('.template-dialog__result')!.click();
     await answerTemplate();
@@ -377,7 +380,9 @@ describe('TemplateDialog', () => {
     await settle();
     expect(page().querySelector('.template-dialog__search')).not.toBeNull();
     expect(page().querySelectorAll('.template-dialog__result').length).toBe(1);
-    expect(page().querySelector('.template-dialog__subtitle')).toBeNull();
+    expect(page().querySelector('.template-dialog__subtitle')!.textContent).toContain(
+      'Vorlage wählen',
+    );
   });
 
   async function enterKm(value: string): Promise<void> {

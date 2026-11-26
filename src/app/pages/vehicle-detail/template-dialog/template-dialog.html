@@ -45,9 +45,7 @@
       @if (hits.length === 0) {
         <p class="template-dialog__none">{{ 'templateDialog.none' | transloco }}</p>
       } @else {
-        @if (hits.length > 1) {
-          <h3 class="template-dialog__subtitle">{{ 'templateDialog.pick' | transloco }}</h3>
-        }
+        <h3 class="template-dialog__subtitle">{{ 'templateDialog.pick' | transloco }}</h3>
         <ul class="template-dialog__results">
           @for (hit of hits; track hit.id) {
             <li>
