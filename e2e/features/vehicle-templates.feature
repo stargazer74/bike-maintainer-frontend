@@ -17,7 +17,8 @@ Feature: Maintenance plan from a vehicle template
     Then I see the text "Für dieses Modell gibt es einen Wartungsplan"
     When I click "Fahrzeug anlegen"
     Then I see the heading "Wartungsplan aus Vorlage"
-    When I check "Ich habe den Hinweis gelesen."
+    When I click the button containing "Moto Guzzi V7"
+    And I check "Ich habe den Hinweis gelesen."
     And I click "Übernehmen"
     Then the dialog is closed
     When I open the tab "Wartungsaufgaben"
@@ -47,12 +48,14 @@ Feature: Maintenance plan from a vehicle template
     And I click "Vorlage übernehmen"
     And I fill in "Hersteller" with "Guzzi"
     And I click "Suchen"
+    And I click the button containing "Moto Guzzi V7"
     And I check "Ich habe den Hinweis gelesen."
     And I click "Übernehmen"
     Then I see the text "3 übernommen, 0 schon vorhanden"
     When I click "Vorlage übernehmen"
     And I fill in "Hersteller" with "Guzzi"
     And I click "Suchen"
+    And I click the button containing "Moto Guzzi V7"
     Then the dialog shows "schon vorhanden"
     And the button "Übernehmen" is disabled
 

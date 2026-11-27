@@ -132,6 +132,7 @@ describe('TemplateDialog', () => {
   async function openApplyStep(vehicle = VEHICLE, existing: string[] = []): Promise<void> {
     create(vehicle, existing);
     await answerSearch([SUMMARY]);
+    page().querySelector<HTMLButtonElement>('.template-dialog__result')!.click();
     await answerTemplate();
   }
 
@@ -192,8 +193,17 @@ describe('TemplateDialog', () => {
     await settle();
   });
 
-  it('goes straight to the apply step for a single hit', async () => {
-    await openApplyStep();
+  it('lists a single hit instead of opening it, and opens it on click', async () => {
+    create();
+    await answerSearch([SUMMARY]);
+    expect(page().querySelector('.template-dialog__search')).not.toBeNull();
+    expect(page().querySelectorAll('.template-dialog__result').length).toBe(1);
+    expect(page().querySelector('.template-dialog__subtitle')!.textContent).toContain(
+      'Vorlage wählen',
+    );
+    expect(page().querySelector('.template-dialog__task')).toBeNull();
+    page().querySelector<HTMLButtonElement>('.template-dialog__result')!.click();
+    await answerTemplate();
     expect(page().querySelector('.template-dialog__results')).toBeNull();
     expect(page().querySelector('.template-dialog__head')!.textContent).toContain('CB650R');
     expect(page().querySelector('.template-dialog__head')!.textContent).toContain(
@@ -218,6 +228,7 @@ describe('TemplateDialog', () => {
   it('shows a load error when the template cannot be fetched', async () => {
     create();
     await answerSearch([SUMMARY]);
+    page().querySelector<HTMLButtonElement>('.template-dialog__result')!.click();
     httpMock
       .expectOne(`${SEARCH_URL}/${SUMMARY.id}`)
       .flush('x', { status: 500, statusText: 'Server Error' });
@@ -369,7 +380,9 @@ describe('TemplateDialog', () => {
     await settle();
     expect(page().querySelector('.template-dialog__search')).not.toBeNull();
     expect(page().querySelectorAll('.template-dialog__result').length).toBe(1);
-    expect(page().querySelector('.template-dialog__subtitle')).toBeNull();
+    expect(page().querySelector('.template-dialog__subtitle')!.textContent).toContain(
+      'Vorlage wählen',
+    );
   });
 
   async function enterKm(value: string): Promise<void> {
